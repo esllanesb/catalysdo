@@ -1,0 +1,915 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; Chapter&nbsp;8.&nbsp;Programming Guide</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="index.html" title="Catalys Node User Guide"><link rel="prev" href="ch07s15.html" title="7.15.&nbsp;Microsoft .NET API"><link rel="next" href="ch08s02.html" title="8.2.&nbsp;CLI Commands"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s15.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="prog"></a>Chapter&nbsp;8.&nbsp;Programming Guide</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="ch08.html#prog_components">8.1. Custom Components</a></span></dt><dd><dl><dt><span class="section"><a href="ch08.html#prog_components_lifecycle">8.1.1. Component Lifecycle</a></span></dt><dt><span class="section"><a href="ch08.html#d5e9690">8.1.2. Application Lifecycle</a></span></dt><dt><span class="section"><a href="ch08.html#d5e9736">8.1.3. Overriding the Lifecycle Methods</a></span></dt><dt><span class="section"><a href="ch08.html#prog_components_msgproc">8.1.4. Custom Message Processors</a></span></dt><dt><span class="section"><a href="ch08.html#prog_components_selector">8.1.5. Custom Selectors</a></span></dt><dt><span class="section"><a href="ch08.html#prog_components_service">8.1.6. Custom Services</a></span></dt><dt><span class="section"><a href="ch08.html#prog_components_monitor">8.1.7. Custom Monitors</a></span></dt><dt><span class="section"><a href="ch08.html#prog_components-accessing-config-runtime">8.1.8. Accessing Global Configuration and Runtime</a></span></dt><dt><span class="section"><a href="ch08.html#prog_components_jmx">8.1.9. JMX Component Operations</a></span></dt></dl></dd><dt><span class="section"><a href="ch08s02.html">8.2. CLI Commands</a></span></dt><dd><dl><dt><span class="section"><a href="ch08s02.html#d5e10083">8.2.1. Introduction</a></span></dt><dt><span class="section"><a href="ch08s02.html#d5e10088">8.2.2. Implementation</a></span></dt></dl></dd><dt><span class="section"><a href="ch08s03.html">8.3. Tasks</a></span></dt><dd><dl><dt><span class="section"><a href="ch08s03.html#d5e10123">8.3.1. Introduction</a></span></dt><dt><span class="section"><a href="ch08s03.html#d5e10126">8.3.2. TaskBase Implementation</a></span></dt><dt><span class="section"><a href="ch08s03.html#d5e10150">8.3.3. PartyTaskBase Implementation</a></span></dt></dl></dd><dt><span class="section"><a href="ch08s04.html">8.4. Persistent Objects</a></span></dt><dd><dl><dt><span class="section"><a href="ch08s04.html#prog_persistent_objects-intro">8.4.1. Introduction</a></span></dt><dt><span class="section"><a href="ch08s04.html#prog_persistent_objects-collectionRegistry">8.4.2. Collection Registry</a></span></dt><dt><span class="section"><a href="ch08s04.html#d5e10248">8.4.3. Compacting a Collection</a></span></dt><dt><span class="section"><a href="ch08s04.html#d5e10254">8.4.4. Removing a Collection</a></span></dt><dt><span class="section"><a href="ch08s04.html#prog_persistent_objects-collections">8.4.5. Collections</a></span></dt><dt><span class="section"><a href="ch08s04.html#prog_persistent_objects-externalizers">8.4.6. Externalizers</a></span></dt></dl></dd><dt><span class="section"><a href="ch08s05.html">8.5. Message Factories</a></span></dt><dd><dl><dt><span class="section"><a href="ch08s05.html#d5e10399">8.5.1. Introduction</a></span></dt><dt><span class="section"><a href="ch08s05.html#d5e10403">8.5.2. Implementation</a></span></dt></dl></dd><dt><span class="section"><a href="ch08s06.html">8.6. Message Transformers</a></span></dt><dd><dl><dt><span class="section"><a href="ch08s06.html#d5e10431">8.6.1. Introduction</a></span></dt><dt><span class="section"><a href="ch08s06.html#d5e10434">8.6.2. Implementation</a></span></dt><dt><span class="section"><a href="ch08s06.html#d5e10461">8.6.3. Configuration</a></span></dt></dl></dd><dt><span class="section"><a href="ch08s07.html">8.7. Repeating Groups</a></span></dt><dd><dl><dt><span class="section"><a href="ch08s07.html#prog_repeating_groups-intro">8.7.1. Introduction</a></span></dt><dt><span class="section"><a href="ch08s07.html#prog_repeating_groups-concepts">8.7.2. Adding a Repeating Group</a></span></dt><dt><span class="section"><a href="ch08s07.html#prog_repeating_groups-creating">8.7.3. Parsing Repeating Groups</a></span></dt></dl></dd><dt><span class="section"><a href="ch08s08.html">8.8. JMX API Advanced Operations</a></span></dt><dd><dl><dt><span class="section"><a href="ch08s08.html#d5e10489">8.8.1. Configuring via JMX</a></span></dt><dt><span class="section"><a href="ch08s08.html#d5e10551">8.8.2. Monitoring via JMX</a></span></dt></dl></dd><dt><span class="section"><a href="ch08s09.html">8.9. Authentication</a></span></dt><dd><dl><dt><span class="section"><a href="ch08s09.html#prog_authentication-intro">8.9.1. Introduction</a></span></dt><dt><span class="section"><a href="ch08s09.html#prog_authentication-refs">8.9.2. References</a></span></dt><dt><span class="section"><a href="ch08s09.html#prog_authentication-implementation">8.9.3. FIX Authentication Implementation</a></span></dt><dt><span class="section"><a href="ch08s09.html#prog_authentication-config">8.9.4. FIX Authentication Configuration</a></span></dt><dt><span class="section"><a href="ch08s09.html#prog_authentication-loginConfig">8.9.5. Login Module Configuration</a></span></dt><dt><span class="section"><a href="ch08s09.html#prog_authentication-support">8.9.6. Support for Custom Login Module Implementations</a></span></dt><dt><span class="section"><a href="ch08s09.html#prog_authentication-templates">8.9.7. FIX Authentication Templates</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_components"></a>8.1.&nbsp;Custom Components</h2></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9606"></a>Introduction</h3></div></div></div><p>
+      Many of the Node's features are implemented as <span class="emphasis"><em>components</em></span>, which include message processors,
+      services, monitors and selectors.  Users can create their own components in order to implement specific
+      functionality or business logic that is not provided by the built-in components.
+    </p><p>
+      From a programmer's perspective, a component is anything that implements the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html" target="_top">IComponent</a>
+      interface. This interface has a well-defined lifecycle to which an implementation must adhere, ensuring that the
+      component is always in the correct internal state as the Node itself changes state. The interface also provides
+      methods to access the built-in configuration subsystem.
+    </p><p>
+      We recommend implementing the <code class="code">IComponent</code> interface by extending the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html" target="_top">ComponentHelper</a>
+      class. It provides default implementations of the interface's methods, allowing you to override only the
+      methods that need to be customized.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_components_lifecycle"></a>8.1.1.&nbsp;Component Lifecycle</h3></div></div></div><p>
+      All components follow this lifecycle:
+    </p><p>
+      </p><div class="mediaobject"><img src="../resources/ComponentLifecycle.gif"></div><p>
+    </p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>State</th><th><code class="code">IComponent</code> Method</th><th>What an Implementation Should Do</th></tr></thead><tbody><tr><td>Constructed</td><td>The component object is created via its default constructor.</td><td>
+              <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                  Custom components must provide a public no-argument constructor or a default constructor. See
+                  <a href="ch08.html#prog_components-accessing-config-runtime" title="8.1.8.&nbsp;Accessing Global Configuration and Runtime">this section</a> below if your custom
+                  component needs to access the global configuration or runtime APIs.
+                </li><li class="listitem">
+                  The constructor should do as little as possible and should not have side effects.
+                </li><li class="listitem">
+                  The component should not depend on components being constructed in a certain order.
+                </li></ul></div>
+            </td></tr><tr><td>Opened</td><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html#openComponent()" target="_top">openComponent()</a>
+              is called. This method is only called once during the lifecycle.
+            </td><td>
+              <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Configure itself as needed according to its attributes.</li><li class="listitem">Allocate any resources that will remain open during activation/deactivation state changes.</li><li class="listitem">
+                  The <a class="javadocplain" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html#openComponent()" target="_top"><code class="code">ComponentHelper</code> implementation</a>
+                  marks the component as open and registers itself with the component registry. It also calls the
+                  <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html#refreshStateFromAttributes()" target="_top">refreshStateFrom&shy;Attributes()</a>
+                  method, which is where the component's configuration attributes should be parsed and applied.
+                </li></ul></div>
+            </td></tr><tr><td>Activated</td><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html#setComponentActive(boolean)" target="_top">setComponentActive(true)</a>
+              is called. This method may be called multiple times during a component's lifecycle, including successive
+              calls with the same value.
+            </td><td>
+              <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">If running in HA mode, allocate any resources that should only be open on the primary Node.</li><li class="listitem">Begin processing and be ready to accept messages and events.</li><li class="listitem">
+                  The <a class="javadocplain" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html#setComponentActive(boolean)" target="_top"><code class="code">ComponentHelper</code> implementation</a>
+                  records that the component is active.
+                </li></ul></div>
+            </td></tr><tr><td>Deactivated</td><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html#setComponentActive(boolean)" target="_top">setComponentActive(false)</a>
+              is called.
+            </td><td>
+              <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Stop processing and stop accepting messages and events.</li><li class="listitem">Release any resources that were allocated in <code class="code">setComponentActive(true)</code>.</li><li class="listitem">
+                  The <a class="javadocplain" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html#setComponentActive(boolean)" target="_top"><code class="code">ComponentHelper</code> implementation</a>
+                  records that the component is deactivated.
+                </li></ul></div>
+            </td></tr><tr><td>Closed</td><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html#closeComponent()" target="_top">closeComponent()</a>
+              is called. No further <code class="code">IComponent</code> methods will be called.
+            </td><td>
+              <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                  Release any resources that were allocated in <code class="code">openComponent()</code>.
+                </li><li class="listitem">
+                  The <a class="javadocplain" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html#closeComponent()" target="_top"><code class="code">ComponentHelper</code> implementation</a>
+                  records that the component is closed and removes it from the component registry.
+                </li></ul></div>
+            </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9690"></a>8.1.2.&nbsp;Application Lifecycle</h3></div></div></div><p>
+      The transition of components from state to state is triggered by changes in the Node's lifecycle. The Node
+      transitions between these three states:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        STOPPED: The Node is not running and no components are open or active.
+      </li><li class="listitem">
+        STARTED: The Node is running and all components are active (unless manually deactivated).
+      </li><li class="listitem">
+        STAND_BY: The Node is a secondary HA node and all components are opened. Only permanent services are active.
+      </li></ul></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9697"></a>Application Startup</h4></div></div></div><p>
+        When a standalone Node starts up, it transitions from STOPPED to STARTED after:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">All components are constructed</li><li class="listitem"><code class="code">openComponent()</code> is called on each component</li><li class="listitem">Components are activated by calling <code class="code">setComponentActive(true)</code></li></ol></div><p>
+        See the
+        <a class="javadocplain" href="../javadoc/com/camerontec/catalys/server/CatalysApplication.html#toRunLevel(com.camerontec.catalys.server.ApplicationRunLevel)" target="_top">state transition table</a>
+        for details about the order in which components are opened and activated. Note that components configured under
+        a specific session are managed by their respective <code class="code">SessionManager</code>, which calls the lifecycle
+        methods on its child components.  For example, when <code class="code">SessionManager.openComponent()</code> is called, it
+        will in turn call <code class="code">openComponent()</code> on each of its message processors, selectors, etc.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9711"></a>High Availability Mode</h4></div></div></div><p>
+        When starting in HA mode, a Node first transitions from STOPPED to STAND_BY after:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">All components are constructed</li><li class="listitem"><code class="code">openComponent()</code> is called on each component</li><li class="listitem">
+          Only permanent services are activated. A permanent service is one that should always be activated at startup,
+          regardless of whether the Node is in a primary or secondary role. See
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html#SERVICE_ALWAYS_ACTIVE" target="_top">IComponent.SERVICE_ALWAYS_ACTIVE</a>
+          for details on how to implement this.
+        </li></ol></div><p>
+        At this stage all components other than permanent services are still deactivated.
+      </p><p>
+        If the Node then becomes primary &#8212; either at startup or after failover &#8212; the application
+        transitions from STAND_BY to STARTED, and all components are activated via <code class="code">setComponentActive(true)</code>,
+        except for permanent services which will have already been activated.
+      </p><p>
+        When a primary node becomes a secondary during failover, it transitions from STARTED to STAND_BY and components
+        other than permanent services are deactivated via <code class="code">setComponentActive(false)</code>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9725"></a>Application Shutdown</h4></div></div></div><p>
+        When the application shuts down (e.g. via the <code class="code">exit</code> CLI command), it transitions from STAND_BY or
+        STARTED to STOPPED after:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+          If the application is in the STARTED state, components are deactivated via
+          <code class="code">setComponentActive(false)</code>.
+        </li><li class="listitem">
+          If the application is in the STAND_BY state, any permanent services are deactivated via
+          <code class="code">setComponentActive(false)</code>.
+        </li><li class="listitem"><code class="code">closeComponent()</code> is then called on all components. The implementation should not depend on
+          components being closed in a certain order.
+        </li></ol></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9736"></a>8.1.3.&nbsp;Overriding the Lifecycle Methods</h3></div></div></div><p>
+      For simple components, the default lifecycle management provided by <code class="code">ComponentHelper</code> may be
+      sufficient.  But if your component requires configuration or needs to allocate additional resources before
+      activating, you will need to override one or more of the lifecycle methods.
+    </p><div class="important"><h3 class="title">Important</h3><p>
+        When overriding any lifecycle methods in <code class="code">ComponentHelper</code>, be sure to call the corresponding
+        <code class="code">super</code> method as well.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9744"></a>Configuring a Component</h4></div></div></div><p>
+        It is likely that your component will need one or more configuration attributes.  These can be specified in the
+        XML configuration by nesting a <code class="code">Properties</code> element beneath your component:
+      </p><pre class="programlisting">&lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.4" heartbeat="60"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="2003"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors&gt;
+      &lt;GenericProcessor class="com.example.CustomProcessor" id="customProcessor"&gt;
+        &lt;Properties id="props"&gt;
+          &lt;Property name="customAttribute" value="someValue"/&gt;
+        &lt;/Properties&gt;
+      &lt;/GenericProcessor&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+        To read the configuration attributes at runtime, override the <code class="code">refreshStateFrom&shy;Attributes()</code>
+        method.  This method is automatically called when a component is opened and when it is safe for a component to
+        reconfigure itself according to its attributes.  From here, attributes can be retrieved using the
+        <code class="code">getAttribute(String)</code> method.  We also provide a helper class,
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/attributesupport/AttributeUtility.html" target="_top">AttributeUtility</a>,
+        which simplifies this process and provides type-specific attribute retrieval with optional default values.
+      </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.server.component.ComponentHelper;
+import com.camerontec.catalys.util.attributesupport.AttributeUtility;
+
+public class CustomComponent extends ComponentHelper
+{
+  private volatile boolean customAttribute;
+
+  @Override
+  public void refreshStateFromAttributes() throws Exception
+  {
+    super.refreshStateFromAttributes();
+
+    // get the attribute as a boolean
+    final Object attr = getAttribute("customAttribute");
+    customAttribute = attr == null ? false : Boolean.valueOf(attr.toString());
+
+    // or do the same thing using AttributeUtility
+    customAttribute = AttributeUtility.getBooleanAttribute("customAttribute", this, false);
+  }
+}</pre><div class="important"><h3 class="title">Important</h3><p>
+          Care should be taken to provide appropriate synchronization and/or visibility for configuration data that is
+          accessed by the component's runtime processing, as configuration and processing occur in different threads.
+        </p></div><p>
+        Components are configured when they are opened, but configuration changes can also occur after startup.
+        A developer must decide whether each custom attribute is <span class="emphasis"><em>read-only</em></span> (cannot be changed
+        after startup) or <span class="emphasis"><em>refreshable</em></span> (can be changed after startup).
+      </p><p>
+        All read-only attributes should be applied from <code class="code">openComponent()</code>, which is only called once during
+        the lifecycle. All refreshable attributes should be applied from <code class="code">refreshStateFromAttributes()</code>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9762"></a>Opening, Activating and Closing a Component</h4></div></div></div><p>
+        If your component needs any other resources before activating, you should allocate them from
+        <code class="code">openComponent()</code> and deallocate them from <code class="code">closeComponent()</code>.
+      </p><p>
+        After the component has been opened and configured, it will then be activated via
+        <code class="code">setComponent&shy;Active(boolean)</code>.  This method should be overridden if you need to perform any
+        other operations before your component can process messages, for example starting a new thread, opening
+        a socket, connecting to a database, etc.  Conversely, when the Node deactivates your component, it will
+        call this method again; in this case you should close or deallocate any such resources.  The
+        <code class="code">boolean</code> argument indicates whether the Node is trying to activate or deactivate your component.
+      </p><div class="note"><h3 class="title">Note</h3><p>
+          When using your component in High-Availability installations, keep in mind that <code class="code">openComponent()</code>
+          is called on the primary and all secondary servers. However, <code class="code">setComponentActive(true)</code> will be
+          called only on the server that is currently the primary. Therefore any resources you wish to allocate only on
+          the primary server should be allocated from <code class="code">setComponentActive(true)</code>.
+        </p></div><p>
+        Here is a simple implementation of these methods:
+      </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.server.component.ComponentHelper;
+
+public class CustomComponent extends ComponentHelper
+{
+  private volatile SomeResource someResource;
+
+  @Override
+  public boolean openComponent() throws Exception
+  {
+    final boolean wasOpen = super.openComponent();
+
+    if (!wasOpen)
+    {
+      // allocate necessary resources
+      someResource = new SomeResource();
+    }
+
+    return wasOpen;
+  }
+
+  @Override
+  public boolean closeComponent() throws Exception
+  {
+    final boolean wasOpen = super.openComponent();
+
+    if (wasOpen)
+    {
+      // release resources allocated in openComponent()
+      someResource.close();
+    }
+
+    return wasOpen;
+  }
+
+  @Override
+  public boolean setComponentActive(boolean active) throws Exception
+  {
+    final boolean wasActive = super.setComponentActive(active);
+
+    if (!wasActive &amp;&amp; active)
+    {
+      someResource.start();
+    }
+    else if (wasActive &amp;&amp; !active)
+    {
+      someResource.stop();
+    }
+
+    return wasActive;
+  }
+}</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_components_msgproc"></a>8.1.4.&nbsp;Custom Message Processors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9779"></a>Introduction</h4></div></div></div><p>
+      A message processor is a component that processes FIX messages.  Message processors are configured under a
+      session and can be chained together.  They can process messages in the inbound or outbound direction, or even
+      both directions.
+    </p><p>
+      The following example shows the most basic message processor. It simply prints out each inbound FIX message it
+      receives.
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.processor.FIXListenerBase;
+import com.camerontec.catalys.util.messaging.MessageEvent;
+
+public class BasicProcessor extends FIXListenerBase
+{
+  @Override
+  public void onMessageFromFix(MessageEvent event, IFIXMessage message)
+  {
+    System.out.println(message);
+  }
+}
+</pre><p>
+      To use this processor, a <code class="code">GenericProcessor</code> element is configured in a session's message processing
+      chain:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.4" heartbeat="60"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="2003"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors&gt;
+      &lt;GenericProcessor class="com.example.BasicProcessor" id="basicProcessor"/&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9787"></a>Message Processor Class Implementation</h4></div></div></div><p>
+      Your custom processor must implement a specific interface depending on which direction messages will flow through
+      it.  We provide abstract base classes that you should extend in order to implement the interface:
+    </p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Message Direction</th><th>Interface</th><th>Base Class</th></tr></thead><tbody><tr><td>Inbound</td><td><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXListener.html" target="_top">IFIXListener</a></td><td><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/FIXListenerBase.html" target="_top">FIXListenerBase</a></td></tr><tr><td>Outbound</td><td><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXSource.html" target="_top">IFIXSource</a></td><td><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/FIXSourceBase.html" target="_top">FIXSourceBase</a></td></tr><tr><td>Inbound and Outbound</td><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXSource.html" target="_top">IFIXSource</a>
+              and
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXListener.html" target="_top">IFIXListener</a>
+            </td><td><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/FIXSourceListenerBase.html" target="_top">FIXSourceListenerBase</a></td></tr></tbody></table></div><p>
+      These base classes extend <code class="code">ComponentHelper</code>.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9822"></a>Processing Inbound Messages</h4></div></div></div><p>
+      If your component will be processing inbound messages, you should extend either <code class="code">FIXListenerBase</code> or
+      <code class="code">FIXSourceListenerBase</code>.
+    </p><p>
+      Messages will be given to your processor via the <code class="code">onMessageFromFix</code> method. This is where you can
+      read, enrich, validate or perform any other processing on the FIX message before it is handed off
+      to the next message processor in the chain.  If you throw an <code class="code">Exception</code> from this method, a standard
+      FIX reject message will be constructed for you automatically using the text of the exception.
+    </p><p>
+      Two other methods, <code class="code">onConnectionStatus</code> and <code class="code">onReset</code>, can be overridden if you wish to
+      be notified of session events. Please refer to the
+      <a class="javadocplain" href="../javadoc/com/camerontec/catalys/server/processor/IFIXListener.html" target="_top">Javadoc</a>
+      for a complete explanation of each method in the <code class="code">IFIXListener</code> interface.
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.processor.FIXListenerBase;
+import com.camerontec.catalys.util.messaging.MessageEvent;
+
+public class BasicProcessor extends FIXListenerBase
+{
+  @Override
+  public void onMessageFromFix(MessageEvent event, IFIXMessage message)
+  {
+    // add a custom tag to the inbound message
+    message.addField(6000, "some text");
+  }
+
+  @Override
+  public void onConnectionStatus(MessageEvent event, boolean connected)
+  {
+    System.out.println("The session is " + (connected ? "connected" : "disconnected"));
+  }
+
+  @Override
+  public void onReset(MessageEvent event)
+  {
+    System.out.println("The session was reset");
+  }
+}
+</pre><p>
+      The message processor must be configured in the session's listener message processing chain:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.4" heartbeat="60"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="2003"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors&gt;
+      &lt;GenericProcessor class="com.example.BasicProcessor" id="basicProcessor"/&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9838"></a>Processing Outbound Messages</h4></div></div></div><p>
+      If your component will be processing outbound messages, you should extend either <code class="code">FIXSourceBase</code> or
+      <code class="code">FIXSourceListenerBase</code>.
+    </p><p>
+      When a message originates earlier in the message processing chain, it will pass through your message
+      processor via the <code class="code">onMessageToFix</code> method. This is where you can read, enrich, validate or perform
+      any other processing on the FIX message before it is handed off to the next message processor in the
+      chain and ultimately sent out the FIX session.
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.processor.FIXSourceBase;
+import com.camerontec.catalys.util.messaging.MessageEvent;
+
+public class BasicOutboundProcessor extends FIXSourceBase
+{
+  @Override
+  public void onMessageToFix(MessageEvent event, IFIXMessage message)
+  {
+    // add a custom tag to the outbound message
+    message.addField(6000, "some text");
+  }
+}
+</pre><p>
+      If your message processor is creating new messages to send out the FIX session, send them via the
+      <code class="code">fireMessage(IFIXMessage)</code> method.  They will pass through any other configured message processors
+      under which your processor is nested; they will not pass through any message processors that are nested
+      beneath.
+    </p><pre class="programlisting">private void sendMessage() throws Exception
+{
+  final IFIXMessage message = getToFIXMessageFactory().createFIXMessage("D");
+  message.addField(11, "Order1");
+  message.addField(55, "IBM");
+  fireMessage(message);
+}</pre><p>
+      An outbound message processor must always be configured in the session's source message processing chain:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.4" heartbeat="60"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="2003"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;GenericProcessor class="com.example.BasicOutboundProcessor" id="basicOutboundProcessor"/&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9851"></a>IFIXMessage Reuse</h4></div></div></div><p>
+      Messages are delivered to processors as <code class="code">IFIXMessage</code> objects.  For efficiency, the Node
+      will try to reuse an <code class="code">IFIXMessage</code> instance whenever possible so as not to create garbage.
+    </p><p>
+      If your message processor does not retain references to the <code class="code">IFIXMessage</code> objects passed via
+      <code class="code">onMessageFromFix</code> and <code class="code">onMessageToFix</code>, it is good practice to indicate that it's safe to
+      reuse message objects that have passed through your processor.  This is accomplished by calling
+      <code class="code">setStoresMessages(boolean)</code> from your constructor or from <code class="code">openComponent()</code>.
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.server.processor.FIXListenerBase;
+
+public class BasicProcessor extends FIXListenerBase
+{
+  public BasicProcessor()
+  {
+    setStoresMessages(false);
+  }
+}</pre><p>
+      More details about message reuse are available in the
+      <a href="ch09s06.html#perf_configuration-reuse" title="9.6.1.&nbsp;Message Object Reuse">Performance Tuning</a> chapter.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9865"></a>Auto Forwarding</h4></div></div></div><p>
+      By default, after a message processor has processed a message, it automatically forwards the message to the next
+      processor in the chain.  In some cases, however, it may be desirable to prevent a message from being forwarded.
+      For example, the <code class="code">CatalysRulesEngine</code> message processor disables auto-forwarding so that it can
+      prevent dropped messages from being delivered upstream.
+    </p><p>
+      To disable auto-forwarding in your message processor, call
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXMessageProcessor.html#setAutoForwarding(boolean)" target="_top">setAutoForwarding(boolean)</a>
+      from the constructor or from <code class="code">openComponent()</code>. Setting this to <code class="code">false</code> means that no
+      message will be for&shy;warded beyond your processor unless you explicitly do so.  To forward a message
+      manually, call
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXMessageProcessor.html#forwardEvent(com.camerontec.catalys.util.messaging.MessageEvent)" target="_top">forwardEvent(MessageEvent)</a>.
+    </p><div class="important"><h3 class="title">Important</h3><p>
+        When auto-forwarding is disabled, all events including messages, exceptions, resets and connection status events
+        will not be auto-forwarded.  Be sure to handle all of these events by overriding the corresponding methods
+        and manually forwarding as needed. See the example below.
+      </p></div><p>
+      The following example illustrates a processor that drops certain messages and forwards all other events:
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.processor.FIXListenerBase;
+import com.camerontec.catalys.util.messaging.MessageEvent;
+
+public class CustomProcessor extends FIXListenerBase
+{
+  public CustomProcessor()
+  {
+    setAutoForwarding(false);
+  }
+
+  @Override
+  public void onMessageFromFix(MessageEvent event, IFIXMessage message) throws Exception
+  {
+    if (message.hasField(6000))
+    {
+      System.out.println("dropping this message");
+    }
+    else
+    {
+      forwardEvent(event);
+    }
+  }
+
+  @Override
+  public void onConnectionStatus(MessageEvent event, boolean connected) throws Exception
+  {
+    forwardEvent(event);
+  }
+
+  @Override
+  public void onException(MessageEvent event, Exception exception) throws Exception
+  {
+    forwardEvent(event);
+  }
+
+  @Override
+  public void onReset(MessageEvent event) throws Exception
+  {
+    forwardEvent(event);
+  }
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9878"></a>JMX Operations</h4></div></div></div><p>
+      A custom processor will appear in the Dashboard or any JMX client without any extra effort. It will be available
+      as a <code class="code">Configuration.Application.MessageProcessor</code> MBean with a
+      <code class="code">com.camerontec.&shy;catalys.server.&shy;management.mbean.CustomMessageProcessor&shy;ConfigurationMBean</code>
+      configuration class. This class exposes attributes via the <code class="code">customAttributes</code> attribute and the
+      <code class="code">setCustomAttribute</code> operation.
+    </p><p>
+      See <a href="ch08.html#prog_components_jmx" title="8.1.9.&nbsp;JMX Component Operations">JMX Component Operations</a> for more details about managing
+      custom components via JMX.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9887"></a>More Examples</h4></div></div></div><p>
+      The source code for two of our built-in message processors, <code class="code">SampleMessageSource</code> and
+      <code class="code">SampleMessage&shy;Listener</code>, is included in the
+      <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test/</em></span> directory of the Node installation.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_components_selector"></a>8.1.5.&nbsp;Custom Selectors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9895"></a>Introduction</h4></div></div></div><p>
+      A selector is a simple component which when passed an object decides whether or not that object is "selected",
+      based on some internal criteria of the selector.  For details on how and when to use them, refer to
+      <a href="ch03.html#config_basic-session-selector" title="Selectors">Selectors</a> in the configuration chapter.
+    </p><p>
+      Two selectors,
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/messageselector/MsgTypeSelector.html" target="_top">MsgTypeSelector</a>
+      and
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/messageselector/SelectByTagValue.html" target="_top">SelectByTagValue</a>,
+      are bundled with the Node.  Refer to the <span class="emphasis"><em>templates/Selectors</em></span> directory for configuration
+      examples; the source code can be found in
+      <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/messageselector</em></span>.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9904"></a>Selector Class Implementation</h4></div></div></div><p>
+      Selectors must implement the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/notification/ISelector.html" target="_top">ISelector</a>
+      interface. Since they are components, we recommend using
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html" target="_top">ComponentHelper</a>
+      as a base class and overriding the <a href="ch08.html#prog_components_lifecycle" title="8.1.1.&nbsp;Component Lifecycle">lifecycle</a> methods as necessary.
+    </p><p>
+      The <code class="code">ISelector</code> interface has just one method: <code class="code">isSelected(Object)</code>.  In the
+      following example, messages with symbol "IBM" are selected.
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.component.ComponentHelper;
+import com.camerontec.catalys.util.messaging.IMessage;
+import com.camerontec.catalys.util.messaging.MessageEvent;
+import com.camerontec.catalys.util.notification.ISelector;
+
+public class BasicSelector extends ComponentHelper implements ISelector
+{
+  @Override
+  public boolean isSelected(Object obj)
+  {
+    if (obj instanceof MessageEvent)
+    {
+      final IMessage message = ((MessageEvent)obj).getMessage();
+
+      if (message instanceof IFIXMessage)
+      {
+        final IFIXMessage fixMessage = (IFIXMessage)message;
+        return fixMessage.getValueAsString(55,"").equals("IBM");
+      }
+    }
+
+    return false;
+  }
+}
+</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9914"></a>Using the Selector</h4></div></div></div><p>
+      A selector is configured in the listener message processing chain of a session using the
+      <code class="code">GenericSelector</code> element.  Alternatively, you can
+      <a href="ch08.html#prog_components_custom-elements" title="Custom XML Elements">define your own element</a> in the DTD.
+    </p><pre class="programlisting">&lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.4" heartbeat="60"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="2002"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors&gt;
+      &lt;GenericSelector class="com.example.BasicSelector" id="selector"&gt;
+        &lt;!-- nested processor here --&gt;
+      &lt;/GenericSelector&gt;
+      &lt;!-- default processor here --&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;
+</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9920"></a>JMX Operations</h4></div></div></div><p>
+      A custom selector will appear in the Dashboard or any JMX client without any extra effort. It will be available
+      as a <code class="code">Configuration.Application.Selector</code> MBean with a
+      <code class="code">com.camerontec.&shy;catalys.server.management.&shy;mbean.CustomSelector&shy;ConfigurationMBean</code>
+      configuration class. This class exposes attributes via the <code class="code">customAttributes</code> attribute and the
+      <code class="code">setCustomAttribute</code> operation.
+    </p><p>
+      See <a href="ch08.html#prog_components_jmx" title="8.1.9.&nbsp;JMX Component Operations">JMX Component Operations</a> for more details about managing
+      custom components via JMX.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_components_service"></a>8.1.6.&nbsp;Custom Services</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9931"></a>Introduction</h4></div></div></div><p>
+      A service is a component that provides functionality which is typically shared by one or more message
+      processors (or even by other services). For more details on how and when to use a service, please refer to
+      <a href="ch03.html#config_basic-services" title="3.1.2.&nbsp;Services Configuration">Services</a> in the configuration chapter.
+    </p><p>
+      For a working example, see <span class="emphasis"><em>templates/CustomService</em></span> and the corresponding source code
+      file <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test/SampleService.java</em></span>.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9938"></a>Service Lifecycle</h4></div></div></div><p>
+      Since services are available to all message processors, the component lifecycle guarantees that they are:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Opened before all message processors</li><li class="listitem">Activated before all messages processors</li><li class="listitem">Deactivated after all messages processors</li><li class="listitem">Closed after all message processors</li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9946"></a>Service Class Implementation</h4></div></div></div><p>
+      Services must implement the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/service/IService.html" target="_top">IService</a>
+      interface.  Since they are components, we recommend using
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html" target="_top">ComponentHelper</a>
+      as a base class and overriding the <a href="ch08.html#prog_components_lifecycle" title="8.1.1.&nbsp;Component Lifecycle">lifecycle</a> methods as necessary.
+    </p><p>
+      The following example shows a simple service with a method that prints a string to standard out:
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.server.component.ComponentHelper;
+import com.camerontec.catalys.util.service.IService;
+
+public class CustomService extends ComponentHelper implements IService
+{
+  private volatile String serviceName;
+
+  @Override
+  public String getServiceName()
+  {
+    return serviceName;
+  }
+
+  @Override
+  public void setServiceName(String serviceName)
+  {
+    this.serviceName = serviceName;
+  }
+
+  public void helloWorld()
+  {
+    System.out.println("hello world");
+  }
+}
+</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9954"></a>Using the Service</h4></div></div></div><p>
+      To deploy the service, add a <code class="code">GenericService</code> element to the Node's configuration:
+    </p><pre class="programlisting">&lt;Application id="app"&gt;
+  &lt;Services&gt;
+    &lt;GenericService class="com.example.CustomService" id="customService"/&gt;
+  &lt;/Services&gt;
+  &lt;Sessions&gt;
+    ...
+  &lt;/Sessions&gt;
+&lt;/Application&gt;</pre><p>
+      All configured services are registered with the global
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/service/ServiceRegistry.html" target="_top">ServiceRegistry</a>.
+    </p><p>
+      To actually use the service, for example from a message processor, it must be obtained from the registry
+      and cast to the expected type.  From there, you can call any one of its public methods.
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.processor.FIXListenerBase;
+import com.camerontec.catalys.util.messaging.MessageEvent;
+import com.camerontec.catalys.util.service.ServiceRegistry;
+
+public class CustomProcessor extends FIXListenerBase
+{
+  private volatile CustomService service;
+
+  @Override
+  public boolean openComponent() throws Exception
+  {
+    final boolean wasOpen = super.openComponent();
+
+    if (!wasOpen)
+    {
+      service = (CustomService)ServiceRegistry.getInstance().getService("customService");
+    }
+
+    return wasOpen;
+  }
+
+  @Override
+  public void onMessageFromFix(MessageEvent event, IFIXMessage message) throws Exception
+  {
+    service.helloWorld();
+  }
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9963"></a>Custom Configuration with HA</h4></div></div></div><p>
+      Services are not limited to any particular functionality, and as such they are not required to use the Node's
+      standard configuration subsystem.  If your service employs its own configuration mechanism and the Node is
+      running in High Availability mode, then you may wish to replicate your configuration across the cluster.  This
+      can be acheived by implementing the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/ha/cluster/IServiceWithReplicatedConfiguration.html" target="_top">IServiceWithReplicatedConfiguration</a>
+      interface instead of
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/service/IService.html" target="_top">IService</a>.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9968"></a>JMX Operations</h4></div></div></div><p>
+      A custom service will appear in the Dashboard or any JMX client without any extra effort. It will be available
+      as a <code class="code">Configuration.Application.Service</code> MBean with a
+      <code class="code">com.camerontec.&shy;catalys.server.management.&shy;mbean.CustomService&shy;ConfigurationMBean</code>
+      configuration class. This class exposes attributes via the <code class="code">customAttributes</code> attribute and the
+      <code class="code">setCustomAttribute</code> operation.
+    </p><p>
+      See <a href="ch08.html#prog_components_jmx" title="8.1.9.&nbsp;JMX Component Operations">JMX Component Operations</a> for more details about managing
+      custom components via JMX.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_components_monitor"></a>8.1.7.&nbsp;Custom Monitors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9979"></a>Introduction</h4></div></div></div><p>
+      A monitor is an application-level component that listens to events from all configured sessions.  It can also
+      be used to customize session behavior.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9982"></a>Monitor Class Implementation</h4></div></div></div><p>
+      To listen to session-level events only, the monitor should implement the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/event/ISessionStatusEventListener.html" target="_top">ISessionStatusEventListener</a>
+      interface.
+    </p><p>
+      To listen to session-level events and session manager-level events, the monitor should implement the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/sessionmanager/ISessionManagerListener.html" target="_top">ISessionManagerListener</a>
+      interface.
+    </p><p>
+      The interfaces have one key method, <code class="code">onEvent(CatalysEventObject event)</code>, via which sessions and
+      session managers deliver events.  The <code class="code">CatalysEventObject</code> argument contains an integer property
+      indicating the event type; these types correspond to a constant defined in
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/event/ICatalysEventType.html" target="_top">ICatalysEventType</a>.
+    </p><p>
+      Since a monitor is a component, we recommend using
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html" target="_top">ComponentHelper</a>
+      as a base class and overriding the <a href="ch08.html#prog_components_lifecycle" title="8.1.1.&nbsp;Component Lifecycle">lifecycle</a> methods as necessary.
+    </p><p>
+      The following example shows a simple monitor that prints each event:
+    </p><pre class="programlisting">package com.example;
+
+import com.camerontec.catalys.server.component.ComponentHelper;
+import com.camerontec.catalys.server.sessionmanager.ISessionManagerListener;
+import com.camerontec.catalys.util.notification.CatalysEventObject;
+
+public class SimpleMonitor extends ComponentHelper implements ISessionManagerListener
+{
+  @Override
+  public void onEvent(CatalysEventObject event)
+  {
+    System.out.println("Received event " + event.getType() + " from " + event.getSource());
+  }
+
+  @Override
+  public boolean shouldReceiveHighVolumeEvents()
+  {
+    return false;
+  }
+}</pre><p>
+      In order to add the monitor to the Node configuration, define a <code class="code">GenericMonitor</code> element:
+    </p><pre class="programlisting">&lt;Application id="app"&gt;
+  &lt;CustomMonitors&gt;
+    &lt;GenericMonitor class="com.example.SimpleMonitor" id="simpleMonitor"/&gt;
+  &lt;/CustomMonitors&gt;
+  &lt;Sessions&gt;
+    ...
+  &lt;/Sessions&gt;
+&lt;/Application&gt;</pre><p>
+      We also provide an abstract base class,
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/sessionmanager/SessionStatusListenerBase.html" target="_top">SessionStatusListenerBase</a>,
+      to use as an alternative to manually implementing the interfaces mentioned above.  This class inspects each event
+      and fires a specific method corresponding to each event type.  You can then override only the methods for the
+      events you wish to handle.
+    </p><p>
+      A working demonstration of a custom monitor is included in <span class="emphasis"><em>templates/CustomMonitor</em></span>.
+      The source code for the monitor used in the template can be found at
+      <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test/SampleMonitor.java</em></span>.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10005"></a>Customizing Session Behavior</h4></div></div></div><p>
+      A session customizer can be used to change the default behavior for: the Logon message exchange, if a
+      counterparty should be accepted and if a message should be resent during a resend request.
+    </p><p>
+      To override the default session-level behavior, the custom monitor should implement the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/ISessionCustomizer.html" target="_top">ISession&shy;Customizer</a>
+      interface. Refer to the
+      <a class="javadocplain" href="../javadoc/com/camerontec/catalys/core/session/ISessionCustomizer.html" target="_top">Javadoc</a>
+      for details on all possible customizations.
+    </p><p>
+      We provide an abstract base class,
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/SessionCustomizerBase.html" target="_top">SessionCustomizerBase</a>,
+      which implements <code class="code">ISessionCustomizer</code> and allows you to override only those methods you wish to
+      customize.
+    </p><p>
+      An example of a session customizer is provided at
+      <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test/Sample&shy;MonitorCustomizer.java</em></span>.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10016"></a>JMX Operations</h4></div></div></div><p>
+      A custom monitor will appear in the Dashboard or any JMX client without any extra effort. It will be available
+      as a <code class="code">Configuration.Application.CustomMonitor</code> MBean with a
+      <code class="code">com.camerontec.&shy;catalys.server.manage&shy;ment.mbean.CustomMonitor&shy;ConfigurationMBean</code>
+      configuration class. This class exposes attributes via the <code class="code">customAttributes</code> attribute and the
+      <code class="code">setCustomAttribute</code> operation.
+    </p><p>
+      See <a href="ch08.html#prog_components_jmx" title="8.1.9.&nbsp;JMX Component Operations">JMX Component Operations</a> for more details about managing
+      custom components via JMX.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_components-accessing-config-runtime"></a>8.1.8.&nbsp;Accessing Global Configuration and Runtime</h3></div></div></div><p>
+      Custom components requiring access to the global configuration or runtime APIs can do so by declaring a
+      constructor with the required interfaces as parameters.  This is often useful if you need to reference other
+      components' runtime configurations. The available APIs include:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/configuration/ConfigurationAgent.html" target="_top">ConfigurationAgent</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/configuration/registry/ConfigurationObjectRegistry.html" target="_top">ConfigurationObjectRegistry</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/configuration/registry/ConfiguredObjectRegistry.html" target="_top">ConfiguredObjectRegistry</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/IConnectionPointConfiguration.html" target="_top">IConnectionPointConfiguration</a></li></ul></div><p>
+      When the component is created, a constructor will be called with the correct instances passed as arguments. For
+      example:
+    </p><pre class="programlisting">public MyComponent(ConfigurationAgent configurationAgent)
+{
+   this.configurationAgent = configurationAgent;
+}</pre><p>Or:</p><pre class="programlisting">public MyComponent(ConfigurationAgent agent,
+                   ConfigurationObjectRegistry config,
+                   ConfiguredObjectRegistry runtime,
+                   IConnectionPointConfiguration conn_points)
+{
+  this.agent = agent;
+  this.config = config;
+  this.runtime = runtime;
+  this.conn_points = conn_points;
+}</pre><p>The configuration may then be accessed via one of these interfaces. For example:</p><pre class="programlisting">CatalysApplication application = runtime.getCatalysApplication();
+Properties properties = application.getProperties();
+for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();)
+{
+  String key = (String)iterator.next();
+  System.out.println(key + "=" + properties.getProperty(key));
+}</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_components_jmx"></a>8.1.9.&nbsp;JMX Component Operations</h3></div></div></div><p>
+      If you require more sophisticated JMX instrumentation (i.e. custom attributes read and written directly with
+      their own customized descriptions, and custom operations available to the JMX client), then it is possible to
+      supply custom JMX configuration. In this case, each component attribute appears as its own individual field on
+      the Dashboard.
+    </p><p>
+      To do this, a number of extra configuration classes must be created in the <span class="emphasis"><em>configuration</em></span> sub-package of the original component. Please follow the examples provided in the following directories of the Node installation.
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test/</em></span></li><li class="listitem"><span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test/configuration/</em></span></li></ul></div><p>
+      Refer to the <span class="emphasis"><em>JMXCustomComponent*.java</em></span> files.
+    </p><p>
+      In addition to creating the configuration classes, the component must have a DTD definition as explained in the
+      next section.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="prog_components_custom-elements"></a>Custom XML Elements</h4></div></div></div><p>
+        Typically custom components are configured by using a generic configuration element and providing
+        the complete class name as an argument, e.g. <code class="code">GenericProcessor</code>.  As an alternative, you can create
+        well-defined configuration elements that correspond to a specific custom class.  This is necessary in order to
+        support advanced JMX configuration described in this section.
+      </p><p>
+        Each Node configuration file must reference a Document Type Definition (DTD) file, which by default is
+        <span class="emphasis"><em>CatalysConfig.dtd</em></span>:
+      </p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE Config SYSTEM "CatalysConfig.dtd"&gt;
+&lt;Config&gt;
+  ...
+&lt;/Config&gt;</pre><p>
+        This DTD file is located in the <span class="emphasis"><em>dtds</em></span> directory of the installation.  Also in that
+        directory is <span class="emphasis"><em>CustomElements.dtd</em></span>.  To define your own custom elements, add them
+        to this file.
+      </p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+
+&lt;!-- Include master dtd file --&gt;
+&lt;!ENTITY % CatalysConfig SYSTEM "CatalysConfig.dtd"&gt;
+%CatalysConfig;
+
+&lt;!ELEMENT MyProcessor ANY&gt;
+&lt;!ATTLIST MyProcessor
+          class CDATA #FIXED "com.example.MyProcessor"
+          id CDATA #REQUIRED
+          msgTypes CDATA #IMPLIED
+          customProp CDATA #IMPLIED
+&gt;
+</pre><p>
+        Now update your configuration files to use the custom DTD. You can then reference your custom
+        component without a generic configuration element:
+      </p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE Config SYSTEM "/path/to/dtds/CustomElements.dtd"&gt;
+&lt;Config&gt;
+  &lt;Application id="app"&gt;
+    &lt;Sessions&gt;
+      &lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.4" heartbeat="60"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="sc" listenport="2003"/&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors/&gt;
+          &lt;ListenerMessageProcessors&gt;
+            &lt;MyProcessor id="myProcessor" customProp="someValue"/&gt;
+          &lt;/ListenerMessageProcessors&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10068"></a>Runtime Instrumentation</h4></div></div></div><p>
+        To add JMX runtime attributes and operations to a custom component, define a runtime MBean interface and
+        implement this in the component. Then have the component register itself with the platform MBean server when
+        it is opened.
+      </p><p>
+        For example, a message processor could be enhanced to count the number of messages that it has received.
+        To instrument this for JMX, perform the following steps:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          Define a runtime MBean interface to access the attributes and operations:
+          <pre class="programlisting">public interface MyProcessorMBean
+{
+  int getMessageCount();
+  void resetMessageCount();
+}</pre></li><li class="listitem">
+          Implement the interface in the message processor
+        </li><li class="listitem">
+          Define a constructor for the message processor which takes a <code class="code">ConfigurationAgent</code> parameter
+          in order to retrieve the global runtime configuration
+        </li><li class="listitem">
+          Register the component with the platform MBean server when it is opened
+        </li></ul></div><pre class="programlisting">import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.configuration.ConfigurationAgent;
+import com.camerontec.catalys.server.processor.FIXListenerBase;
+import com.camerontec.catalys.util.messaging.MessageEvent;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
+
+public class MyProcessor extends FIXListenerBase implements MyProcessorMBean
+{
+  private final ConfigurationAgent configurationAgent;
+  private volatile int messageCount;
+
+  public MyProcessor(ConfigurationAgent configurationAgent)
+  {
+    this.configurationAgent = configurationAgent;
+  }
+
+  @Override
+  public boolean openComponent() throws Exception
+  {
+    final boolean wasOpen = super.openComponent();
+
+    if (!wasOpen)
+    {
+      final String componentID = getAttribute("id").toString();
+      final String appID = configurationAgent.getApplicationId();
+      final MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+      final String mbeanFormat =
+        "com.camerontec:CatalysServer=\"%s\",name=\"%s\",type=\"CatalysServer.MessageProcessor\"";
+
+      mBeanServer.registerMBean(
+        this,
+        new ObjectName(String.format(mbeanFormat, appID, componentID)));
+    }
+
+    return wasOpen;
+  }
+
+  @Override
+  public void onMessageFromFix(MessageEvent event, IFIXMessage message)
+  {
+    System.out.println(message);
+    messageCount++;
+  }
+
+  public int getMessageCount()
+  {
+    return messageCount;
+  }
+
+  public void resetMessageCount()
+  {
+    messageCount = 0;
+  }
+}</pre><p>
+        This will give the custom MBean a name which is consistent with the Catalys naming scheme.
+      </p></div></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s15.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.15.&nbsp;Microsoft .NET API&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;8.2.&nbsp;CLI Commands</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:42+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

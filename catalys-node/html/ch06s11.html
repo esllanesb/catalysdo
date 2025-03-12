@@ -1,0 +1,141 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.11.&nbsp;Market Data Services</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s10.html" title="6.10.&nbsp;Message Compression"><link rel="next" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s10.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_market_data_service"></a>6.11.&nbsp;Market Data Services</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_market_data_service-intro"></a>6.11.1.&nbsp;Introduction</h3></div></div></div><p>
+      A Node Market Data Service (MDS) is a Java object that knows how to process market data (e.g. prices) coming
+      from a particular source. All stock exchanges provide some kind of a price feed giving the current prices of
+      stocks traded in that exchange. They are a common source of market data. Market data can also come from third
+      parties such as Reuters.
+    </p><p>
+      Typically, each exchange or third party provides market data in their own proprietary format. The job of a Node
+      MDS is to interpret the market data coming from a particular source and make that data available in a standard
+      form which can be used by Node components. Node users can also access the market data in their own code (e.g.
+      in a custom message processor).
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_market_data_service-configuring"></a>6.11.2.&nbsp;Configuring a Market Data Service</h3></div></div></div><p>
+      Node MDS are a special kind of Node service. Every Node service must implement our standard
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/service/IService.html" target="_top">IService</a>
+      interface. Market data services must implement
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/IMarketDataService.html" target="_top">IMarketDataService</a>
+      (which extends
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/service/IService.html" target="_top">IService</a>).
+    </p><p>
+      MDS are configured by specifying them under the <code class="code">Services</code> element. Like all services, each service is
+      assigned a unique id which becomes the name by which the service is known.
+    </p><p>
+      Most MDS inherit from
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/marketdata/service/MarketDataServiceBase.html" target="_top">MarketDataServiceBase</a>.
+      All such services support an optional nested <code class="code">NonStandardData</code> element which allows for non
+      standard FIX market data fields. The <code class="code">NonStandardData</code> element can contain multiple
+      <code class="code">MarketDataField</code> elements. The <code class="code">MarketDataField</code> element has the following
+      attributes:
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6355"></a>MarketDataField Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>name</td><td>
+                <p>Name of field.</p>
+                <p>Required.</p>
+              </td></tr><tr><td>entryType</td><td>
+                <p>Value of FIX MDEntryType (tag 269) corresponding to this field.</p>
+
+                <p>
+                  Required for fields in FIX MarketDataFullRefresh and MarketDataIncrementalRefresh messages
+                  (MsgTypes W and X).
+                </p>
+
+                <p>It is not required for fields that map directly to a unique FIX tag.</p>
+              </td></tr><tr><td>fixTag</td><td>
+                <p>FIX Tag corresponding to field.</p>
+              </td></tr><tr><td>securityStatus</td><td>
+                <p>
+                  <code class="code">true</code> if this field should go out in a FIX SecurityStatus message (MsgType f).
+                </p>
+
+                <p>
+                  <code class="code">false</code> if this field should go out in FIX MarketDataFullRefresh and
+                  MarketDataIncrementalRefresh messages (MsgTypes W and X).
+                </p>
+
+                <p>Optional. Defaults to <code class="code">false</code>.</p>
+              </td></tr><tr><td>isPrice</td><td>
+                <p><code class="code">true</code> if this field is price type.</p>
+                <p><code class="code">false</code> if this field is not price type.</p>
+                <p>Optional. Defaults to <code class="code">false</code>.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6399"></a>Configuration Example</h4></div></div></div><pre class="programlisting">&lt;Services&gt;
+  &lt;InternalMarketDataService id="fixMarketData"&gt;
+    &lt;NonStandardData&gt;
+      &lt;MarketDataField name="MyVwapPrice" entryType="A" fixTag="270" /&gt;
+    &lt;/NonStandardData&gt;
+  &lt;/InternalMarketDataService&gt;
+&lt;/Services&gt;</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_market_data_service-using"></a>6.11.3.&nbsp;Using a Market Data Service</h3></div></div></div><p>
+      The job of an <code class="code">IMarketDataService</code> object is to read market data from some source and update its
+      internal store of current market data. So every MDS has an internal market data store. It can be retrieved from a
+      market data service by calling the service's
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/IMarketDataService.html#getMarketDataStore()" target="_top">getMarketDataStore</a>
+      method. This returns the market data as an
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/IMarketDataStore.html" target="_top">IMarketDataStore</a>
+      object.
+    </p><p>
+      An <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/IMarketDataStore.html" target="_top">IMarketDataStore</a>
+      is basically a collection of
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/IInstrument.html" target="_top">IInstrument</a>
+      objects. Each
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/IInstrument.html" target="_top">IInstrument</a>
+      object represents an instrument (e.g. stock) for which we have market data. Other objects can access instrument
+      data by calling the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/IMarketDataStore.html#getInstrument(java.lang.String)" target="_top">getInstrument</a>
+      method.
+    </p><p>
+      Other objects can also register themselves as listeners to the market data store, in which case they will be
+      notified of market data changes. See the various add listener methods of <code class="code">IMarketDataStore</code> and the
+      interfaces which listening objects must implement.
+    </p><p>See the JavaDoc for the above classes for more detailed information.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_market_data_service-writing"></a>6.11.4.&nbsp;Writing a Market Data Service</h3></div></div></div><p>
+      The full source code for a sample market data service,
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/marketdata/test/SampleMarketDataService.html" target="_top">SampleMarketDataService</a>,
+      can be found at
+      <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/marketdata/service/SampleMarketDataService.java</em></span>.
+    </p><p>
+      Almost all of the code in a MDS involves reading and interpreting the source of market data that your MDS wants
+      to process. Once you have extracted some market data, (e.g. a price update for a particular stock), you need to
+      update your internal
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/IMarketDataStore.html" target="_top">IMarketDataStore</a>
+      (see <a href="ch06s11.html#optfeature_market_data_service-using" title="6.11.3.&nbsp;Using a Market Data Service">previous section</a>). Fortunately, you will not
+      normally need to write your own <code class="code">IMarketDataStore</code> and <code class="code">IInstrument</code> implementations. You 
+      should be able to use the standard implementations provided by
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/StandardMarketDataStore.html" target="_top">StandardMarketDataStore</a>
+      and
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/StandardInstrument.html" target="_top">StandardInstrument</a>.
+    </p><p>
+      Note that you can add instruments to <code class="code">StandardMarketDataStore</code> using
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/StandardMarketDataStore.html#addInstrument(com.camerontec.catalys.util.marketdata.IInstrument)" target="_top">addInstrument</a>.
+      Note also that you can update the market data associated with a
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/StandardInstrument.html" target="_top">StandardInstrument</a>
+      using various set methods such as
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/marketdata/StandardInstrument.html#setTopOfBook(int,%20int,%20int,%20int,%20int,%20int)" target="_top">setTopOfBook</a>.
+    </p><p>
+      All MDS declared in the <code class="code">Services</code> configuration element are instantiated when the Node is started.
+      MDS comply to the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html" target="_top">IComponent</a>
+      interface. After instantiation of the service object, the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html#openComponent()" target="_top">openComponent</a>
+      method will be called. This is where your service should read its configuration attributes (e.g., using the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/attributesupport/IHasAttributes.html#getAttribute(java.lang.String)" target="_top">getAttribute</a>
+      method) and configure itself. The service should only become active (eg by actually connecting and subscribing to
+      a data source) when the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html#setComponentActive(boolean)" target="_top">setComponentActive</a>
+      method is called with parameter
+      <span class="emphasis"><em>true</em></span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_market_data_service-derived"></a>6.11.5.&nbsp;Writing a Derived Market Data Service</h3></div></div></div><p>
+      A <span class="emphasis"><em>derived</em></span> market data service is a market data service which depends on one or more other
+      underlying MDS.
+    </p><p>
+      Instead of reading and processing incoming data from some external market data source, a derived MDS process
+      locates the underlying market data services that it depends on and registers itself as a listener to their
+      <code class="code">IMarketDataStores</code>. It processes the updates coming in from those underlying stores and updates its
+      own <code class="code">IMarketDataStore</code> with the result of the processing.
+    </p><p>There are two templates of derived market data services:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/marketdata/test/SampleDerivedPriceMarketDataService.html" target="_top">SampleDerivedPriceMarketDataService</a>.
+        Full source code can be found at
+        <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/marketdata/test/SampleDerivedPriceMarketDataService.java</em></span>.
+      </li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/marketdata/test/SampleAggregatedMarketDataService.html" target="_top">SampleAggregatedMarketDataService</a>.
+        Full source code can be found at
+        <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/marketdata/test/SampleAggregatedMarketDataService.java</em></span>.
+      </li></ul></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s10.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.10.&nbsp;Message Compression&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;7.&nbsp;Technology Adapters</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:37+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

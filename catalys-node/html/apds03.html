@@ -1,0 +1,26 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; D.3.&nbsp;Compacting Collections</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="apd.html" title="Appendix&nbsp;D.&nbsp;Persistent Collections Properties"><link rel="prev" href="apds02.html" title="D.2.&nbsp;Properties"><link rel="next" href="ape.html" title="Appendix&nbsp;E.&nbsp;Error Codes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="apds02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;D.&nbsp;Persistent Collections Properties</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ape.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="d5e34313"></a>D.3.&nbsp;Compacting Collections</h2></div></div></div><p>
+      To ensure that collections do not grow without bound, standard Node components, which use persistent collections,
+      clear and compact their files as part of their end-of-day procedure. This procedure can be invoked by calling the
+      <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_end_of_day</a> CLI command or
+      <a href="ch05s02.html" title="5.2.&nbsp;Scheduling">scheduling</a> the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/task/EndOfDayTask.html" target="_top">EndOfDayTask</a>.
+    </p><p>
+      Support is also provided to compact persistent collections at other times. This is accomplished by scheduling the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/task/CompactTask.html" target="_top">CompactTask</a>.
+    </p><p>
+      This task is configured by providing the <a href="apds02.html#persistent_collections_properties-name">name(s)</a>
+      of the collection(s) to compact, as a property. For example:
+    </p><pre class="programlisting">&lt;Task id="compact" class="com.camerontec.catalys.server.task.CompactTask"&gt;
+  &lt;Properties id="props"&gt;
+    &lt;Property name="names" value="logs/dir1:logs/dir2"/&gt;
+  &lt;/Properties&gt;
+&lt;/Task&gt;</pre><div class="note"><h3 class="title">Note</h3><p>
+        While compacting a collection is thread-safe, it can be a time consuming and resource intensive
+        process and should be performed only while a session is inactive.
+      </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="apds02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="apd.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ape.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">D.2.&nbsp;Properties&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Appendix&nbsp;E.&nbsp;Error Codes</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:51+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

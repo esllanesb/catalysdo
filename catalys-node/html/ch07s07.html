@@ -1,0 +1,123 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.7.&nbsp;TIBCO Rendezvous Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s06.html" title="7.6.&nbsp;IBM MQSeries Adapter"><link rel="next" href="ch07s08.html" title="7.8.&nbsp;Microsoft MQ Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s06.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s08.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_tibco"></a>7.7.&nbsp;TIBCO Rendezvous Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_tibco-intro"></a>7.7.1.&nbsp;Introduction</h3></div></div></div><p>
+      The TIBCO Rendezvous adapter is designed to work with the Node and the TIBCO Rendezvous messaging product.
+      Together with the Node, FIX messages can be sent to and received from any application connected to TIBCO
+      Rendezvous.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_tibco-install"></a>7.7.2.&nbsp;Adapter Installation</h3></div></div></div><p>
+      TIBCO Rendezvous should be installed. See the TIBCO documentation. The TIBCO Rendezvous Adapter is a built-in
+      message processor. It also requires the standard TIBCO Rendezvous .jar files containing the
+      <code class="code">com.tibco.tibrv.*</code> classes be added to the classpath.
+    </p><p>
+      The adapter is compiled against TIBCO Rendezvous 6.9, and is compatible with 7.2. Other Rendezvous versions may
+      work with the adapter, but are not officially supported. Note that TIBCO always provides a JMS (Java Messaging
+      Service) bridge for Rendezvous, so our <a href="ch07s04.html" title="7.4.&nbsp;JMS Adapter">JMS adapter</a> will also work with all
+      TIBCO versions.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_tibco-tibcoConfig"></a>7.7.3.&nbsp;Typical Configuration and Message Conversion</h3></div></div></div><p>A typical scenario for message interaction between the Node and a TIBCO application might be:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">A FIX counterparty establishes a socket connection with the Node</li><li class="listitem">The Node writes inbound FIX messages to a queue or topic</li><li class="listitem">The customer application reads inbound messages from the queue or topic</li><li class="listitem">The customer application writes outbound messages to another queue or topic</li><li class="listitem">The Node consumes messages from the queue or topic</li><li class="listitem">The Node sends these messages out a FIX session to a counterparty</li></ol></div><p>
+      The TIBCO adapter does not assume that the application is written in Java. It can be written in any language that
+      can communicate wih the TIBCO Rendezvous technology.
+    </p><p>Three standard FIX message formats are supported with the TIBCO adapter:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        TIBRVTransformer - each FIX field is placed in a separate TibrvField. Each Tibrv field has a name that
+        is the FIX field number it represents. The value of each field is the type and value of the FIX field.
+      </li><li class="listitem">
+        TIBRVNameTransformer - is the same as the TIBRVTransformer except that Tibrv field names are FIX field names.
+      </li><li class="listitem">
+        TIBRVRawTransformer - contains one field with the name "message", and the value is the entire FIX message.
+      </li></ol></div><p>
+      Besides the FIX message type, there are three other types of messages that may be passed over the TIBCO adapter:
+    </p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Message Type</th><th>Field Name</th><th>Value</th></tr></thead><tbody><tr><td>Connection Status</td><td>Connection.status</td><td>[true|false]</td></tr><tr><td>Reset</td><td>reset</td><td>reset</td></tr><tr><td>Exception</td><td>exception</td><td>Exception details</td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_tibco-config"></a>7.7.4.&nbsp;Configuration</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7918"></a>Configuration Elements</h4></div></div></div><p>
+        There are two Node TIBCO Rendezvous message processors:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+            <span class="bold"><strong>TIBRVMessageListener</strong></span>  - listens for inbound FIX messages received on a
+            session and writes to a TIBCO subject. For a complete list of attributes, see the
+            <a href="config_reference.html#config_ref_TIBRVMessageListener" title="TIBRVMessageListener">TIBRVMessageListener Configuration Reference</a>.
+          </p></li><li class="listitem"><p>
+            <span class="bold"><strong>TIBRVMessageSource</strong></span> - reads messages from a TIBRV subject and sends them
+            out a session. For a complete list of attributes, see the
+            <a href="config_reference.html#config_ref_TIBRVMessageSource" title="TIBRVMessageSource">TIBRVMessageSource Configuration Reference</a>.
+          </p></li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7930"></a>Single Session Configuration</h4></div></div></div><p>The following examples shows a TIBCO adapter configured on one session:</p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="EXCHANGE" compid="BROKER"
+           fixversion="4.4" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="sc1" hostname="localhost" port="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;TIBRVMessageSource subject="EXCH_OUTBOUND" id="tms"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;TIBRVMessageListener subject="EXCH_INBOUND" id="tml"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7934"></a>Multi-Session Configuration</h4></div></div></div><p>
+        The TIBCO Adapter can be configured where one TIBRV subject can be used to send message out multiple FIX
+        sessions. When this configuration is used, the TIBRV message is required to set the value of the targetCompID
+        field(s) to the same values configured on one of the sessions.
+      </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="EXCHANGE_A" compid="BROKER" subid="Trader1"
+           fixversion="4.2" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="idN65553" hostname="localhost" port="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;TIBRVMessageSource subject="EXCH_OUTBOUND" id="tms1"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;TIBRVMessageListener subject="EXCH_INBOUND" id="tml1"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+  &lt;Session counterpartycompid="EXCHANGE_B" compid="BROKER" subid="Trader2"
+           fixversion="4.2" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="idN65587" hostname="localhost" port="2001"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;TIBRVMessageSource subject="EXCH_OUTBOUND" id="tms2"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;TIBRVMessageListener subject="EXCH_INBOUND" id="tml2"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre><p>
+        In this particular configuration, outbound messages put on "EXCH_OUTBOUND" subject must contain TargetCompID
+        and TargetSubID fields. The Node will then use these two fields to decide which session to send the message out
+        on.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_tibco-templates"></a>7.7.5.&nbsp;Templates</h3></div></div></div><p>
+      Working demonstrations of the TIBCO adapter can be found in <span class="emphasis"><em>templates/TIBRVAdapter</em></span>.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_tibco-test-classes"></a>Test Utility Classes</h4></div></div></div><p>
+        There are test utility classes available in the Node to test TIBCO configurations. These are in the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/tibrv/test/package-frame.html" target="_top">com.camerontec.catalys.server.adapter.tibrv.test</a>
+        package.
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+            <span class="bold"><strong>ReadandParseInboundMessageFromTIBRV</strong></span> - this utility waits for messages on a
+            TIBRV subject, when one is received, it transforms it into an <code class="code">IFIXMessage</code> using the
+            TIBRVTransformer provided, and then prints the message contents to <code class="code">System.out</code>.
+          </p><p>
+            This can be invoked as follows:
+            </p><pre class="programlisting">java -Djava.library.path=&lt;%PATH_TO_TIBRV_LIBS%&gt; \
+  com.camerontec.catalys.server.adapter.tibrv.test.ReadandParseInboundMessageFromTIBRV \
+  &lt;%TIBRV_SUBJECT_NAME%&gt; &lt;%TIBRV_SERVICE_NAME%&gt; &lt;%TIBRV_NETWORK_NAME%&gt; \
+  &lt;%TIBRV_DAEMON_NAME%&gt;</pre><p>
+          </p></li><li class="listitem"><p>
+            <span class="bold"><strong>SendOutboundFIXMMessagetoTIBRV</strong></span> - this utility publishes a FIX message to
+            a TIBRV subject every five seconds. It uses the TIBRVTransformer to transform the message from an
+            IFIXMessage object to the format described above and prints the message contents to <code class="code">System.out</code>.
+          </p><p>
+            This can be invoked as follows:
+            </p><pre class="programlisting">java -Djava.library.path=&lt;%PATH_TO_TIBRV_LIBS%&gt; \
+  com.camerontec.catalys.server.adapter.tibrv.test.SendOutboundFIXMMessagetoTIBRV \
+  &lt;%TIBRV_SUBJECT_NAME%&gt; &lt;%TIBRV_SERVICE_NAME%&gt; &lt;%TIBRV_NETWORK_NAME%&gt; \
+  &lt;%TIBRV_DAEMON_NAME%&gt;</pre><p>
+          </p></li></ul></div><p>
+        Two more sets of send and receive utility classes that demonstrate the TIBRVRawTransformer and
+        TIBRVNameTransformer are also available.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s06.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.6.&nbsp;IBM MQSeries Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.8.&nbsp;Microsoft MQ Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:39+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

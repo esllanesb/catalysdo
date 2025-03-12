@@ -1,0 +1,104 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.5.&nbsp;FIXML Transformer</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s04.html" title="6.4.&nbsp;Scheduled Order Cache"><link rel="next" href="ch06s06.html" title="6.6.&nbsp;SSL Socket Connection"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s04.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s06.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_fixml"></a>6.5.&nbsp;FIXML Transformer</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_fixml-intro"></a>6.5.1.&nbsp;Introduction</h3></div></div></div><p>
+      The FIXML Transformer is designed to work with certain Catalys Node Technology Adapters. This transformer enables
+      the Node to accept FIXML messages over a technology adapter, transform them into FIX messages which are then
+      sent over a session. It can also transform inbound FIX messages into FIXML and pass them back over a technology
+      adapter or simply log them to a file.
+    </p><p>
+      This transformer is designed to work with all FIXML versions and contains the FIXML 4.4 and 5.0 schemas, which may
+      also be freely downloaded from the <a href="https://www.fixtrading.org/" target="_top">FIX Protocol website</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_fixml-configuration"></a>6.5.2.&nbsp;Configuration</h3></div></div></div><p>
+      The FIXML transformer can be configured to work with certain technology adapters via the <code class="code">transformer</code>
+      attribute by setting it to <code class="code">com.camerontec.catalys.core.fixml.FIXMLTransformer</code>.
+    </p><p>
+      The following example shows the FIXML transformer configured on an the outbound side of a JMS Adapter.
+    </p><pre class="programlisting">&lt;Session compid="CLIENT" counterpartycompid="SERVER" fixversion="4.2"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="conn" hostname="10.1.1.1" port="2000" /&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;JmsConsumer type="queue" destination="OUTBOUND" factory="primaryQCF" id="idN65562"
+                   transformer="com.camerontec.util.fixml.FIXMLTransformer"&gt;
+        &lt;Properties&gt;
+          &lt;Property name="ignoreUndefinedElements" value="true"/&gt;
+          &lt;Property name="ignoreUndefinedAttributes" value="true"/&gt;
+          &lt;Property name="ignoreUndefinedFIXTags" value="true"/&gt;
+        &lt;/Properties&gt;
+      &lt;/JmsConsumer&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+      The transformer attribute is parametrized by a nested <code class="code">Properties</code> element. The attributes allowed
+      within this nested <code class="code">Properties</code> element are:
+    </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attribute</th><th>Notes</th></tr></thead><tbody><tr><td>ignoreUndefinedElements</td><td>
+              <p>
+                If enabled, the transformer will ignore FIXML elements (XML tags) that do not appear in the schema when
+                attempting to transform FIXML messages into FIX. If this attribute is not set then the Node will throw
+                an exception when an element that does not appear in the XSD is found in a FIXML message.
+              </p>
+              <p>Optional. Defaults to <code class="code">false</code>.</p>
+            </td></tr><tr><td>ignoreUndefinedAttributes</td><td>
+              <p>
+                If enabled, the transformer will ignore attributes that do not appear in the schema when attempting to
+                transform FIXML messages into FIX. If this attribute is not set then the Node will throw an exception
+                when an attribute that does not appear in the XSD is found in a FIXML message.
+              </p>
+              <p>Optional. Defaults to <code class="code">false</code>.</p>
+            </td></tr><tr><td>ignoreUndefinedFIXTags</td><td>
+              <p>
+                If enabled, the transformer will ignore FIX tags that do not have a corresponding element or attribute
+                in the schema when attempting to transform FIX messages into FIXML. If this attribute is not set then
+                the Node will throw an exception when a corresponding element or attribute cannot be found for a FIX
+                tag in the XSD.
+              </p>
+              <p>Optional. Defaults to <code class="code">false</code>.</p>
+            </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_fixml-customizing"></a>6.5.3.&nbsp;Customizing FIXML Definitions - FixmlElementGenerator</h3></div></div></div><p>
+      FIX Protocol Limited (FPL) delivers the FIXML definition in XML Schema Definition (XSD) files. These XSD
+      files come in pairs, one <span class="emphasis"><em>base</em></span> file and one <span class="emphasis"><em>impl</em></span> file. To add a custom
+      fields (as described in FPL's documentation), you must amend the <span class="emphasis"><em>impl</em></span> files. Details of this
+      procedure are contained in the FIXML Schema guide from the
+      <a href="https://www.fixtrading.org/" target="_top">FIX Protocol website</a>.
+    </p><p>
+      If you need to modify the default schema, please download the FIXML schema from the FPL website and make your
+      modifications.
+    </p><p>After the modification you must generate new Java source code based on the new XSD files.</p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5032"></a>FixmlElementGenerator</h4></div></div></div><p>
+        This tool generates Java code from the FIXML Schema files which is used during the transformation of
+        FIX messages. There is a sample script,
+        <span class="emphasis"><em>templates/Fixmlv2/FixmlGenerator/&lt;os&gt;/generateFixmlElements.[bat|sh]</em></span>, which
+        illustrates the syntax.
+      </p><p>
+        There are two Java system properties which must be set in order to run the <code class="code">FixmlElementGenerator</code>:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><span class="bold"><strong>-DresourcesDir</strong></span><p>
+            This should point to the directory containing the XSD files and code templates. There must be
+            subdirectories <span class="emphasis"><em>xsd</em></span> and <span class="emphasis"><em>fixmltemplates</em></span>. Please copy the TEMPLATE
+            files from the jar into <span class="emphasis"><em>fixmltemplates</em></span> and the XSD files into <span class="emphasis"><em>xsd</em></span>.
+            The xsd directory must contain subdirectories representing a particular FIX version. The name of these
+            version subdirectories must match the FIX version in a config file where all dots must be replaced
+            by underscores, prefixed with <span class="emphasis"><em>FIX_</em></span>. So for 5.0SP1 the subdirectory should be named
+            <span class="emphasis"><em>FIX_5_0SP1</em></span>
+          </p><div class="note"><h3 class="title">Note</h3><p>
+              There are no schema (XSD) files included in the Node. They are available for download from the
+              <a href="https://www.fixtrading.org/" target="_top">FIX Protocol website</a> for all versions.
+            </p></div></li><li class="listitem"><span class="bold"><strong>-DoutputDir</strong></span><p>
+            Point this to any directory you wish the output to be created under. There will also be subdirectories
+            for every version matching the ones from the <code class="code">resourcesDir</code>.
+          </p></li></ol></div><p>
+        When the source code is generated you need to compile the classes (using <span class="emphasis"><em>catalys-node.jar</em></span>
+        in the classpath), pack them into a jar file, change your classpath of the Node to include this jar and at the
+        same time you should not forget about removing the previous FIXML implementation from your classpath.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_fixml-template"></a>6.5.4.&nbsp;Templates</h3></div></div></div><p>
+      Refer to <span class="emphasis"><em>templates/Fixml/Fixml2Fix</em></span> for a simple demonstration of how a FIXML message can be
+      transformed to a FIX message.
+    </p><p>
+      Refer to <span class="emphasis"><em>templates/Fixml/Fix2Fixml</em></span> for a demonstration of a custom message processor which
+      uses a transformer to print out FIXML messages after they have been transformed from FIX. The source code for the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/test/FixmlTransformPrinter.html" target="_top">FixmlTransformPrinter</a>
+      can be found in the <span class="emphasis"><em>templates/src</em></span> directory.
+      </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s04.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.4.&nbsp;Scheduled Order Cache&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.6.&nbsp;SSL Socket Connection</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

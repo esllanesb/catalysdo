@@ -1,0 +1,77 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 8.2.&nbsp;CLI Commands</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="prev" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="next" href="ch08s03.html" title="8.3.&nbsp;Tasks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch08.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_cli"></a>8.2.&nbsp;CLI Commands</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10083"></a>8.2.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Catalys Node <a href="ch04s02.html#operations_monitoring-command-line" title="4.2.2.&nbsp;Command-Line Interface">command-line interface</a> (CLI) is
+      extensible, allowing users to create their own commands in any
+      <a href="ch08.html#prog_components" title="8.1.&nbsp;Custom Components">custom component</a>.  Common use cases for this are providing
+      administrative control of custom components and printing information or statistics related to a custom component
+      or other aspects of the Node (e.g. memory usage).
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10088"></a>8.2.2.&nbsp;Implementation</h3></div></div></div><p>The following steps should be taken when creating a custom command:</p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10091"></a>Implement the ICommandLineProcessor Interface</h4></div></div></div><p>
+        The custom component must implement the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/commandline/ICommandLineProcessor.html" target="_top">ICommandLineProcessor</a>
+        interface.
+      </p><pre class="programlisting">public class CustomComponent implements ICommandLineProcessor { ... }</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10096"></a>Define Command IDs</h4></div></div></div><p>
+        CLI commands are identified by a unique integer value. These values must be provided when creating
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/commandline/Command.html" target="_top">Command</a>
+        objects. Custom command IDs should start from <code class="code">0xA</code> to avoid conflicts with other built-in commands.
+      </p><pre class="programlisting">private static final int COMMAND_ONE = 0xA001;
+private static final int COMMAND_TWO = 0xA002;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10102"></a>Create the Command Objects</h4></div></div></div><p>
+        Create a
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/commandline/Command.html" target="_top">Command</a>
+        object for each custom command.  It is useful to store these in an array.
+      </p><pre class="programlisting">private static final Command[] COMMANDS = {
+  new Command(COMMAND_ONE, "command_one", "comm_one",
+    "&lt;arg1&gt;: call to command_one with one arg", "", true),
+  new Command(COMMAND_TWO, "command_two", "comm_two",
+    "&lt;arg1&gt; &lt;arg2&gt;: call to command_two with two args", "", true),
+};</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10107"></a>Register the Command Objects</h4></div></div></div><p>
+        Register the <code class="code">Command</code> objects with the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/commandline/CommandLine.html" target="_top">CommandLine</a>
+        singleton.
+      </p><pre class="programlisting">static
+{
+  final ICommandLineProcessor clp = ComponentCommandLineProcessor.getInstance();
+  for (final Command command : COMMANDS)
+  {
+    command.processor = clp;
+  }
+  CommandLine.getInstance().registerAndCheck(COMMANDS);
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10113"></a>Implement the Process Method</h4></div></div></div><p>
+        The <code class="code">ICommandLineProcessor</code> interface has one
+        <code class="code">process(Command command, String[] args)</code> method that must be implemented. This is where you
+        validate the command and its arguments, perform an action in your custom component  and return user output in a
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/text/table/TableSet.html" target="_top"><code class="code">TableSet</code></a>
+        object.
+      </p><pre class="programlisting">@Override
+public TableSet process(final Command command, final String[] args) {
+  final TableSet results = new TableSet();
+  switch (command.id) {
+    case COMMAND_ONE:
+      results.header("Command One", "Message");
+      if (args.length != 1)  {
+        result.add(command.name, false, "command_one requires one argument &lt;arg1&gt;");
+      } else {
+        // ***Perform command_one actions in CustomComponent***
+        results.add(command.name, true, "command_one successful");
+      }
+      break;
+    case COMMAND_TWO:
+      results.header("Command Two", "Message");
+      if (args.length != 2)  {
+        result.add(command.name, false, "command_two requires two arguments &lt;arg1&gt;, &lt;arg2&gt;");
+      } else {
+        // ***Perform command_two actions in CustomComponent***
+        results.add(command.name, true, "command_two successful");
+      }
+      break;
+    default:
+      results.add(command.name, false, "Unknown command");
+      break;
+  }
+  return results;
+}
+</pre></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch08.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch08.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;8.&nbsp;Programming Guide&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;8.3.&nbsp;Tasks</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:41+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

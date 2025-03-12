@@ -1,0 +1,23 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; Appendix&nbsp;C.&nbsp;FIX Session Dialects</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="index.html" title="Catalys Node User Guide"><link rel="prev" href="apb.html" title="Appendix&nbsp;B.&nbsp;CatalysServer Startup Arguments"><link rel="next" href="apcs02.html" title="C.2.&nbsp;Configuring a Dialect"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="apb.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;C.&nbsp;FIX Session Dialects</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="apcs02.html">Next</a></td></tr></table><hr></div><div class="appendix"><div class="titlepage"><div><div><h1 class="title"><a name="appendix_dialects"></a>Appendix&nbsp;C.&nbsp;FIX Session Dialects</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="apc.html#d5e33742">C.1. Introduction</a></span></dt><dt><span class="section"><a href="apcs02.html">C.2. Configuring a Dialect</a></span></dt><dt><span class="section"><a href="apcs03.html">C.3. Available Dialects</a></span></dt><dt><span class="section"><a href="apcs04.html">C.4. Implementations Requiring Dialects</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="d5e33742"></a>C.1.&nbsp;Introduction</h2></div></div></div><p>
+      Unfortunately, not all FIX implementations conform fully to the FIX standard. It is hoped that such
+      implementations will eventually move into line with the standard. However, in the meantime, it may be necessary
+      to communicate with them in their non-standard form.  The problem is how to safely support non-standard
+      communication without compromising our own strict compliance with the standard and without weakening the FIX
+      standard itself.
+    </p><p>
+      The Node handles this general problem through the use of <span class="emphasis"><em>dialects</em></span>. Each dialect is a
+      well-defined departure from the standard low-level FIX protocol. Individual FIX sessions can be configured to
+      support one or more dialects.
+    </p><p>
+      Dialects do not cover high-level application message protocol differences (such as correct handling of ClOrdID and
+      OrigClOrdID). Although such departures from the standard are serious, they are usually best handled by the user's
+      application. By contrast, if the low-level protocol is not functioning correctly, sessions can lock up completely
+      or, in the worst case, messages can be completely lost without the user's application even being aware that there
+      has been a problem.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="apb.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="apcs02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Appendix&nbsp;B.&nbsp;CatalysServer Startup Arguments&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;C.2.&nbsp;Configuring a Dialect</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:51+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

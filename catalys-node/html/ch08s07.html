@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 8.7.&nbsp;Repeating Groups</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="prev" href="ch08s06.html" title="8.6.&nbsp;Message Transformers"><link rel="next" href="ch08s08.html" title="8.8.&nbsp;JMX API Advanced Operations"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch08s06.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08s08.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_repeating_groups"></a>8.7.&nbsp;Repeating Groups</h2></div></div></div><div class="important"><h3 class="title">Important</h3><p>
+      As of Catalys 2.0, the legacy repeating group API that used the <code class="code">RepeatingGroup</code> and
+      <code class="code">RepeatingGroupAccessor</code> classes is deprecated, and may be removed altogether in a later release.
+      Client code uses those classes should migrate to the new methods demonstrated below.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_repeating_groups-intro"></a>8.7.1.&nbsp;Introduction</h3></div></div></div><p>
+      The <code class="code">IFIXMessage</code> message object interface can contain repeating groups. The following examples
+      demonstrate how to add a repeating group to a message object as well as how to parse an existing repeating group
+      on a message object.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_repeating_groups-concepts"></a>8.7.2.&nbsp;Adding a Repeating Group</h3></div></div></div><p>
+      To add a repeating group to a message object simply call the appropriate <code class="code">addField()</code> method in the
+      order that the repeating groups are required to be in, starting with the "NoOfID" FIX field. The order of the
+      fields will be maintained within the message.
+    </p><p>
+      The following is an example of adding a repeating group with two entries. The first entry has a nested repeating
+      group with two additional entries:
+    </p><pre class="programlisting">...
+// Instantiate IFIXMessage object for a NewOrderSingle
+final IFIXMessage msg = getToFIXMessageFactory().createFIXMessage(MsgType.NewOrderSingle.value);
+
+// Start with Num in group tag.
+msg.addField(Field.NoPartyIDs.tag, 2);
+
+// Group Entry 1
+msg.addField(Field.PartyID.tag, "ABC");
+msg.addField(Field.PartyIDSource.tag, "SOURCEA");
+msg.addField(Field.PartyRole.tag, "ROLEX");
+
+// Nested Group
+msg.addField(Field.NoPartySubIDs.tag, 2);
+msg.addField(Field.PartySubID.tag, "BIC12345");
+msg.addField(Field.PartySubIDType.tag, "NESTED1");
+msg.addField(Field.PartySubID.tag, "BIC6789");
+msg.addField(Field.PartySubIDType.tag, "NESTED2");
+
+// Group Entry 2
+msg.addField(Field.PartyID.tag, "DEF");
+msg.addField(Field.PartyIDSource.tag, "SOURCEB");
+msg.addField(Field.PartyRole.tag, "ROLEZ");
+...</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_repeating_groups-creating"></a>8.7.3.&nbsp;Parsing Repeating Groups</h3></div></div></div><p>
+      To parse a repeating group on a message object, iterate the message starting at the "NoOfID" FIX field of
+      the repeating group. From there, call the <code class="code">next()</code> method until <code class="code">hasNext()</code> returns
+      false. The following example is for parsing a NoPartyIDs repeating group.
+    </p><pre class="programlisting">// Instantiate member variables for parsing
+private final ITagValue partyRepeatingGroupReturnBuffer = new StandardTagValue();
+private ListIterator&lt;ITagValue&gt; partyRepeatingGroupIterator;
+...
+// Used to initialize the iterator
+private ListIterator&lt;ITagValue&gt; updateIterator(IFIXMessage message,
+                                                ListIterator&lt;ITagValue&gt; iterator,
+                                                int tag,
+                                                ITagValue returnBuffer) {
+
+  // We first check to see whether the iterator may be bound to this message.
+  if (message.isBindable(iterator)) {
+    // Bind our resuable iterator to the message. Iteration will commence from ths
+    // specified tag (if it doesn't exist exception is thrown) or the first field
+    // if the specified tag is &lt;= 0.
+    return message.bind(iterator, tag, returnBuffer);
+  } else {
+    // This iterator cannot be bound to this message. We have no choice but to create
+    // a new iterator which is guaranteed to be bindable. We can save that one for
+    // the next message and try to reuse it then.
+    return message.iterator();
+  }
+}
+
+//Called when inbound messages are received
+@Override
+public void onMessageFromFix(MessageEvent event, IFIXMessage message) throws Exception {
+  // Initialize the reusable iterator and return value buffer
+  partyRepeatingGroupIterator = updateIterator(message,
+                                                partyRepeatingGroupIterator,
+                                                Field.NoPartyIDs.tag,
+                                                partyRepeatingGroupReturnBuffer);
+
+  // Iterate over all fields using in a reusable iterator from a specific tag.
+  if (message.hasField(Field.NoPartyIDs.tag)) {
+    logger.info("Reusable iteration from Party Group:");
+    while (partyRepeatingGroupIterator.hasNext()) {
+      ITagValue field = partyRepeatingGroupIterator.next();
+      logger.info("-&gt; {}: {}", Field.from(field.getTag()), field.getValue().getValueAsString());
+    }
+  }
+}</pre></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch08s06.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch08.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">8.6.&nbsp;Message Transformers&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;8.8.&nbsp;JMX API Advanced Operations</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:41+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,398 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; D.2.&nbsp;Properties</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="apd.html" title="Appendix&nbsp;D.&nbsp;Persistent Collections Properties"><link rel="prev" href="apd.html" title="Appendix&nbsp;D.&nbsp;Persistent Collections Properties"><link rel="next" href="apds03.html" title="D.3.&nbsp;Compacting Collections"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="apd.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;D.&nbsp;Persistent Collections Properties</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="apds03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="persistent_collections_properties-persistedCollectionProperties"></a>D.2.&nbsp;Properties</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34052"></a>D.2.1.&nbsp;Common Collection Properties</h3></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Property</th><th>Definition</th></tr></thead><tbody><tr><td><a name="persistent_collections_properties-directoryName"></a>directoryName</td><td>
+                The location of the persistence file associated with the collection.
+                <p>Required.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-name"></a>name</td><td>
+                The name under which a collection is registered in the collection registry. If this property is not
+                specified, the value of <code class="code">directoryName</code> is used instead.
+
+                <p>
+                  If using a collection in a High Availability configuration, it is recommended to specify an explicit
+                  collection name through this property when then collection's directory name is long (for example if
+                  it is an absolute path). This is because collection names are exchanged between cluster nodes for
+                  the purpose of data replication and synchronization.
+                </p>
+
+                <p>
+                  Names specified using this property have to be unique across all collections bound to the collections
+                  registry.
+                </p>
+
+                <p>Optional.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-highCapacityList"></a>isHighCapacityList</td><td>
+                Whether this is a high capacity list.
+
+                <p>
+                  Standard capacity lists provide excellent read and write performance and contain about 12 bytes of
+                  overhead for each element. Initialization time can be affected when the list grows large since, in
+                  order to maintain excellent write performance there are no disk indices, which means they must be
+                  deduced on initialization. Standard capacity lists also have the additional specific properties
+                  specified in
+                  <a href="apds02.html#persistent_collections_properties-listCollectionProperties" title="D.2.2.1.&nbsp;Standard Capacity Collection Properties">Standard Capacity List Properties</a>.
+                </p>
+
+                <p>
+                  High capacity lists preserve low start times. They have slightly worse read and write performance
+                  than standard capacity lists and they have fixed, configurable memory overhead (the default is 1MB).
+                  High capacity lists also have the additional specific properties specified in
+                  <a href="apds02.html#persistent_collections_properties-highCapacityListCollectionProperties" title="D.2.2.2.&nbsp;High Capacity List (Indexed) Collection Properties">High Capacity List Properties</a>.
+                  In addition to the journal files written for high capacity collections, there is also an index file
+                  in the collection directory.
+                </p>
+
+                <p>Optional. Defaults to <code class="code">false</code>.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-synchAfterWrite"></a>synchAfterWrite</td><td>
+                Whether to synchronize with the file after every write.
+
+                <p>
+                  In HA configurations, if this property is set to <code class="code">true</code> and there is a failed replication
+                  attempt, then the outstanding write operations are synchronized with the underlying file.
+                </p>
+
+                <p>
+                  In standalone configurations, each successful write is synchronized with the underlying file. This
+                  can incur a significant performance overhead.
+                </p>
+
+                <p>Optional. Defaults to <code class="code">false</code>.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-useWriteBuffering"></a>useWriteBuffering</td><td>
+                Whether to use write buffering.
+
+                <p>
+                  If this property is set to <code class="code">true</code> then data is only flushed to disk when there is
+                  <code class="code">writeBufferSize</code> data to write, or the <code class="code">writeBufferFlushingDelay</code> is exceeded.
+                  Setting the <code class="code">writeBufferSize</code> to the disk block size increases performance but adds risk
+                  that data will be lost on an application restart.
+                </p>
+
+                <p>Optional. Defaults to <code class="code">false</code>.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-writeBufferSize"></a>writeBufferSize</td><td>
+                The size, in bytes, of the write buffer to use if write buffering is turned on.
+
+                <p>
+                  Note: When a write request larger than this buffer size is encountered, the write buffer is extended
+                  so that it can accommodate this write request. However, this is a costly operation, therefore it is
+                  recommended to use a sensible size from the beginning rather than relying on this buffer extension
+                  mechanism.
+                </p>
+
+                <p>Optional. Defaults to 64kB.</p>
+              </td></tr><tr><td>
+                <a name="persistent_collections_properties-writeBufferFlushingDelay"></a>writeBufferFlushingDelay
+              </td><td>
+                The maximum amount of time, in milliseconds, that data should remain in the writing buffer if write
+                buffering is turned on.
+
+                <p>
+                  Note: Since this implementation does not use a flushing thread, there is no guarantee that a flush
+                  will happen at regular time interval, since writes may be infrequent. Therefore, this delay really
+                  comes into play when writes are frequent but the writing buffer takes a long time to fill up.
+                </p>
+
+                <p>Optional. Defaults to 1s. Can be between 0.5s and 5s.</p>
+              </td></tr><tr><td>
+                <a name="persistent_collections_properties-randomAccessReadBufferSize"></a>randomAccessReadBufferSize
+              </td><td>
+                The size, in bytes, of the read buffer to use when performing random access reads.
+
+                <p>
+                  This is an advanced property which should be changed with care. The default should be suitable in a
+                  majority of situations. In particular, using large values can cause serious performance degradation.
+                </p>
+
+                <p>Optional. Defaults to 128 KB. Value must be between 1 KB and 128 MB.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-scanningReadBufferSize"></a>scanningReadBufferSize</td><td>
+                The size, in bytes, of the read buffer to use when scanning the underlying journal, either at start-up,
+                or after compacting.
+
+                <p>
+                  This property has a relatively low default value in order to avoid consuming too much heap memory for
+                  collections that are not likely to take a long time to be scanned. For very large collections though,
+                  using a large value is likely to have noticeable effects on scanning performance, since fewer I/O
+                  operations will be required to go though the entire journal.
+                </p>
+
+                <p>Optional. Defaults to 128 KB. Value must be between 1 KB and 128 MB.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-rollJournalFileEvery"></a>rollJournalFileEvery</td><td>
+                The maximum size, in bytes, that the current journal file is allowed to reach.
+
+                <p>
+                  Once the current journal file reaches that size, a new journal file is created and subsequent
+                  writes are made to this new file. Rolling always happens before the limit is reached, which means
+                  that journal files can never exceed the limit. A value less than zero disables this rolling
+                  functionality, meaning that the journal file will keep growing as long as the file-system allows.
+                </p>
+
+                <p>Optional. Defaults to 2GB.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-recordVersionHistory"></a>recordVersionHistory</td><td>
+                Whether or not the store's indexer should keep an in-memory record of the offsets of the last write
+                requests in the journal in order to be able to access version history.
+
+                <p>
+                  When turned on, the actual size of the history is given by the value of property
+                  <code class="code">versionHistorySize</code>. This feature is normally only needed when running in High
+                  Availability configurations, where it is necessary to be able to replay version history for
+                  synchronization purposes. The memory footprint when this feature is turned on is 8 bytes times the
+                  size of the history. So for a default history size of 10,000, the footprint is 80 kb.
+                </p>
+
+                <p>Optional. Defaults to <code class="code">false</code>.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-versionHistorySize"></a>versionHistorySize</td><td>
+                The size of the in-memory record of write request offsets maintained by the store's indexer when
+                version history recording is turned on.
+
+                <p>
+                  Using a smaller value reduces the memory footprint and start-up time (because it reduces the
+                  area in the journal file that must be scanned to reconstruct the history), but increases the
+                  likelihood that the entire journal file must be scanned to service a version history request because
+                  the requested version is outside the record. Using a larger value increases the memory footprint and
+                  start-up time but reduces the likelihood that the entire journal file must be scanned when searching
+                  for a version.
+                </p>
+
+                <p>Optional. Defaults to 10,000. Can be between 1,000 and 1,000,000.</p>
+              </td></tr><tr><td><a name="persistent_collections_properties-filePathLevelsInLogger"></a>filePathLevelsInLogger</td><td>
+                Specifies the number of path components of this store's backing directory to include in the name of the
+                logger used to print log messages.
+
+                <p>
+                  Optional. Defaults to the base name of the directory, which corresponds to a depth of one. Value can
+                  be between 1 and the maximum file path levels.
+                </p>
+              </td></tr><tr><td><a name="persistent_collections_properties-replicated"></a>replicated</td><td>
+                Specifies whether the contents of this collection should be replicated across the cluster when used in
+                a high availability context.
+
+                <p>
+                  Optional. Defaults to <code class="code">true</code>, which means that collections are replicated by default. 
+                  Ignored when not used in a high availability context.
+                </p>
+              </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="persistent_collections_properties-specificCollectionProperties"></a>D.2.2.&nbsp;Specific Collection Properties</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="persistent_collections_properties-listCollectionProperties"></a>D.2.2.1.&nbsp;Standard Capacity Collection Properties</h4></div></div></div><p>
+          These specific properties only apply when the
+          <a class="code" href="apds02.html#persistent_collections_properties-highCapacityList">isHighCapacityList</a>
+          property is set to <code class="code">false</code>.
+        </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Property</th><th>Definition</th></tr></thead><tbody><tr><td><a name="persistent_collections_properties-initialIndexCapacity"></a>initialIndexCapacity</td><td>
+                  If many entries are to be stored in the store, creating it with a sufficiently large capacity will
+                  allow the entries to be stored more efficiently than letting it perform automatic array copies as
+                  needed to grow the in-memory index.
+
+                  <p>
+                    Optional. Defaults to 10,000. Value can be between 1 and 2<sup>31</sup> - 1.
+                  </p>
+                </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="persistent_collections_properties-highCapacityListCollectionProperties"></a>D.2.2.2.&nbsp;High Capacity List (Indexed) Collection Properties</h4></div></div></div><p>
+          These specific properties only apply when the
+          <a class="code" href="apds02.html#persistent_collections_properties-highCapacityList">isHighCapacityList</a>
+          property is set to <code class="code">true</code>.
+        </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Property</th><th>Definition</th></tr></thead><tbody><tr><td><a name="persistent_collections_properties-indexerMemoryLimit"></a>indexerMemoryLimit</td><td>
+                  The limit, in bytes, to the amount of memory that this store's indexer is allowed to use for its 
+                  index backlog.
+                  
+                  <p>
+                    The backlog contains the index entries that have yet to be written to disk. In most cases (i.e. 
+                    when data in write requests is not too large), it takes significantly less time to append a write 
+                    request to the end of a journal file than to add an index entry to the on-disk index. Therefore,
+                    under a constant load of writes, the indexer's backlog will grow until it reaches this limit. Once 
+                    the backlog is full, further writes will be throttled to the speed of the index persister thread. 
+                    Using a larger limit can be useful if it is necessary to absorb data bursts without performance
+                    degradation for a longer time.
+                  </p>
+                  
+                  <p>
+                    Optional. Defaults to 1MB. Value can be between 0.5MB and as much as the heap size allows.
+                  </p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-reportIndexerThrottling"></a>reportIndexerThrottling
+                </td><td>
+                  Whether the store's indexer should regularly report the number of writes throttled and the average 
+                  extra latency due to throttling.
+                  
+                  <p>
+                    When enabled, a warning will be printed to the logs every N write operations to the store (N being
+                    the value given by property <code class="code">reportIndexerThrottlingEvery</code> below) if at least one
+                    operation was throttled.
+                  </p>
+
+                  <p>Optional. Defaults to <code class="code">true</code>.</p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-reportIndexerThrottlingEvery"></a>
+                  reportIndexerThrottlingEvery
+                </td><td>
+                  The occurrence with which throttled writes should be reported as a warning in the logs by the store's
+                  indexer (provided there is at least one throttled write to report) if throttle reporting is turned on 
+                  (using property <code class="code">reportIndexerThrottling</code> above).
+
+                  <p>Optional. Defaults to 1,000,000. Value can be between 1,000 and 1,000,000.</p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-list-isBytesCachingEnabled"></a>isBytesCachingEnabled
+                </td><td>
+                  Whether the store's underlying journal should make use of a cache to increase reading performance.
+                  
+                  <p>
+                    Refer to the description of Map property 
+                    <a class="code" href="apds02.html#persistent_collections_properties-map-isBytesCachingEnabled">isBytesCachingEnabled</a>
+                    for details.
+                  </p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-list-bytesCacheCapacity"></a>bytesCacheCapacity
+                </td><td>
+                  The capacity, expressed as a number of bytes, of the journal's bytes cache. 
+                  
+                  <p>
+                    Refer to the description of Map property 
+                    <a class="code" href="apds02.html#persistent_collections_properties-map-bytesCacheCapacity">bytesCacheCapacity</a>
+                    for details.
+                  </p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-list-bytesCacheAveragePayloadSize"></a>bytesCacheAverage&shy;PayloadSize
+                </td><td>
+                  The expected average size, expressed as a number of bytes, of entries stored in the journal's bytes cache. 
+                  
+                  <p>
+                    Refer to the description of Map property 
+                    <a class="code" href="apds02.html#persistent_collections_properties-map-bytesCacheAveragePayloadSize">bytesCacheAveragePayloadSize</a>
+                    for details.
+                  </p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-list-bytesCacheObjectName"></a>bytesCacheObjectName
+                </td><td>
+                  The JMX object name under which the cache should register an MXBean exposing its sizing and utilisation
+                  data at runtime. Refer to the MXBean's self-exposed attribute descriptions for details about these
+                  attributes.
+                  
+                  <p>
+                    Refer to the description of Map property 
+                    <a class="code" href="apds02.html#persistent_collections_properties-map-bytesCacheObjectName">bytesCacheObjectName</a>
+                    for details.
+                  </p>
+                </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="persistent_collections_properties-mappedCollectionProperties"></a>D.2.2.3.&nbsp;Map Collection Properties</h4></div></div></div><p>These properties only apply to <code class="code">Map</code> collections.</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Property</th><th>Definition</th></tr></thead><tbody><tr><td><a name="persistent_collections_properties-isCachingEnabled"></a>isCachingEnabled</td><td>
+                  With caching enabled the underlying implementation maintains an in memory cache for the purpose of 
+                  improving read performance. Even though the read performance of the underlying persistent store is 
+                  likely to be very good, there is still a cost associated with deserializing data. This cost may be 
+                  avoided altogether in many cases via an adequate caching policy.
+
+                  <p>Note that this property is only applicable to map collections.</p>
+                  <p>Optional. Defaults to <code class="code">true</code>.</p>
+                </td></tr><tr><td><a name="persistent_collections_properties-maxCacheElements"></a>maxCacheElements</td><td>
+                  The maximum number of elements in the memory cache. Only used if <code class="code">isCachingEnabled</code> is set
+                  to <code class="code">true</code>.
+
+                  <p>Optional. Defaults to 100.</p>
+                </td></tr><tr><td><a name="persistent_collections_properties-indexLoadFactor"></a>indexLoadFactor</td><td>
+                  The load factor of the in-memory hash map that represents the store's index.
+                  <p>Optional. Defaults to 0.5. Valid values are &gt; 0 and &lt;= 1.0.</p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-map-isBytesCachingEnabled"></a>isBytesCachingEnabled
+                </td><td>
+                  Whether the store's underlying journal should make use of a cache to increase reading performance.
+                  
+                  <p>
+                    When enabled, the store's underlying journal caches bytes in memory to avoid having to read bytes
+                    from disk too often. This is a different type of cache to the cache that gets created when using
+                    property <code class="code">isCachingEnabled</code>, which caches objects representing map values on the heap
+                    and is therefore somewhat limited in size. A journal's bytes cache, by contrast, only caches bytes, 
+                    and makes use of off-heap memory to do so, which means that it is only limited by the amount of
+                    physical memory available on the local machine. This type of cache is particularly well suited
+                    for collections storing large to very large values and from which reads are very frequent. In such 
+                    cases, if sized properly, the cache can potentially eliminate the need for disk I/O.
+                  </p>
+
+                  <p>Optional. Defaults to <code class="code">false</code>, meaning that the journal does not cache bytes by 
+                        default.
+                  </p>
+                  
+                  <p>
+                    A journal's bytes cache combines a small synchronous on-heap L1 cache with a very large asynchronous
+                    off-heap L2 cache. It therefore requires a dedicated thread to exchange data with its L2 cache.
+                    The total capacity of the bytes cache is expressed as a number of bytes (for example, 1 GB), and the
+                    amount of heap memory used by the L1 cache never exceeds 5% of that capacity. 
+                  </p>
+                  
+                  <p>
+                    The bytes cache uses an LRU (Least Recently Used) policy to evict old entries once at capacity.  
+                  </p>
+                  
+                  <p>
+                    In order to get the best out of the amount of off-heap memory that it can use, the L2 cache needs to
+                    be calibrated, which is a one-off operation which consists in segmenting the off-heap memory into
+                    small data chunks used to store actual payload. The quantity and size of those chunks depends on the 
+                    expected size of the payload, which therefore needs to be configured. This is expressed as the cache's
+                    average payload size, which is the average size in bytes (for example, 1 KB) of the 
+                    <span class="emphasis"><em>values</em></span> stored into the persistent collection. This average payload size does not need
+                    to be (and sometimes cannot be) too precise, but it is still important to configure a size that is close 
+                    enough to the actual payload size:
+                    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                        If the actual payload size is significantly smaller than the configured size, the cache will deliver
+                        optimal performance but will not be using all of the off-heap memory that is allocated to it.
+                      </li><li class="listitem">
+                        If the actual payload size is significantly larger than the configured size, the cache will make use 
+                        of all its off-heap memory but its reading performance will be slightly deteriorated.
+                      </li></ul></div><p>  
+                    In order to ease the configuration of the cache's average payload size, it is possible to get the cache
+                    to register a JMX MXBean that exposes various sizing and utilisation attributes that can be used to 
+                    detect a suboptimal configuration.
+                  </p>
+                  
+                  <p>
+                    The calibration of the journal's bytes cache can take up to a few seconds when done for the first
+                    time. For that purpose, the cache persists its calibration data into a directory called
+                    <code class="code">calibration</code> located within the persistent collection's directory. This calibration data
+                    is reused when present. If the calibration directory gets deleted, then a new calibration will take
+                    place the next time the collection is loaded.    
+                  </p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-map-bytesCacheCapacity"></a>bytesCacheCapacity
+                </td><td>
+                  The capacity, expressed as a number of bytes, of the journal's bytes cache. 
+                  
+                  <p>
+                    This is the cache's total capacity, which is split between an on-heap L1 cache which takes up to
+                    5% of the capacity, and an off-heap L2 cache. Once at capacity, the cache will evict its oldest
+                    entries using an LRU (Least Recently Used) policy.
+                  </p>
+
+                  <p>Mandatory when <code class="code">isBytesCachingEnabled</code> is true, ignored otherwise. Value must be 
+                        at least 128 MB and cannot exceed the amount of physical memory available on the local machine. 
+                        <span class="emphasis"><em>Warning:</em></span> Specifying a capacity that is larger than the amount of available 
+                        physical memory will cause the JVM to crash.
+                  </p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-map-bytesCacheAveragePayloadSize"></a>bytesCacheAverage&shy;PayloadSize
+                </td><td>
+                  The expected average size, expressed as a number of bytes, of entries stored in the journal's bytes cache. 
+                  
+                  <p>
+                    This size corresponds to the size of <span class="emphasis"><em>values</em></span> stored in the persistent collection. In
+                    the case of a persisted map, the key size does not count, the cache is only used to store value bytes.
+                  </p>
+
+                  <p>Mandatory when <code class="code">isBytesCachingEnabled</code> is true, ignored otherwise. Value must be at least 
+                        64 bytes and should ideally be as close as possible to the actual average payload size. Significant
+                        differences between the configured value and the actual average payload size will not cause the
+                        cache to malfunction, but it may not make the best out of its off-heap memory (in cases where the
+                        actual payload size is much larger than the configured value) or it won't deliver optimal reading
+                        performance (in cases where the actual payload size is much smaller than the configured value).
+                        It is therefore recommended to use the JMX MXBean that the cache can optionally expose to determine
+                        whether this value is properly configured.
+                  </p>
+                </td></tr><tr><td>
+                  <a name="persistent_collections_properties-map-bytesCacheObjectName"></a>bytesCacheObjectName
+                </td><td>
+                  The JMX object name under which the cache should register an MXBean exposing its sizing and utilisation
+                  data at runtime. Refer to the MXBean's self-exposed attribute descriptions for details about these
+                  attributes.
+                  
+                  <p>
+                    This MXBean can be used to determine whether the cache was configured properly and therefore makes the
+                    best out of its off-heap memory and delivers optimal performance. 
+                  </p>
+
+                  <p>Optional when <code class="code">isBytesCachingEnabled</code> is true, ignored otherwise. If omitted, no MXBean
+                        gets registered. If present, value must be a valid JMX object name and must not conflict with the 
+                        name of another JMX MXBean.
+                  </p>
+                </td></tr></tbody></table></div></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="apd.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="apd.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="apds03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Appendix&nbsp;D.&nbsp;Persistent Collections Properties&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;D.3.&nbsp;Compacting Collections</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:51+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

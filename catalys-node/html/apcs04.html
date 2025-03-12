@@ -1,0 +1,77 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; C.4.&nbsp;Implementations Requiring Dialects</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="apc.html" title="Appendix&nbsp;C.&nbsp;FIX Session Dialects"><link rel="prev" href="apcs03.html" title="C.3.&nbsp;Available Dialects"><link rel="next" href="apd.html" title="Appendix&nbsp;D.&nbsp;Persistent Collections Properties"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="apcs03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;C.&nbsp;FIX Session Dialects</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="apd.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="d5e33930"></a>C.4.&nbsp;Implementations Requiring Dialects</h2></div></div></div><p>
+      The following are known FIX implementations that require dialects in order for the Node
+      to reliably communicate with them.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e33933"></a>EMX</h3></div></div></div><p>Requires:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectProcessSkippedMessages">dialectProcessSkippedMessages</a></li></ul></div><p>
+        When the EMX hub was written, FIX was at version 4.1. Unfortunately, that version of the FIX specification
+        contained wording that misleadingly stated that the new sequence number in a gap fill should be
+        "<span class="emphasis"><em>the next sequence number to be transmitted"</em></span>. This loose wording was corrected in version
+        4.2 of the specification to read "<span class="emphasis"><em>the next sequence number immediately following the
+        messages and/or sequence numbers being skipped</em></span>".
+      </p><p>
+        Unfortunately, EMX went with the literal wording in version 4.1. Using this interpretation, there is no
+        implication that skipped messages can be ignored and the safest procedure is to process all skipped messages.
+        EMX is not FIX and does not claim to be despite the fact that it is strongly based on the FIX standard. We are
+        not aware of any move to change its behaviour in this respect.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e33943"></a>Reuters</h3></div></div></div><p>Requires:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectProcessSkippedMessages">dialectProcessSkippedMessages</a></li></ul></div><p>
+        Reuters have written their own FIX engine which does not currently appear to support Sequence Reset gap fills at
+        all. It does not seem that it is possible for them to, say, in the above example, just skip message 3. In this
+        situation, the safest procedure is to process skipped messages. In fact, we are aware of conditions where a
+        session with Reuters can lock up unless this dialect is in use.
+      </p><p>
+        There has been some correspondence with Reuters on this. However, we are unaware of any move on their part to
+        resolve the issue.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e33951"></a>Fujitsu</h3></div></div></div><p>Requires:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectOrigSendingTimeInGapFill">dialectOrigSendingTimeInGapFill</a></li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e33957"></a>CME (Chicago Mercantile Exchange)</h3></div></div></div><p>Requires:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectAllowNoLengthOnRawData">dialectAllowNoLengthOnRawData</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectIgnoreIDFieldsInLogonResponse">dialectIgnoreIDFieldsInLogonResponse</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectIgnoreInputMessageSequencing">dialectIgnoreInputMessageSequencing</a> (for TCP replay)</li></ul></div><p>
+        CME's "iLink FIX 4.2" uses the raw data field for a logon password and omits the raw data length field.
+      </p><p>
+        In addition, it does not return correct IDs in a logon response. If you try communicating using the IDs
+        supplied in the logon response, CME will reject your messages.
+      </p><p>
+        CME also adds a non standard field, LoginRouteID, which must be present in the header of all messages, otherwise
+        the messages are rejected. In order to support this, you need to use a non-default message factory for creating
+        all messages. The Node installation supplies the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/CmeMessageFactory.html" target="_top"><code class="code">CmeMessageFactory</code></a>
+        for this purpose which can be associated with the session using the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/Session.html#setFromFIXMessageFactory(com.camerontec.catalys.core.message.IFIXMessageFactory)" target="_top"><code class="code">setFromFIXMessageFactory</code></a>
+        and
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/Session.html#setToFIXMessageFactory(com.camerontec.catalys.core.message.IFIXMessageFactory)" target="_top"><code class="code">setToFIXMessageFactory</code></a>
+        methods.
+      </p><p>
+        The special CME TCP replay market data FIX session requires <code class="code">dialectIgnoreInputMessageSequencing</code>
+        because replayed market data messages come back with their original sequence numbers. However, this dialect
+        should not be used elsewhere on normal CME FIX sessions.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e33978"></a>CME iLink 2.0</h3></div></div></div><p>Requires:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectAllowNoLengthOnRawData">dialectAllowNoLengthOnRawData</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectAlwaysSendResendRequest">dialectAlwaysSendResendRequest</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectIgnoreIDFieldsInLogonResponse">dialectIgnoreIDFieldsInLogonResponse</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectOrigSendingTimeInGapFill">dialectOrigSendingTimeInGapFill</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectProcessSkippedMessages">dialectProcessSkippedMessages</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectResendRequestEndSeqNoAlwaysInfinity">dialectResendRequestEndSeqNoAlwaysInfinity</a></li></ul></div><p>
+        The
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/CMEiLink2MessageFactory.html" target="_top"><code class="code">CMEiLink2MessageFactory</code></a>
+        should also be used.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e33997"></a>CSFB (Credit Suisse First Boston)</h3></div></div></div><p>Requires:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectInitializeCipherOncePerSession">dialectInitializeCipherOncePerSession</a></li></ul></div><p>
+        This is only required if you are using FIX encryption with CSFB and you are communicating with their
+        in-house FIX engine.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34004"></a>Macgregor Predator OMS</h3></div></div></div><p>Requires:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectSequenceResetToLastSeqno">dialectSequenceResetToLastSeqno</a></li></ul></div><p>
+        Without the use of this dialect, the Node will see the next incoming message as 1 too large and request a
+        resend of the gap. On receipt of another Sequence Reset, the Node breaks the connection because the
+        sequence number is being set back 1, which is illegal in FIX.
+      </p><p>
+        Macgregor is aware of this deviation from FIX, but has made no move to correct it.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34012"></a>SFE (Sydney Futures Exchange)</h3></div></div></div><p>Requires:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectAllowLogonResponseWithoutEncryptMethod">dialectAllowLogonResponseWithoutEncryptMethod</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectAlwaysSendPossDupFlagAndOrigSendingTime">dialectAlwaysSendPossDupFlagAndOrigSendingTime</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectDoNotSendTargetCompID">dialectDoNotSendTargetCompID</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectEnableShortTestReqIDFormat">dialectEnableShortTestReqIDFormat</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectIgnoreIDFieldsInLogonResponse">dialectIgnoreIDFieldsInLogonResponse</a></li><li class="listitem"><a class="code" href="apcs03.html#dialects_dialectInsertCustomFieldsInHeader">dialectInsertCustomFieldsInHeader</a></li></ul></div><p>
+        The SFE FIX engine accepts Logon requests containing the EncryptMethod tag, however, it does not set it in its
+        Logon response. Normally the Node would reject such a Logon response, however, it will be accepted when
+        <code class="code">dialectAllowLogonResponseWithoutEncryptMethod</code> is enabled.
+      </p><p>
+        The SFE FIX engine expects PossDupFlag(43) and OrigSendingTime(122) set in every incoming FIX message even
+        if the message is not for reset. If the message is not for resend, PossDupFlag is set with value "N" and
+        OrigSendingTime is set to be equal to SendingTime.
+      </p><p>
+        The SFE FIX engine also expects custom tag 5006 in the header portion of every incoming FIX message. When
+        sending FIX message to SFE using the Node, this custom tag can be added by setting
+        <code class="code">dialectInsertCustomFieldsInHeader</code> to <code class="code">5006=0</code>.
+      </p><p>
+        According to the FIX specification provided by SFE, it does not expect incoming message to have TargetCompID
+        (field 56) set and does not send TargetCompID in response FIX message to connected party. Additionally, SFE FIX
+        engine expects TestReqID (field 112) in incoming FIX test request message in the format of "HHmmss".
+      </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="apcs03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="apc.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="apd.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">C.3.&nbsp;Available Dialects&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Appendix&nbsp;D.&nbsp;Persistent Collections Properties</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:51+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

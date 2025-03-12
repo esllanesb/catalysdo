@@ -1,0 +1,232 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; Appendix&nbsp;E.&nbsp;Error Codes</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="index.html" title="Catalys Node User Guide"><link rel="prev" href="apds03.html" title="D.3.&nbsp;Compacting Collections"><link rel="next" href="apf.html" title="Appendix&nbsp;F.&nbsp;JMX MBean Reference"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="apds03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;E.&nbsp;Error Codes</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="apf.html">Next</a></td></tr></table><hr></div><div class="appendix"><div class="titlepage"><div><div><h1 class="title"><a name="error_guide"></a>Appendix&nbsp;E.&nbsp;Error Codes</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="ape.html#d5e34328">E.1. Errors</a></span></dt><dd><dl><dt><span class="section"><a href="ape.html#d5e34330">E.1.1. General Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34335">E.1.2. Send Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34343">E.1.3. Bad Data Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34357">E.1.4. Fatal Protocol Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34399">E.1.5. Non Fatal Protocol Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34421">E.1.6. Logon Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34439">E.1.7. Message Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34481">E.1.8. Routing Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34486">E.1.9. Timeout Errors</a></span></dt><dt><span class="section"><a href="ape.html#d5e34498">E.1.10. SCP Errors</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="d5e34328"></a>E.1.&nbsp;Errors</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34330"></a>E.1.1.&nbsp;General Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34332"></a>Error 0: Any</h4></div></div></div><p>This is a general error. See the message printed with the
+          error for the specific problem.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34335"></a>E.1.2.&nbsp;Send Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34337"></a>Error 1: Send Failure</h4></div></div></div><p>This error occurs when a message cannot be sent.</p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34340"></a>Error 2: Message List Send Error</h4></div></div></div><p>This error occurs when a list of messages is being sent, and
+          the sending of any of them fails.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34343"></a>E.1.3.&nbsp;Bad Data Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34345"></a>Error 101: Bad Encoded Length Type</h4></div></div></div><p>This error occurs during message creation, when the encoded
+          length is not found in the field infos structure.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34348"></a>Error 109: Unknown Encoding</h4></div></div></div><p>This error occurs during message creation, when an encoded
+          field is added to message and its value is null, its encoding is
+          null, or its encoding is invalid.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34351"></a>Error 110: Unknown FIX Version</h4></div></div></div><p>This error occurs during session logon, when the FIX version
+          contained within the begin string field (FIX tag 8) has an
+          incorrect prefix or is an invalid value. Valid values are: "2.7",
+          "3.0", "4.0", "4.1", "4.2", "4.3", "4.4", "5.0", "5.0SP1",
+          "5.0SP2".
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34354"></a>Error 112: Unknown FIX Transport Version</h4></div></div></div><p>This error occurs during session login, when the FIX transport
+          version contained within the begin string field (FIX tag 8) does
+          not equal "1.1".
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34357"></a>E.1.4.&nbsp;Fatal Protocol Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34359"></a>Error 300: Application Rejected Party</h4></div></div></div><p>This error occurs during session logon, when the parties
+          fields SenderCompID (FIX tag 49), SenderSubID (FIX tag 50),
+          SenderLocationID (FIX tag 142), TargetCompID (FIX tag 56),
+          TargetSubID (FIX tag 57), TargetLocationID (FIX tag 143) in a
+          received logon message do not match those configured for the
+          session.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34362"></a>Error 301: Message Sequence Number Too Low</h4></div></div></div><p>This error occurs during message processing, when the received
+          sequence number is lower than expected. This is a fatal error
+          because there is no way to recover when the sequence number
+          corresponds to a message that has already been processed.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34365"></a>Error 302: Reset to Lower Sequence Number</h4></div></div></div><p>This error occurs during the processing of a sequence reset
+          message (FIX msg type 4), when the new sequence number (FIX tag
+          36) is lower than the value of the last sequence number
+          processed.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34368"></a>Error 303: Session not Started</h4></div></div></div><p>This error occurs when a resend request (FIX msg type 2) is
+          received but the session is not logged on, or if the session
+          attempts to send a message and the session is not started.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34371"></a>Error 304: Session is Blocked</h4></div></div></div><p>This error occurs during session establishment, when there is
+          an attempt to connect the session while it is blocked.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34374"></a>Error 305: Resend Request for Unsent Messages</h4></div></div></div><p>This error occurs when a resend request message (FIX msg type
+          2) is received, and it is requesting message sequence numbers
+          (FIX tags 7 and 16) that have not already been sent.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34377"></a>Error 306: Out of Sequence Resend Request</h4></div></div></div><p>This error occurs when a resend request (FIX msg type 2) is
+          received and it is out of sequence itself.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34380"></a>Error 307: Both Ends Strategy Activation
+          Failure
+        </h4></div></div></div><p>This error occurs during session connection. If both parties
+          of the Session are Catalys Nodes then a set of capabilities can
+          be negotiated between the nodes, and an optimal set (strategy)
+          can be selected. This error occurs when the two ends of the
+          session cannot successfully negotiate a strategy.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34383"></a>Error 308: Next Expected Sequence Number Too
+          High
+        </h4></div></div></div><p>This error occurs during session logon. A FIX logon message
+          can optionally contain the next expected sequence number (FIX tag
+          789: NextExpectedSequenceNumber). When a FIX session party
+          receives a logon message that does contain this field, it checks
+          its value against its next outgoing message sequence number. If
+          they are equal it proceeds and if the next expected sequence
+          number is lower than the number the party was expecting to send,
+          then it gap fills.
+        </p><p>This error occurs if the next expected sequence number is
+          higher than the one the party was expecting to send, as it cannot
+          recover messages that it has no record of sending.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34387"></a>Error 309: Garbled Message Received</h4></div></div></div><p>This error occurs during message processing, when a message
+          received by a FIX party cannot be decoded. This can happen
+          because:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">The message does not have a correctly formed 'Begin
+            String'
+          </li><li class="listitem">The message does not have the 'Body Length' tag as the
+            second field of the message
+          </li><li class="listitem">The 'Body Length' of the message does correspond to the
+            actual length of the message
+          </li><li class="listitem">The calculated checksum of the message does not match the
+            'Checksum' value.
+          </li></ul></div><p>If two or more of these messages are received consecutively
+          then the session is logged out.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34396"></a>Error 310: First Message must be Logon</h4></div></div></div><p>This error occurs if the first message received is not a logon
+          message.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34399"></a>E.1.5.&nbsp;Non Fatal Protocol Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34401"></a>Error 400: Message Exception</h4></div></div></div><p>This error occurs whenever there is a problem with an incoming
+          message but the problem is such that system can continue
+          processing.
+        </p><p>The message given with this log message will identify the
+          specific problem with the message. Examples include:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">The value of a field in an incoming message cannot be
+            converted to the correct type e.g. if there is a floating point
+            number where there should be an integer
+          </li><li class="listitem">If the message is missing some mandatory data e.g.
+
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">the message is a reject and it does not contain the
+                sequence number of the message that is being rejected (Tag
+                45: 'RefSeqNum')
+              </li><li class="listitem">A logon message over an encrypted session is missing
+                encryption information
+              </li><li class="listitem">A logon message over an encrypted session has
+                unrecognizable encryption information
+              </li></ul></div></li><li class="listitem">The session times out waiting for its next message</li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34413"></a>Error 401: Missing Messages</h4></div></div></div><p>This error occurs if a message with a greater than expected
+          sequence number is received.
+        </p><p>The log message for this error will include the messages that
+          are missing, and a resend request (FIX Msg Type 2) for those
+          messages will be sent to the other party.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34417"></a>Error 402: Not Allowed in Strict Mode</h4></div></div></div><p>Strict mode (strict adherence to the FIX protocol) is the
+          default setting for the Catalys Node Server. This mode can be
+          switched off in certain certification and testing scenarios.
+        </p><p>This error occurs when if an application attempts to perform
+          an operation which would break the adherence to the FIX protocol.
+          e.g. switching off the internal processing of FIX messages.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34421"></a>E.1.6.&nbsp;Logon Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34423"></a>Error 500: General Logon Failure</h4></div></div></div><p>This error occurs when the logon fails, and the reason for the
+          failure is not one of the specific failures described below.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34426"></a>Error 501: General Logon Rejection</h4></div></div></div><p>This error occurs when instead of receiving a logon message in
+          response to sending one, another message type is received.
+        </p><p>If the received message contains a text field (FIX tag 58)
+          then then this will be logged with the error. Otherwise the
+          message type (FIX tag 35) of the received message will be
+          logged.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34430"></a>Error 502: Rejected Encryption Method</h4></div></div></div><p>This error occurs when the encryption method (FIX tag 98)
+          contained within the logon message does not match the method
+          configured locally.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34433"></a>Error 503: Rejected Session Security
+          Information
+        </h4></div></div></div><p>This error occurs when the session security information
+          contained in the raw data field (FIX tag 96) does not match the
+          session security information configured locally.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34436"></a>Error 504: Logon Received Mid Session</h4></div></div></div><p>This error occurs when a logon message is received mid-session
+          i.e. after a successful login had previously been negotiated, and
+          the Session attribute dialectAllowNonResetLogonMessagesMidSession
+          is set to false. (If this dialect is true the the mid-session
+          logon is ignored).
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34439"></a>E.1.7.&nbsp;Message Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34441"></a>Error 600: Bad Data Value</h4></div></div></div><p>This error occurs when a message contains an illegal value in
+          one of its fields. The tag and value is printed in the message
+          that is logged with the error.
+        </p><p>The error can happen if ConditionValidFIX condition is
+          included in the message processor chain of an application (on
+          inbound or outbound messages), or if any of the standard fields
+          in a message are malformed.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34445"></a>Error 610: Missing Encryption Session
+          Information
+        </h4></div></div></div><p>This error occurs during logon processing, on an encrypted
+          session, when a logon response is received and the Session Info
+          structure is missing from the raw data field (FIX tag 96) See
+          [1].
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34448"></a>Error 613: Missing Required Field</h4></div></div></div><p>This error occurs during message validation, when the message
+          is missing a required field. The field that is missing will be
+          shown in the error message, and can include:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">MsgType (FIX tag 35)</li><li class="listitem">BeginSeqNo (FIX tag 7) of a resend request (FIX msg type
+            2)
+          </li><li class="listitem">EndSeqNo (FIX tag 16) of a resend request (FIX msg type
+            2)
+          </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34455"></a>Error 615: Unknown Party</h4></div></div></div><p>This error occurs when an adapter component cannot send a
+          message across a FIX session because the the
+          comp/subcomp/location fields of the message do not unambiguously
+          specify a FIX session.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34458"></a>Error 616: Unrecognizeable Encyption Session
+          Information
+        </h4></div></div></div><p>This error occurs during logon processing, on an encrypted
+          session, when a logon response is received and the Session Info
+          structure contained in the raw data field (FIX tag 96) is the
+          wrong length. See [1].
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34461"></a>Error 617: Inbound Validation Error</h4></div></div></div><p>This error occurs during inbound message validation, when the
+          validation fails. Reasons for this failure can include:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">BeginString (FIX tag 8) has an invalid value</li><li class="listitem">(For FIX 5.0, DefaultAppVer field (FIX tag 1137) is missing
+            or has an invalid value
+          </li><li class="listitem">A field is empty</li><li class="listitem">A field cannot be converted to the correct type</li><li class="listitem">BeginString (FIX tag 8) contained in message does not match
+            that configured on the session
+          </li><li class="listitem">MsgType (FIX tag 35) is invalid</li><li class="listitem">SenderCompID (FIX tag 49) does not match that configured on
+            the session
+          </li><li class="listitem">TargetCompID (FIX tag 56) does not match that configured on
+            the session
+          </li><li class="listitem">SendingTime (FIX tag 52) is not in UTC format</li><li class="listitem">PossDupFlag (FIX tag 43) does not contain 'Y' or 'N'</li><li class="listitem">PossResend (FIX tag 97) does not contain 'Y' or 'N'</li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34476"></a>Error 619: Message Serialization Failed</h4></div></div></div><p>This error occurs during outbound message serialization, when the
+          serialization fails. Reasons for this failure can include:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Message contains a field with a negative tag number.</li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34481"></a>E.1.8.&nbsp;Routing Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34483"></a>Error 700: No Listener for Connection Point</h4></div></div></div><p>This error occurs during message processing, when a message
+          processor tries to send a message to an end point which has no
+          listeners, that is there is no destination which is listening for
+          the message.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34486"></a>E.1.9.&nbsp;Timeout Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34488"></a>Error 800: Timed Out Waiting for Input</h4></div></div></div><p>This error occurs when the server takes too long to read a
+          message from its input processing queue. In response to this
+          condition, it will send a TestRequest message (FIX msg type 1).
+          If the response to this message also times out then a standard
+          I/O exception will be reported.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34491"></a>Error 801: Timed Out Waiting for Test Request Heart
+          Beat
+        </h4></div></div></div><p>This error occurs when the server does not receive a HeartBeat
+          message (FIX msg type 0) within the two heart beat intervals (FIX
+          tag 108 in the Logon message (FIX msg type A)) after sending a
+          Test Request (FIX msg type 1).
+        </p><p>The server responds to this condition by sending a logout
+          message and closing the connection.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34495"></a>Error 802: Timeout Out Waiting for Other
+          Messages
+        </h4></div></div></div><p>This error occurs when a response to a logon or logout message
+          is not received within a heart beat interval (FIX tag 108 in the
+          Logon message (FIX msg type A)).
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34498"></a>E.1.10.&nbsp;SCP Errors</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34500"></a>Error 900 and 901: SCP Alert Received/Sent</h4></div></div></div><p>This error occurs on a FAST session, when an SCP (session
+          control protocol) alert is received or sent. This message
+          provides as much information as possible regarding the reason for
+          termination of the session. The message printed with this error
+          has the following information:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">the Severity of the alert</li><li class="listitem">the Code of the alert, one of
+
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">Close: Normal termination</li><li class="listitem">Unauthorized: Peer not authorized</li><li class="listitem">UnknownTemplateId: The decoder cannot find a template
+                name associated with a template identifier. The template
+                identifier is supplied in the Value field
+              </li><li class="listitem">UnknownTemplateName: The decoder cannot find a template
+                definition associated with a template name. The template
+                identifier is supplied in the Value field if available. The
+                name of the missing template is included in the Description
+                field.
+              </li></ul></div></li><li class="listitem">a Value associated with the alert</li><li class="listitem">a Description of the alert</li></ul></div><p>For more information, refer to [2].</p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34514"></a>Error 1000: Hello Message Expected</h4></div></div></div><p>This error occurs on a FAST session, when the first message
+          received is not a Hello message.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34517"></a>Error 1001: Not Supported In Version 1.1 Level
+          1
+        </h4></div></div></div><p>This error occurs when any SCP message aside from a Reset
+          message is received, as this level of the protocol only supports
+          the Reset message.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34520"></a>Error 1002: Not Supported in Version 1.1 Level
+          2
+        </h4></div></div></div><p>This error occurs when any SCP message aside from a Reset,
+          Hello or Alert is received as these are the only SCP messages
+          supported in this level of the protocol.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e34523"></a>Error 1003: Should only receive one Hello
+          message
+        </h4></div></div></div><p>This error occurs when multiple SCP Hello messages are
+          received. The protocol specifies that only one should be
+          received.
+        </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34526"></a>References</h3></div></div></div><p>[1] See the Key Exchange section of the FIX Protocol Document:
+        PGP-DES-MD5 and PEM-DES-MD5 Overview (security.doc).
+      </p><p>[2] See the Fast Session Control Protocol Specification (FAST
+        Session Control Protocol 1.1.doc).
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="apds03.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="apf.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">D.3.&nbsp;Compacting Collections&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Appendix&nbsp;F.&nbsp;JMX MBean Reference</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:52+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

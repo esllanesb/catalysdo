@@ -1,0 +1,68 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 8.3.&nbsp;Tasks</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="prev" href="ch08s02.html" title="8.2.&nbsp;CLI Commands"><link rel="next" href="ch08s04.html" title="8.4.&nbsp;Persistent Objects"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch08s02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08s04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_task"></a>8.3.&nbsp;Tasks</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10123"></a>8.3.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Catalys Node Scheduler feature supports a number of built-in tasks that can be scheduled at an application
+      or session level. The Scheduler is extensible, which allows users to create their own tasks and schedule them
+      like the built-in tasks.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10126"></a>8.3.2.&nbsp;TaskBase Implementation</h3></div></div></div><p>
+      Custom tasks that run at the application level should extend the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/task/TaskBase.html" target="_top">TaskBase</a>
+      class. The
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/configuration/registry/ConfiguredObjectRegistry.html" target="_top">ConfiguredObjectRegistry</a>
+      object will be injected into the constructor of this type of
+      task. The following are the steps to take to create a custom <code class="code">TaskBase</code> task.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10132"></a>Extend the TaskBase Class</h4></div></div></div><pre class="programlisting">public class CustomTask extends TaskBase { ... }</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10135"></a>Define the Constructor</h4></div></div></div><p>
+        In the constructor for your class you can optionally inject the <code class="code">ConfiguredObjectRegistry</code>. This
+        gives you a reference to any configured component in the Node.
+      </p><pre class="programlisting">private final ConfiguredObjectRegistry configuredObjectRegistry;
+public CustomTask(ConfiguredObjectRegistry configuredObjectRegistry) {
+  this.configuredObjectRegistry = configuredObjectRegistry;
+}
+</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10140"></a>Implement the doTask() Method</h4></div></div></div><p>
+        The <code class="code">TaskBase</code> parent class has one <code class="code">void doTask()</code> method that must be implemented. This
+        is where actions associated with the task are performed.
+      </p><pre class="programlisting">@Override
+public void doTask() throws Exception {
+  logger.info("Performing Custom Task");
+  // Call task's actions here
+}
+</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10146"></a>Configuring the Custom Task</h4></div></div></div><p>
+        Configuring the custom task is done the same as with built-in tasks. Set the full class with namespace when
+        defining the custom task in the XML. All other configuration is the same.
+      </p><pre class="programlisting">&lt;Tasks&gt;
+  &lt;Task id="custom_task" class="com.camerontec.catalys.server.task.CustomTask"/&gt;
+&lt;/Tasks&gt;</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10150"></a>8.3.3.&nbsp;PartyTaskBase Implementation</h3></div></div></div><p>
+        Custom tasks that run at the session level should extend the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/task/PartyTaskBase.html" target="_top">PartyTaskBase</a>
+        class. The
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/configuration/registry/ConfiguredObjectRegistry.html" target="_top">ConfiguredObjectRegistry</a>
+        and
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/IConnectionPointConfiguration.html" target="_top">IConnectionPointConfiguration</a>
+        objects will be injected into the constructor of this type of task. The following are the steps to take to
+        create a custom <code class="code">PartyTaskBase</code> task.
+      </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10157"></a>Extend the PartyTaskBase Class</h4></div></div></div><pre class="programlisting">public class CustomPartyTask extends PartyTaskBase { ... }</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10160"></a>Define the Constructor</h4></div></div></div><p>
+          In the constructor for your class you can optionally inject the <code class="code">ConfiguredObjectRegistry</code> and
+          <code class="code">IConnectionPointConfiguration</code> objects. This gives you a reference to any configured component in
+          the Node and passes a reference to the session the custom task is configured to run on.
+        </p><pre class="programlisting">public CustomPartyTask(ConfigurationObjectRegistry configurationObjectFactory,
+  IConnectionPointConfiguration connectionPointConfiguration) {
+  super(configurationObjectFactory, connectionPointConfiguration);
+}
+</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10166"></a>Implement the doTask() Method</h4></div></div></div><p>
+          The <code class="code">PartyTaskBase</code> parent class has one <code class="code">void doTask()</code> method that must be implemented. This
+          is where actions associated with the task are performed.
+        </p><pre class="programlisting">@Override
+public void doTask() throws Exception {
+  ISessionManager session_manager = getSessionManager();
+  // perform action on session
+  logger.info(session_manager.getConnectionPoint().toString());
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10172"></a>Configuring the Custom Task</h4></div></div></div><p>
+          Configuring the custom task is done the same as with built-in tasks. Set the full class with namespace when
+          defining the custom task in the XML. All other configuration is the same.
+        </p><pre class="programlisting">&lt;Tasks&gt;
+  &lt;Task id="custom_party_task" class="com.camerontec.catalys.server.task.CustomPartyTask"/&gt;
+&lt;/Tasks&gt;</pre></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch08s02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch08.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">8.2.&nbsp;CLI Commands&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;8.4.&nbsp;Persistent Objects</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:41+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

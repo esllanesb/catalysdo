@@ -1,0 +1,61 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 8.5.&nbsp;Message Factories</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="prev" href="ch08s04.html" title="8.4.&nbsp;Persistent Objects"><link rel="next" href="ch08s06.html" title="8.6.&nbsp;Message Transformers"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch08s04.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08s06.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_msg_fact"></a>8.5.&nbsp;Message Factories</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10399"></a>8.5.1.&nbsp;Introduction</h3></div></div></div><p>
+      The implementation steps below show how to develop your own message factory class. Refer to the
+      <a href="ch05s09.html" title="5.9.&nbsp;Message Factories">Message Factories</a> section for information on typical use-cases, a
+      list of provided message factories and configuration examples.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10403"></a>8.5.2.&nbsp;Implementation</h3></div></div></div><p>To create and configure a custom message factory:</p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10406"></a>Implement the IFIXMessageFactory Interface</h4></div></div></div><p>
+        The custom message factory must implement the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessageFactory.html" target="_top">IFIXMessageFactory</a> and 
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/configuration/IConfigurable.html" target="_top">IConfigurable</a>
+        interface.
+      </p><pre class="programlisting">public class CustomMessageFactory implements IFIXMessageFactory,IConfigurable { ... }</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10412"></a>Implement the createMessage(...) Methods</h4></div></div></div><p>
+        The <code class="code">IFIXMessageFactory</code> interface has two <code class="code">createMessage(...)</code> methods that must be
+        implemented. This allows you to create messages of a certain type as well as add non-standard fields to
+        certain message types.
+      </p><pre class="programlisting">@Override
+public IFIXMessage createFIXMessage() {
+  IFIXMessage message = new FIXMessageAsArray();
+  if (dictionaryName != null) {
+    message.setDictionaryName(dictionaryName);
+    message.setUseExactFixDictionary(useExactFixDictionary);
+  }
+  return message;
+}
+
+@Override
+public IFIXMessage createFIXMessage(String msgType) {
+  IFIXMessage message = createFIXMessage();
+  message.setValue(Field.MsgType.tag, msgType);
+  // add field1 and field2 to Logout messages
+  if (MsgType.Logout.value.equals(msgType)) {
+    message.setValue(9001, this.field1Value);
+    message.setValue(9002, this.field2Value);
+  }
+  return message;
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10418"></a>Implement the configure(...) Method</h4></div></div></div><p>
+        The <code class="code">IConfigurable</code> interface has <code class="code">configure(...)</code> method that must be
+        implemented. This allows you to access custom properties defined in the message factory configuration.
+      </p><pre class="programlisting">@Override
+public void configure(IConfiguration configuration) throws ConfigurationException {
+  Properties props = configuration.getConfigurationAsProperties();
+  this.field1Value=props.getProperty("prop1");
+  this.field2Value=props.getProperty("prop2");
+  try {
+    initialize(props);
+  } catch (Throwable e) {
+    throw new ConfigurationException("Message factory " + configuration.getRegistrationName()
+      + " cannot be configured", e);
+  }
+  // Save this configuration as the last valid configuration used
+  this.configuration = configuration;
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10424"></a>Implement Other Methods</h4></div></div></div><p>
+        The <code class="code">IFIXMessageFactory</code> interface has more dictionary related methods that must be implemented.
+        Refer to the
+        <a class="javadocplain" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessageFactory.html" target="_top">Javadoc</a>
+        for details.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch08s04.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch08.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08s06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">8.4.&nbsp;Persistent Objects&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;8.6.&nbsp;Message Transformers</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:41+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

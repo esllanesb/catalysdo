@@ -1,0 +1,199 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; Chapter&nbsp;7.&nbsp;Technology Adapters</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="index.html" title="Catalys Node User Guide"><link rel="prev" href="ch06s11.html" title="6.11.&nbsp;Market Data Services"><link rel="next" href="ch07s02.html" title="7.2.&nbsp;Advanced Socket Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s11.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="d5e6455"></a>Chapter&nbsp;7.&nbsp;Technology Adapters</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="ch07.html#adapter_socket">7.1. Socket Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07.html#adapter_socket-intro">7.1.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07.html#adapter_socket-protocol">7.1.2. Socket Adapter Protocol</a></span></dt><dt><span class="section"><a href="ch07.html#adapter_socket-config">7.1.3. Configuration</a></span></dt><dt><span class="section"><a href="ch07.html#adapter_socket-client-code">7.1.4. Sample Client Code</a></span></dt><dt><span class="section"><a href="ch07.html#d5e6614">7.1.5. Message Transformers</a></span></dt><dt><span class="section"><a href="ch07.html#d5e6633">7.1.6. Multi-Session Support</a></span></dt><dt><span class="section"><a href="ch07.html#d5e6644">7.1.7. Message Acknowledgements</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s02.html">7.2. Advanced Socket Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s02.html#d5e6658">7.2.1. Simple vs. Advanced</a></span></dt><dt><span class="section"><a href="ch07s02.html#d5e6702">7.2.2. Application Architecture</a></span></dt><dt><span class="section"><a href="ch07s02.html#d5e6709">7.2.3. Protocol</a></span></dt><dt><span class="section"><a href="ch07s02.html#d5e7360">7.2.4. Configuration</a></span></dt><dt><span class="section"><a href="ch07s02.html#d5e7381">7.2.5. Command-Line Operations</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s03.html">7.3. Embedded Catalys Node Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s03.html#adapter_embedded-intro">7.3.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s03.html#adapter_embedded-operation">7.3.2. Adapter Operation</a></span></dt><dt><span class="section"><a href="ch07s03.html#adapter_embedded-config">7.3.3. Configuration</a></span></dt><dt><span class="section"><a href="ch07s03.html#adapter_embedded-templates">7.3.4. Templates and Example Client Code</a></span></dt><dt><span class="section"><a href="ch07s03.html#adapter_embedded-performance">7.3.5. Performance</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s04.html">7.4. JMS Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s04.html#adapter_jms-introduction">7.4.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s04.html#adapter_jms-installProvider">7.4.2. JMS Provider Installation</a></span></dt><dt><span class="section"><a href="ch07s04.html#adapter_jms-configuration">7.4.3. Configuration</a></span></dt><dt><span class="section"><a href="ch07s04.html#adapter_jms-template">7.4.4. Templates</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s05.html">7.5. Solace Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s05.html#adapter_solace-intro">7.5.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s05.html#adapter_solace-install">7.5.2. Installation</a></span></dt><dt><span class="section"><a href="ch07s05.html#adapter_solace-functionality">7.5.3. Functionality</a></span></dt><dt><span class="section"><a href="ch07s05.html#adapter_solace-components">7.5.4. Solace Adapter Components</a></span></dt><dt><span class="section"><a href="ch07s05.html#adapter_solace-catalys-config">7.5.5. Configuration</a></span></dt><dt><span class="section"><a href="ch07s05.html#adapter_solace-performance">7.5.6. Performance Tuning</a></span></dt><dt><span class="section"><a href="ch07s05.html#adapter_solace-ha-mode">7.5.7. Using the Adapter with Catalys Node High Availability</a></span></dt><dt><span class="section"><a href="ch07s05.html#adapter_solace-jcsmp-logging">7.5.8. JCSMP API Logging</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s06.html">7.6. IBM MQSeries Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s06.html#adapter_ibm_mq-intro">7.6.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s06.html#adapter_ibm_mq-install">7.6.2. MQSeries Installation</a></span></dt><dt><span class="section"><a href="ch07s06.html#adapter_ibm_mq-mq-config">7.6.3. Typical Configuration and Message Conversion</a></span></dt><dt><span class="section"><a href="ch07s06.html#adapter_ibm_mq-config">7.6.4. Configuration</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s07.html">7.7. TIBCO Rendezvous Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s07.html#adapter_tibco-intro">7.7.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s07.html#adapter_tibco-install">7.7.2. Adapter Installation</a></span></dt><dt><span class="section"><a href="ch07s07.html#adapter_tibco-tibcoConfig">7.7.3. Typical Configuration and Message Conversion</a></span></dt><dt><span class="section"><a href="ch07s07.html#adapter_tibco-config">7.7.4. Configuration</a></span></dt><dt><span class="section"><a href="ch07s07.html#adapter_tibco-templates">7.7.5. Templates</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s08.html">7.8. Microsoft MQ Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s08.html#adapter_msmq-intro">7.8.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s08.html#adapter_msmq-overview">7.8.2. Overview</a></span></dt><dt><span class="section"><a href="ch07s08.html#adapter_msmq-install">7.8.3. MSMQ Installation</a></span></dt><dt><span class="section"><a href="ch07s08.html#adapter_msmq-mq-config">7.8.4. Configuration</a></span></dt><dt><span class="section"><a href="ch07s08.html#adapter_msmq-troubleshoooting">7.8.5. Troubleshooting</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s09.html">7.9. JDBC Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s09.html#adapter_jdbc-introduction">7.9.1. Overview</a></span></dt><dt><span class="section"><a href="ch07s09.html#adapter_jdbc-install">7.9.2. JDBC Adapter Installation</a></span></dt><dt><span class="section"><a href="ch07s09.html#adapter_jdbc-config">7.9.3. Configuration</a></span></dt><dt><span class="section"><a href="ch07s09.html#adapter_jdbc-template">7.9.4. Template</a></span></dt><dt><span class="section"><a href="ch07s09.html#adapter_jdbc-repeatinggroups">7.9.5. Repeating Groups Considerations</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s10.html">7.10. Flat File Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s10.html#adapter_flat_file-intro">7.10.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s10.html#adapter_flat_file-flatfileadapter">7.10.2. Operation</a></span></dt><dt><span class="section"><a href="ch07s10.html#adapter_flat_file-config">7.10.3. Configuration</a></span></dt><dt><span class="section"><a href="ch07s10.html#adapter_flat_file-fifofilequeue">7.10.4. File System Persistent Message Queue</a></span></dt><dt><span class="section"><a href="ch07s10.html#adapter_flat_file-fifofilequeueconv">7.10.5. File Naming Conventions</a></span></dt><dt><span class="section"><a href="ch07s10.html#adapter_flat_file-fifofilequeuestate">7.10.6. Queue Snapshots</a></span></dt><dt><span class="section"><a href="ch07s10.html#d5e8257">7.10.7. Templates</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s11.html">7.11. RMI Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s11.html#adapter_rmi-intro">7.11.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s11.html#adapter_rmi-configuration">7.11.2. Configuration</a></span></dt><dt><span class="section"><a href="ch07s11.html#adapter_rmi-objectmodel">7.11.3. Catalys Node Object Model</a></span></dt><dt><span class="section"><a href="ch07s11.html#adapter_rmi-classsummary">7.11.4. Class Summary</a></span></dt><dt><span class="section"><a href="ch07s11.html#adapter_rmi-gettingstarted">7.11.5. Templates</a></span></dt><dt><span class="section"><a href="ch07s11.html#adapter_rmi-troubleshoooting">7.11.6. Troubleshooting</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s12.html">7.12. EMX Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s12.html#adapter_emx-intro">7.12.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s12.html#d5e8471">7.12.2. Introducing the EMX Integrator</a></span></dt><dt><span class="section"><a href="ch07s12.html#adapter_emx-install">7.12.3. Installation</a></span></dt><dt><span class="section"><a href="ch07s12.html#adapter_emx-demo">7.12.4. Running the Demonstration Programs</a></span></dt><dt><span class="section"><a href="ch07s12.html#d5e8678">7.12.5. Developing Your System</a></span></dt><dt><span class="section"><a href="ch07s12.html#d5e8798">7.12.6. Performing the EMX Compliance Tests</a></span></dt><dt><span class="section"><a href="ch07s12.html#d5e8867">7.12.7. Obtaining a Certificate for the Live EMX System</a></span></dt><dt><span class="section"><a href="ch07s12.html#d5e8880">7.12.8. Other Information</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s13.html">7.13. EMX Delimited File Adapter</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s13.html#adapter_emx_delimited-intro">7.13.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s13.html#d5e8918">7.13.2. Configuration and Initial Set Up</a></span></dt><dt><span class="section"><a href="ch07s13.html#d5e8922">7.13.3. EMX Delimited File Adapter User Guide</a></span></dt><dt><span class="section"><a href="ch07s13.html#d5e8970">7.13.4. Daily Running</a></span></dt><dt><span class="section"><a href="ch07s13.html#d5e8993">7.13.5. Outgoing Message Files</a></span></dt><dt><span class="section"><a href="ch07s13.html#d5e9118">7.13.6. Incoming Message Files</a></span></dt><dt><span class="section"><a href="ch07s13.html#d5e9221">7.13.7. Operational Issues</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s14.html">7.14. C/C++ API</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s14.html#adapter_api_c-intro">7.14.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s14.html#adapter_api_c-install">7.14.2. Overview</a></span></dt><dt><span class="section"><a href="ch07s14.html#d5e9272">7.14.3. Programming Notes</a></span></dt><dt><span class="section"><a href="ch07s14.html#d5e9276">7.14.4. Library</a></span></dt><dt><span class="section"><a href="ch07s14.html#d5e9288">7.14.5. Class Diagram</a></span></dt><dt><span class="section"><a href="ch07s14.html#d5e9399">7.14.6. Sequence Diagram</a></span></dt><dt><span class="section"><a href="ch07s14.html#d5e9408">7.14.7. Templates</a></span></dt><dt><span class="section"><a href="ch07s14.html#d5e9413">7.14.8. Sample user code</a></span></dt></dl></dd><dt><span class="section"><a href="ch07s15.html">7.15. Microsoft .NET API</a></span></dt><dd><dl><dt><span class="section"><a href="ch07s15.html#adapter_api_dotnet-intro">7.15.1. Introduction</a></span></dt><dt><span class="section"><a href="ch07s15.html#adapter_api_dotnet-install">7.15.2. Installation</a></span></dt><dt><span class="section"><a href="ch07s15.html#adapter_api_dotnet-gettingstarted">7.15.3. Getting Started</a></span></dt><dt><span class="section"><a href="ch07s15.html#adapter_api_dotnet-netapi">7.15.4. The Catalys Node .NET API</a></span></dt><dt><span class="section"><a href="ch07s15.html#adapter_api_dotnet-config">7.15.5. Catalys Node Configuration</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_socket"></a>7.1.&nbsp;Socket Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_socket-intro"></a>7.1.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Socket Adapter allows non-FIX applications to connect to the Node in order to send and receive FIX messages.
+      It uses a simple socket messaging format. This technology adapter normally supports applications written in Java,
+      C/C++ or .NET.
+    </p><p>
+      The architecture of a Node running with a socket adapter typically looks like this:
+    </p><p>
+      </p><div class="mediaobject"><img src="../resources/SocketTemplate.gif"></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_socket-protocol"></a>7.1.2.&nbsp;Socket Adapter Protocol</h3></div></div></div><p>
+      Socket clients and the socket adapter use a well-defined messaging protocol to connect and pass messages, data
+      and events between each other. Message acknowledgement is also supported between client and adapter.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_socket-protocol-message-format"></a>Message Format</h4></div></div></div><p>The messaging protocol uses a message format defined in the following table:</p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Field Name</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td>STX 0x02 (Start Of Text)</td><td>1 byte</td><td>Indicator for the start of the message.</td></tr><tr><td>MessageLength</td><td>6 or 9 bytes</td><td>
+                The total length of the entire message excluding the STX and MessageLength field itself. This field is
+                represented either as a 6 or 9 char text string padded with leading zeros (e.g. "000128"). The size of
+                this field depends on whether the <code class="code">largeMessages</code> attribute has been set.
+              </td></tr><tr><td>MessageType</td><td>1 byte</td><td>
+                An 8 bit number that identifies the type of the message. See the next table for a list of supported
+                message types.
+              </td></tr><tr><td>MessageId</td><td>variable</td><td>
+                A unique identifier created by the client program so that any outgoing messages can easily be
+                acknowledged.
+              </td></tr><tr><td>ETX 0x03 (End Of Text)</td><td>1 byte</td><td>Because the MessageId can be any length this byte indicates the end of the MessageId field.</td></tr><tr><td>Data</td><td>variable</td><td>&nbsp;</td></tr><tr><td>EOT 0x04 (End Of Trans)</td><td>1 byte</td><td>&nbsp;</td></tr></tbody></table></div><p>
+        The following diagram shows a typical socket message. Note the area the MessageLength covers.
+      </p><p>
+        </p><div class="mediaobject"><img src="../resources/SocketMessage.gif"></div><p>
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_socket-protocol-message-types"></a>Message Types</h4></div></div></div><p>Supported message types:</p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>MessageType</th><th>ID</th><th>Description</th></tr></thead><tbody><tr><td>SEND_MESSAGE</td><td>0x30</td><td>
+                Message used to send an outbound FIX messages from the Node. The Node will respond with either a
+                <code class="code">RECV_ACK</code> or <code class="code">RECV_NACK</code> depending on whether or not the message was sent.
+                A unique <code class="code">MessageId</code> must be set..
+              </td></tr><tr><td>RECV_MESSAGE</td><td>0x31</td><td>Message received containing an inbound FIX message.</td></tr><tr><td>RECV_ACK</td><td>0x32</td><td>
+                Message received when an outbound message is valid and has been sent using a <code class="code">SEND_MESSAGE</code>.
+                The MessageId field maps to the original value in the <code class="code">SEND_MESSAGE</code>. The data field is
+                empty.
+              </td></tr><tr><td>RECV_NACK</td><td>0x33</td><td>
+                Message received when a message fails to be sent out a FIX session. The MessageId field maps to the
+                original value in the <code class="code">SEND_MESSAGE</code>. The data field contains a description of why the
+                message failed to be sent.
+              </td></tr><tr><td>RECV_EXCEPTION</td><td>0x34</td><td>
+                Message received when a session-related exception occurs on the Node. The data field contains the name
+                of the session and a description of the exception.
+              </td></tr><tr><td>RECV_RESET_MSG</td><td>0x35</td><td>
+                Message received when a session gets reset. The data field contains the session that was reset.
+              </td></tr><tr><td>RECV_CONNECTION_STATUS</td><td>0x36</td><td>
+                Message received when the status session of a FIX session changes. The data field contains the session
+                and new state of the session.
+              </td></tr><tr><td>SEND_ACK</td><td>0x37</td><td>
+                Message acknowledgment sent from the client to the server sent when the corresponding
+                <code class="code">RECV_MESSAGE</code> was received. This message should contain the same <code class="code">MessageId</code>
+                value as the <code class="code">RECV_MESSAGE</code> to indicate which message is being acked.
+              </td></tr><tr><td>RECV_ACK_MSG</td><td>0x38</td><td>
+                Received when an outbound message has been successfully sent over a FIX session. This message contains
+                the complete FIX message, including the header and trailer.</td></tr><tr><td>SESSION_STATUS_REQUEST</td><td>0x46</td><td>
+                Requests the connection status of all FIX sessions. The Node will respond with one or more
+                <code class="code">RECV_CONNECTION_STATUS</code> messages.
+              </td></tr></tbody></table></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_socket-config"></a>7.1.3.&nbsp;Configuration</h3></div></div></div><p>
+      The example illustrates a <code class="code">SocketAdapter</code> configured on the Source and Listener message processor
+      chains of a FIX session listening for socket clients on port 7000.
+    </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session fixversion="4.2" heartbeat="60" counterpartycompid="BROKER" compid="CLIENT" &gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection hostname="192.168.100.100" port="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;SocketAdapter id="socket_adapter" port="7000"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;MessageProcessorReference id="ref_socket_adapter" refid="socket_adapter"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre><p>
+      For a complete list of attributes, see the
+      <a href="config_reference.html#config_ref_SocketAdapter" title="SocketAdapter">SocketAdapter Configuration Reference</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_socket-client-code"></a>7.1.4.&nbsp;Sample Client Code</h3></div></div></div><p>
+      The following code snippets are taken from the sample Java client located in
+      <span class="emphasis"><em>/templates/src/com/camerontec/catalys/server/adapter/socket/test/SocketClient.java</em></span>.
+      The snippets show the key interactions between the Java client and Socket Adapter configured on a Node.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6593"></a>Class Definitions</h4></div></div></div><pre class="programlisting">//Client extends Thread to implement run()
+public class SocketClient extends Thread {
+  ...
+  //To conveniently write to the log
+  private static final ILogger logger_ = LoggerManager.getLogger(SocketClient.class);
+
+  //Objects to connect to the Socket Adapter
+  private InputStream inputStream_;
+  private OutputStream outStream_;
+  private Socket socket_;
+  ...
+
+  //table to hold acks
+  private Map&lt;String, SocketMessage&gt; ackTable_;
+  //Transforms IFIXMessage objects to BytesSegment objects
+  private IMessageTransformer transformer_;
+  //Catalys FIX message object
+  private IFIXMessage message_;
+  ...
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6596"></a>Connecting to the Socket Adapter</h4></div></div></div><pre class="programlisting">socket_ = new Socket(hostname_, port_);
+outStream_ = new BufferedOutputStream(socket_.getOutputStream());
+inputStream_ = new BufferedInputStream(socket_.getInputStream());</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6599"></a>Reading and Processing Messages from the Node</h4></div></div></div><pre class="programlisting">try {
+  //Read message
+  SocketMessage msg = SocketMessage.readMessage(inputStream_);
+  //Check the MessageType and process each message type accordingly
+  switch (msg.type_) {
+    ...
+  }
+  //Catch exceptions
+} catch (Exception e) {
+  logger_.error("Error processing messages. " + e);
+  ...
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6602"></a>Acknowledge RECV_MESSAGE if Enabled</h4></div></div></div><pre class="programlisting">//Check ack flag
+if (ack_) {
+  //Create SEND_ACK message from received message
+  msg.type_ = SocketMessage.SEND_ACK;
+  msg.writeMessage(outStream_);
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6605"></a>Update Acknowledge Table on the Client and Notify Any Waiting Threads</h4></div></div></div><pre class="programlisting">//Check ack flag
+if (ack_) {
+  synchronized (ackTable_) {
+    ackTable_.put(msg.id_, msg);
+    ackTable_.notifyAll();
+  }
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6608"></a>Create and Populate an Outbound Message</h4></div></div></div><pre class="programlisting">//Instantiate message object
+IFIXMessage message = new  FIXMessageAsIndexedByteArray();
+//Set fields on the message
+message.setValue(Field.MsgType.tag, MsgType.NewOrderSingle.value);
+message.setValue(Field.OrderQty.tag, 1000);</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6611"></a>Transform and Send Message</h4></div></div></div><pre class="programlisting">//Transform and cast message to a BytesSegment
+BytesSegment bytesSegment = (BytesSegment)transformer_.toObject(msg, null);
+//Create a SocketMessage and add the unique message id
+SocketMessage sm = new SocketMessage(SocketMessage.SEND_MESSAGE,
+    bytesSegment, "id:" + orderIndex_);
+//Send the message
+sm.writeMessage(outStream_);</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e6614"></a>7.1.5.&nbsp;Message Transformers</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6616"></a>IMessageTransformer</h4></div></div></div><p>
+        The <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IMessageTransformer.html" target="_top">IMessageTransformer</a>
+        interface is designed to accommodate a broad range of message formats and convert them into an internal format
+        (<a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessage.html" target="_top">IFIXMessage</a>)
+        that is used throughout the Catalys Node.  All message data fields are transformed by an
+        <code class="code">IMessageTransformer</code> implementation.  An example is the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/StandardFixTransformer.html" target="_top">StandardFixTransformer</a>.
+        It takes raw FIX messages in the form of byte arrays and converts them into <code class="code">IFIXMessage</code> objects.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e6624"></a>IMessageProcessorEventTransformer</h4></div></div></div><p>
+        The <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IMessageProcessorEventTransformer.html" target="_top">IMessageProcessorEventTransformer</a>
+        interface is designed to accommodate a broad range of event formats and convert them from internal formats into
+        messages usable by various clients. All event data fields are transformed by an
+        <code class="code">IMessageProcessorEventTransformer</code> implementation.
+      </p><p>
+        By default, the socket adapter uses
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/socket/SocketAdapterRawTransformer.html" target="_top">SocketAdapterRawTransformer</a>.
+        It converts session connection status, reset and exception events into easily parsed messages. As an example is
+        the format for a session connection status event: <code class="code">SESSION_ID:Bigbroker/CONNECTED:true</code>.
+        This will appear in the data field of a <code class="code">RECV_CONNECTION_STATUS message</code>.</p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e6633"></a>7.1.6.&nbsp;Multi-Session Support</h3></div></div></div><p>
+      The socket adapter supports one client sending and receiving messages from multiple FIX sessions. The following
+      example shows how to configure this:
+    </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="MARKET1" compid="BROKER" fixversion="4.2" heartbeat="60"&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;SocketAdapter id="sa1" multiSession="true" port="7000"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;MessageProcessorReference id="listen_sa1" refid="sa1"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+  &lt;Session counterpartycompid="MARKET2" compid="BROKER" fixversion="4.2" heartbeat="60"&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;SocketAdapter id="sa2" multiSession="true" port="7000"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;MessageProcessorReference id="listen_sa2" refid="sa2"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;
+</pre><div class="note"><h3 class="title">Note</h3><p>
+        Multi-session requires each session to have a <code class="code">SocketAdapter</code> configured with the
+        <code class="code">multiSession</code> attribute set to <code class="code">true</code> and all instances listening on the same port.
+      </p></div><p>
+      When multi-session support is enabled, the Java client is required to set the value of the TargetCompID field(s)
+      to the same values configured on one of the sessions. In order for the client to send an outbound message to the
+      MARKET2 session in the above example, it would set the TargetCompID field on the message object like
+      this:
+      </p><pre class="programlisting">message.setValue(Field.TargetCompID.tag, "MARKET2");</pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e6644"></a>7.1.7.&nbsp;Message Acknowledgements</h3></div></div></div><p>
+      The socket adapter supports message ack'ing between the client and server. The socket adapter will always respond
+      to a <code class="code">SEND_MESSAGE</code> sent from the client with a <code class="code">RECV_ACK</code> or <code class="code">RECV_NACK</code>. The
+      client can decide how to handle these message types.
+    </p><p>
+      If the <code class="code">ackTimeout</code> attribute on the socket adapter is greater than 0, then the client is required to
+      to respond to <code class="code">RECV_MESSAGE</code> messages with a <code class="code">SEND_ACK</code> before the <code class="code">ackTimeout</code>
+      value (in milliseconds). The socket adapter will disconnect the client if the <code class="code">SEND_ACK</code> is not sent
+      before the timeout.
+    </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s11.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.11.&nbsp;Market Data Services&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.2.&nbsp;Advanced Socket Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:40+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,121 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 2.4.&nbsp;New Installation</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch02.html" title="Chapter&nbsp;2.&nbsp;Installation and Startup"><link rel="prev" href="ch02s03.html" title="2.3.&nbsp;License Management"><link rel="next" href="ch02s05.html" title="2.5.&nbsp;Migrating a Previous Installation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;2.&nbsp;Installation and Startup</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch02s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="install_new_installation"></a>2.4.&nbsp;New Installation</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="install_new_installation-intro"></a>2.4.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Catalys Node application has traditionally been packaged as a platform-independent zip file which is
+      installed simply by unzipping the package in the desired destination directory. Starting with Catalys v2.2, we
+      provide an automated platform-specific installer that separates the Node distribution from the Node instances.
+      The installer also helps you to:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Selectively install (and omit) certain features
+      </li><li class="listitem">
+        Automatically create our prescribed directory structure that eases management of your Node instances
+      </li><li class="listitem">
+        Simplify the upgrade process
+      </li></ul></div><p>
+      We continue to provide the zip package for customers who prefer to manually manage their installation process.
+      However, for all other customers, we recommend using the installer, which is covered in the remainder of this
+      section.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="install_new_installation-steps"></a>2.4.2.&nbsp;Installation Steps</h3></div></div></div><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Download the installer for your platform:
+        <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Linux, Solaris, Mac OSX and other Unix-based systems</strong></span>:
+            <span class="emphasis"><em>catalys-node-2.2-installer-r&lt;revision&gt;.sh</em></span><p>
+              After downloading this file, you may need to make it executable if not already. This
+              can be done by running <code class="code">chmod +x <span class="emphasis"><em>&lt;filename&gt;</em></span></code>.
+            </p></li><li class="listitem"><span class="bold"><strong>Windows 64-bit</strong></span>:
+            <span class="emphasis"><em>catalys-node-2.2-installer-64bit-r&lt;revision&gt;.exe</em></span></li><li class="listitem"><span class="bold"><strong>Windows 32-bit</strong></span>:
+            <span class="emphasis"><em>catalys-node-2.2-installer-32bit-r&lt;revision&gt;.exe</em></span></li></ul></div><p>
+          The <span class="emphasis"><em>r&lt;revision&gt;</em></span> indicates the latest
+          <a href="ch01s03.html" title="1.3.&nbsp;Catalys Releases">maintenance revision number</a>.
+        </p><p>Windows installers require a JRE to be installed that matches the architecture of the installer.</p></li><li class="listitem">Launch the installer.</li><li class="listitem">
+        Select a Destination Directory: This is where the Node distribution will be installed.
+      </li><li class="listitem">Select Components:
+        <div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><span class="bold"><strong>Core Node</strong></span> - core binaries and files required to run the Node.
+          </li><li class="listitem"><span class="bold"><strong>Node Instances</strong></span> - configuration, scripts and recommended directory layout
+            for an instance of the Node.
+          </li><li class="listitem"><span class="bold"><strong>Configuration and Coding Templates</strong></span> - XML configuration templates and
+            sample Java classes developed against the Catalys Node API for the purposes of changing the default
+            behavior, introducing business logic, adding services, monitoring and configuration.
+          </li><li class="listitem"><span class="bold"><strong>Maven Support</strong></span> - includes a <span class="emphasis"><em>pom.xml</em></span> file and unbundled
+            <span class="emphasis"><em>catalys-node.jar</em></span> to support building Java applications using Maven.
+          </li><li class="listitem"><span class="bold"><strong>C/C++ Adapter</strong></span> - includes C/C++ libraries and example client code for
+            connecting to the Node with a C/C++ application.
+          </li><li class="listitem"><span class="bold"><strong>MSMQ Adapter</strong></span> - includes DLLs for connecting to the Node
+            with the Microsoft Messaging Queue technology (only available in Windows installers).
+          </li><li class="listitem"><span class="bold"><strong>.NET Adapter</strong></span> - includes DLLs and example client code for connecting to the
+            Node with a .NET application (only available in Windows installers).
+          </li><li class="listitem"><span class="bold"><strong>Break Out Box</strong></span> - includes a <span class="emphasis"><em>web</em></span>  directory that
+            supports our Break Out Box functionality.
+          </li></ol></div></li><li class="listitem">
+        Select a Catalys Node Instances directory: Node Instances contains configuration files, scripts and data for
+        individual Node instances. They are stored in a location separate from the core Node distribution in order to
+        allow the core Node to be upgraded without affecting the instances. This also helps when migrating individual
+        instances from one environment to the next (e.g. Dev -&gt; UAT -&gt; Production).
+
+        <div class="tip"><h3 class="title">Tip</h3><p>
+            If you select this option, files for an example Node instance will be included in the directory you choose.
+            We recommend using this as a starting point for your own Node instances.
+          </p></div></li><li class="listitem">
+        Install License File: Enable this step if you would like the installer to place a copy of your license file
+        into the root of our installation. There are other ways to reference the license file which are outlined in
+        <a href="ch02s03.html" title="2.3.&nbsp;License Management">License Management</a>.
+      </li></ol></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="install_new_installation-core-directories"></a>2.4.3.&nbsp;Post-Installation Core Node Directories</h3></div></div></div><p>
+      After the installation is complete, you will see the following Core Node directories. The default location is
+      <span class="emphasis"><em>&lt;INSTALL_BASE&gt;/CameronTec/catalys-node-2.2</em></span>.
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>doc</strong></span> - contains information on our 3rd party libraries and has links to our
+        online documentation (included with "Core Node" option)
+      </li><li class="listitem"><span class="bold"><strong>ext</strong></span> - contains 3rd party libraries that cannot be packaged with
+        <span class="emphasis"><em>catalys-node.jar</em></span> due to licensing constraints (included with "Core Node" option)
+      </li><li class="listitem"><span class="bold"><strong>lib</strong></span> - contains <span class="emphasis"><em>catalys-node.jar</em></span> and other optional
+        library files based on the selected components (included with "Core Node" option)
+      </li><li class="listitem"><span class="bold"><strong>lib-unbundled</strong></span> - contains an unbundled <span class="emphasis"><em>catalys-node.jar</em></span>
+        and separate 3rd party jar files (included with the "Maven Support" option)
+
+      </li><li class="listitem"><span class="bold"><strong>maven</strong></span> - contains a Maven <span class="emphasis"><em>pom.xml</em></span>
+        (included with the "Maven Support" option)
+      </li><li class="listitem"><span class="bold"><strong>resources</strong></span> - contains default FIX dictionaries, Rules Engine validation files,
+        DTD reference files and Rules Engine data files (included with "Core Node" option)
+      </li><li class="listitem"><span class="bold"><strong>templates</strong></span> - contains XML configuration examples showing how to
+        configure different Catalys features (included with "Configuration and Coding Templates" option)
+      </li><li class="listitem"><span class="bold"><strong>templates/src</strong></span> - contains sample Java code written against the
+        Catalys Node API (included with "Configuration and Coding Templates" option)
+      </li><li class="listitem"><span class="bold"><strong>web</strong></span> - contains the web GUI for Break Out Box feature
+        (included with "Break Out Box" option)
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="install_new_installation-instance-directories"></a>2.4.4.&nbsp;Post-Installation Node Instances Directories</h3></div></div></div><p>
+      You will only see these directories if you selected the 'Nodes Instances' option when using the installer.
+    </p><p>
+      After the installation is complete, you will see the following Node instance directories. The default location
+      is <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/example</em></span>.
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>conf</strong></span> - contains logging configuration and the configuration for this Node
+        instance
+      </li><li class="listitem"><span class="bold"><strong>data</strong></span> - contains data directories and files created and used by this
+        Node instance (e.g. FIX persistence, Rules Engine persistence, Buffering, Throttling)
+      </li><li class="listitem"><span class="bold"><strong>logs</strong></span> - contains ASCII-based log files for this Node instance
+      </li><li class="listitem"><span class="bold"><strong>logs/hpl</strong></span> - contains binary-based (HPL) log files for this Node instance
+      </li><li class="listitem"><span class="bold"><strong>scripts</strong></span> - contains scripts that work with this Node instance
+      </li></ul></div><p>
+      The scripts that are included with the example Node instance are:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>clean-data.[sh|bat]</strong></span> - deletes all persistence data for the example instance
+      </li><li class="listitem"><span class="bold"><strong>clean-logs.[sh|bat]</strong></span> - deletes all log data for the example instance
+      </li><li class="listitem"><span class="bold"><strong>start-cli.[sh|bat]</strong></span> - starts the remote command line interface for the example
+        instance
+      </li><li class="listitem"><span class="bold"><strong>start-example.[sh|bat]</strong></span> - starts the example Node instance process
+      </li><li class="listitem"><span class="bold"><strong>view-hpl-logs.[sh|bat]</strong></span> - outputs the HPL log data for the example instance
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="install_new_installation-upgrading"></a>2.4.5.&nbsp;Upgrading or Installing Additional Features</h3></div></div></div><p>
+      The installer can be used for upgrading the Node to a newer version, starting at version 2.2 or later. It can
+      also be rerun to add additional options that weren't selected on a previous installation. When the installer
+      starts it should recognize that a previous installation exists.
+    </p><p>
+      The Node instance directory and its contents will never be updated or overwritten once created. Anything in the
+      Node core directory may be overwritten or deleted by the installer.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="install_new_installation-uninstaller"></a>2.4.6.&nbsp;Uninstaller</h3></div></div></div><p>
+      If you used the installer, an <code class="code">uninstall</code> executable will be placed in the base directory of your Node.
+      Run this to remove the entire Catalys Node distribution.
+    </p><div class="note"><h3 class="title">Note</h3><p>
+        Running the <code class="code">uninstall</code> executable will not delete your
+        <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;</em></span> directory or contents. You must manually delete this if
+        required.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch02s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">2.3.&nbsp;License Management&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;2.5.&nbsp;Migrating a Previous Installation</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:32+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 5.6.&nbsp;Message Throttling</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="prev" href="ch05s05.html" title="5.5.&nbsp;Message Buffering"><link rel="next" href="ch05s07.html" title="5.7.&nbsp;FIX Dictionaries"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05s05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;5.&nbsp;Standard Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05s07.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="stdfeature_throttling"></a>5.6.&nbsp;Message Throttling</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_throttling-introduction"></a>5.6.1.&nbsp;Introduction</h3></div></div></div><p>
+      Throttling provides a mechanism to allow only a certain number of messages per a configurable time period,
+      normally a second, pass through a FIX session. When throttling is not configured, the Node processes FIX messages
+      as fast as possible.
+    </p><p>Some common situations when throttling is utilized:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        An internal application is a slow consumer of inbound messages, so
+        <a href="ch05s06.html#stdfeature_throttling-configuration-listener" title="Listener Message Throttling">listener</a> throttling can be configured to
+        limit the inbound message rate.
+      </li><li class="listitem">
+        A FIX counterparty can only consume a certain rate of messages, so
+        <a href="ch05s06.html#stdfeature_throttling-configuration-source" title="Source Message Throttling">source</a> throttling can be configured to
+        limit the outbound message rate.
+      </li><li class="listitem">
+        An exchange allows only a certain number of orders per second to be sent from each client, so
+        <a href="ch05s06.html#stdfeature_throttling-configuration-listener" title="Listener Message Throttling">listener</a> throttling can be configured on
+        all client sessions to operate at the same inbound rate.
+      </li></ul></div><p>
+      One way the Node throttles messages is by storing them temporarily on disk before delivering further upstream or
+      downstream. This means that throttled messages are retained after restarts and unexpected termination of the Node,
+      and they are replicated across members of a high-availability cluster.
+    </p><p>
+      Alternatively, the Node can throttle inbound messages by governing the read operations on the FIX session's
+      inbound socket when the sender exceeds the permitted rate limit. This is a more efficient and accurate way to
+      throttle messages &#8212; the application does not waste resources (e.g. CPU and disk I/O) on messages that are
+      sent too quickly. See
+      <a href="ch05s06.html#stdfeature_throttling-session-socket" title="Inbound Socket Throttling">Inbound Socket Throttling</a> for a configuration example.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_throttling-configuration"></a>5.6.2.&nbsp;Configuration</h3></div></div></div><p>
+      Message throttling is a built-in feature of the Node in the form of a message processor that can
+      be configured and nested like any other message processor.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_throttling-configuration-source"></a>Source Message Throttling</h4></div></div></div><p>
+        The <code class="code">SourceMessageThrottle</code> is used to throttle <span class="bold"><strong>outbound</strong></span> messages
+        on a session at a certain rate. It is usually configured as the outermost message processor on the Source
+        message processing chain:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;SourceMessageProcessors&gt;
+    &lt;!-- SourceMessageThrottle configured as the outermost message processor. This
+          will throttle outbound message flow to 100 messages per second --&gt;
+    &lt;SourceMessageThrottle id="throttle" directory="./data/throttle"
+                           messagesPerInterval="100" interval="1"&gt;
+      &lt;CatalysRulesEngine id="cre" rulesPackId="outbound-enrichment-rules"&gt;
+        &lt;JmsConsumer id="jms" type="queue" destination="BUY_OUTBOUND" factory="primaryQCF"/&gt;
+      &lt;/CatalysRulesEngine&gt;
+    &lt;/SourceMessageThrottle&gt;
+  &lt;/SourceMessageProcessors&gt;
+  &lt;ListenerMessageProcessors/&gt;
+&lt;/SessionManager&gt;
+</pre><p>
+        In cases where a strict outbound message rate limit is required even when messages are resent,
+        <a class="code" href="config_reference.html#config_ref_Session_resendThrottleInterval">resendThrottleInterval</a> and
+        <a class="code" href="config_reference.html#config_ref_Session_resendThrottleMessagesPerInterval">resendThrottleMessagesPerInterval</a>
+        attributes of the <code class="code">Session</code> element should be used.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_SourceMessageThrottle" title="SourceMessageThrottle">SourceMessageThrottle Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_throttling-configuration-listener"></a>Listener Message Throttling</h4></div></div></div><p>
+        The <code class="code">ListenerMessageThrottle</code> is used to throttle <span class="bold"><strong>inbound</strong></span> messages
+        on a session at a certain rate. It is usually configured as the outermost message processor on the Listener
+        message processing chain:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;ListenerMessageProcessors&gt;
+    &lt;!-- ListenerMessageThrottle normally the outer most configured message processor. This
+      will throttle inbound message flow at 100 messages per second --&gt;
+    &lt;ListenerMessageThrottle id="throttle" directory="./data/throttle"
+                             messagesPerInterval="100" interval="1"&gt;
+      &lt;CatalysRulesEngine id="cre" rulesPackId="inbound-rules"&gt;
+          &lt;JmsConsumer id="jms" type="queue" destination="BUY_OUTBOUND" factory="primaryQCF"/&gt;
+      &lt;/CatalysRulesEngine&gt;
+    &lt;/ListenerMessageThrottle&gt;
+  &lt;/ListenerMessageProcessors&gt;
+  &lt;SourceMessageProcessors/&gt;
+&lt;/SessionManager&gt;</pre><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_ListenerMessageThrottle" title="ListenerMessageThrottle">ListenerMessageThrottle Configuration Reference</a>.
+      </p><p>
+        For a working demonstration of inbound message throttling to disk, see the Throttling template located in
+        <span class="emphasis"><em>templates/Throttling/Persisted</em></span>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_throttling-session-socket"></a>Inbound Socket Throttling</h4></div></div></div><p>
+        To enable inbound throttling at the FIX session's socket layer, set the
+        <a class="code" href="config_reference.html#config_ref_Session_maximumInboundMessageRate">maximumInboundMessageRate</a>
+        attribute on the <code class="code">Session</code> to the maximum number of messages to read from the socket per second.
+        Throttling is applied prior to reading messages from the TCP socket. Messages are not buffered or queued in the
+        application; rather, when a sender exceeds the configured rate, messages will accumulate in the inbound
+        socket's buffer. Note this is not supported when <code class="code">multiplexingMode</code> is configured.
+      </p><pre class="programlisting">&lt;!-- throttles inbound messages on this session to 500 messages/sec --&gt;
+&lt;Session maximumInboundMessageRate="500"
+         counterpartycompid="CLIENT" compid="SERVER" fixversion="4.4" &gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="2002"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+        For a working demonstration of inbound message throttling at the socket layer, see the Throttling template
+        located in <span class="emphasis"><em>templates/Throttling/InboundSocket</em></span>.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s05.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch05.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.5.&nbsp;Message Buffering&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;5.7.&nbsp;FIX Dictionaries</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:34+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

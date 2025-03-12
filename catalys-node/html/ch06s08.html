@@ -1,0 +1,287 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.8.&nbsp;Breakout Box</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s07.html" title="6.7.&nbsp;Data Encryption"><link rel="next" href="ch06s09.html" title="6.9.&nbsp;Market Compliance"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s07.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s09.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_breakout_box"></a>6.8.&nbsp;Breakout Box</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_breakout_box-intro"></a>6.8.1.&nbsp;Introduction</h3></div></div></div><p>The BreakOut feature is a generic mechanism that allows a FIX message to be broken out of normal processing
+      and held in a persistent object, called a
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/IBreakOutBox.html" target="_top">BreakOutBox</a>,
+      until the message can be examined and then approved, rejected or resent by a user.
+    </p><div class="note"><h3 class="title">Note</h3><p>
+        The BreakOut option does not provide any user interface for examining/manipulating the contents of a
+        BreakOutBox, it merely provides the infrastructure on which such an interface can be built.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_breakout_box-concepts"></a>6.8.2.&nbsp;Concepts</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5289"></a>Breaking Out</h4></div></div></div><p>
+        A message is usually broken out of normal processing because it has failed some sort of check and should not
+        be passed on to the back end system.
+      </p><p>
+        For example, a broker might have a message processor that performs client credit limit checks. If an New Order
+        Single message comes in that exceeds the clients limit, then the message processor can break the message out of
+        normal processing and pass it to the BreakOutBox. A user interface can then alert a broker-salesperson, who can
+        then decide whether to:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">Approve the Order and release.</li><li class="listitem">Reject the Order.</li><li class="listitem">
+          Increase the client's credit limit and resubmit it to the message processor, to see if it passes any other checks.
+        </li></ol></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5297"></a>Related Messages</h4></div></div></div><p>
+        When a message is broken out there may be subsequent messages that are, in some way, related to the broken out
+        message. If these messages are passed on to the backend system then it will at best reject them and at worst
+        become confused. Therefore the BreakOutBox can be configured to break out, or reject related messages.
+      </p><p>
+        For example, if an New Order Single message has been broken out and then an Order Cancel/Replace Request
+        message comes in for that order, the the Order Cancel/Replace could also be broken out, or it could be rejected.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5301"></a>Policy Engine</h4></div></div></div><p>
+        The
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/IBreakOutBox.html" target="_top">BreakOutBox</a>
+        delegates the decisions about related messages to a pluggable
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/IBreakOutPolicyEngine.html" target="_top">IBreakOutPolicyEngine</a>
+        which is charged with deciding whether incoming message is related to one that is already in the box, and:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">Should the new message be broken out?</li><li class="listitem">Should the message processor stop processing the new message?</li><li class="listitem">Should a response message be sent?</li><li class="listitem">Should a message that is already in the box be removed?</li></ol></div><p>The policy engine is also in invoked when a message is broken out to decide:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">Should a response message be sent?</li><li class="listitem">Should another message that is already in the box be removed?</li></ol></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_breakout_box-examples"></a>6.8.3.&nbsp;Examples</h3></div></div></div><p>This example will demonstrate:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">How to write a message processor that uses a BreakOutBox box.</li><li class="listitem">How to write policy engine.</li><li class="listitem">How to configure a <code class="code">BreakOutBox</code> into a Node.</li></ol></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_breakout_box-example_mp"></a>ExampleBreakOutProcessor</h4></div></div></div><p>
+        Here is an example message processor, it breaks out Order messages where the OrderQty field is greater than
+        or equal to 1000. The lines in bold are the specific to the BreakOut box; the italicized numbers on the left
+        hand side are referred to in the Notes below:
+      </p><pre class="programlisting">public class ExampleBreakOutProcessor extends FIXSourceListenerBase
+{
+  private IBreakOutBox breakOutBox;
+
+  public boolean openComponent()
+  {
+    //1
+    setAutoForwarding(false);
+    //2
+    breakOutBox = (IBreakOutBox)
+    ServiceRegistry.getInstance().getService("myBreakOutBox");
+    //3
+    breakOutBox.registerMessageProcessor(this);
+  }
+
+  public void onMessageFromFix( MessageEvent event, Message message )
+  {
+    //4
+    if(breakOutBox.breakOutIfRelated(this, message)) {
+      return;
+    }
+    if(Constants.MSGOrder.equals(message.getMsgType()) &amp;&amp;
+      message.getIntegerFieldValue(Constants.TAGiOrderQty) &gt; 1000)
+    {
+      //5
+      breakOutBox.breakOut(this, message, "Order is to big", IBreakOutReason.DEFAULT_CODE);
+    }
+    else
+    {
+      //6
+      forwardEvent(event);
+    }
+  }
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5327"></a>Notes</h4></div></div></div><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+          Turn off auto forwarding (see
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXMessageProcessor.html#setAutoForwarding(boolean)" target="_top">setAutoForwarding()</a>
+          ), because this message processor is going to decide whether to keep processing a message or put it into
+          the break out box.
+        </li><li class="listitem">
+          Get a break out box from the
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/service/ServiceRegistry.html" target="_top">ServiceRegistry</a>.
+          This is not always necessary, but it is recommended when the break out box is shared by multiple components
+          (e.g., message processors).
+        </li><li class="listitem">
+          Register this message processor with the breakout box. The breakout box needs this so that it can route
+          messages back to the message processor when it breaks them in.
+        </li><li class="listitem">
+          When a message arrives, you first need to decide if it is related to some other message in the break out
+          box, then the break out box will take care of it and the message processor does not need to process it any
+          further. E.g., if the message is an OrderCancelReplaceRequest for an Order that already in the break out
+          box, then it could be broken out.
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/IBreakOutBox.html#breakOutIfRelated(com.camerontec.catalys.server.processor.IFIXMessageProcessor,%20com.camerontec.catalys.core.message.IFIXMessage)" target="_top">breakOutIfRelated</a>
+          returns <code class="code">true</code> if the
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/IBreakOutBox.html" target="_top">BreakOutBox</a>
+          is going to take reponsiblity for the message.
+        </li><li class="listitem">
+          If the message meets some condition (in this case: if is it an order for more 1000 units) then call break
+          it out by calling
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/IBreakOutBox.html#breakOut(com.camerontec.catalys.server.processor.IFIXMessageProcessor,%20com.camerontec.catalys.core.message.IFIXMessage,%20java.lang.String,%20int)" target="_top">breakOut</a></li><li class="listitem">
+          Otherwise forward the message. This is necessary because auto forwarding was turned off in step 1.
+        </li></ol></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_breakout_box-example_policy_engine"></a>PolicyEngine</h4></div></div></div><p>
+        The policy engine must be an instance of
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/IBreakOutPolicyEngine.html" target="_top">IBreakOutPolicyEngine</a>
+        which is an interface with four methods that are called when certain events happen in a
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/IBreakOutBox.html" target="_top">BreakOutBox</a>.
+      </p><p>
+        The easiest way to write a policy engine is to subclass
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractBreakoutPolicyEngine.html" target="_top">AbstractBreakoutPolicyEngine</a>
+        and implement a
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractPolicyEngineMessageHandler.html" target="_top">AbstractPolicyEngineMessageHandler</a>
+        for each type of message that you handle. A message handler is responible for making the decisions for one
+        message type. We'll implement message handlers for New Order Single (aka Order) and Order Cancel Request
+        messages.
+      </p><p>
+        Here is the policy engine. The full source can be found here:
+        <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/breakout/policyengine/ExampleBreakOutPolicyEngine.java</em></span>.
+      </p><pre class="programlisting">public class ExampleBreakOutPolicyEngine extends AbstractBreakoutPolicyEngine
+{
+  private Map messageHandlers = new HashMap();
+
+  public ExampleBreakOutPolicyEngine()
+  {
+    messageHandlers.put(Constants.MSGOrder, new ExampleOrderHandler());
+    messageHandlers.put(Constants.MSGOrderCancelRequest, new ExampleOrderCancelHandler());
+  }
+
+  protected Map getMessageHandlers()
+  {
+    return messageHandlers;
+  }
+}</pre><p>
+        As you can see the policy engine is fairly simple, it's main function is to construct and provide a
+        <a class="code" href="http://docs.oracle.com/javase/6/docs/api/java/util/Map.html" target="_top">Map</a>
+        that maps the message types to message handlers.
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractBreakoutPolicyEngine.html" target="_top">AbstractBreakoutPolicyEngine</a>
+        uses this map to select the appropriate message handler for each message.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5356"></a>ExampleOrderHandler</h4></div></div></div><p>Here is the handler for order messages.</p><pre class="programlisting">public class ExampleOrderHandler extends AbstractPolicyEngineMessageHandler
+{
+  private static final int[] TAGS = { Constants.TAGiClOrdID };
+
+  public RelatedMessagePolicyAction determineRelatedMessageAction(
+    HandlerContext context,
+    IFIXMessageProcessor source,
+    Message mess,
+    PerSessionIndicies indices)
+    throws MessageException
+  {
+    return new RelatedMessagePolicyAction(false, // don't stopProcessing
+      false, // don't breakOut the message
+      null, // no reponseMessage
+      null); // don't remove any other message
+  }
+
+  public MessageAddedPolicyAction onMessageAdded(HandlerContext context,
+    BrokenOutMessageData data,
+    PerSessionIndicies indices)
+    throws MessageException
+  {
+    return super.onMessageAdded(context, data, indices);
+  }
+
+  protected int[] getIDTags()
+  {
+    return TAGS;
+  }
+}</pre><p>
+        There are four public methods in a message handler (
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractPolicyEngineMessageHandler.html#determineRelatedMessageAction(com.camerontec.catalys.server.breakout.policyengine.HandlerContext,%20com.camerontec.catalys.server.processor.IFIXMessageProcessor,%20com.camerontec.catalys.core.message.IFIXMessage,%20com.camerontec.catalys.server.breakout.policyengine.PerSessionIndicies)" target="_top">determineRelatedMessageAction()</a>,
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractPolicyEngineMessageHandler.html#onMessageAdded(com.camerontec.catalys.server.breakout.policyengine.HandlerContext,%20com.camerontec.catalys.server.breakout.BrokenOutMessageData,%20com.camerontec.catalys.server.breakout.policyengine.PerSessionIndicies)" target="_top">onMessageAdded()</a>,
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractPolicyEngineMessageHandler.html#onMessageRemoved(com.camerontec.catalys.server.breakout.policyengine.HandlerContext,%20com.camerontec.catalys.server.breakout.BrokenOutMessageData,%20com.camerontec.catalys.server.breakout.policyengine.PerSessionIndicies)" target="_top">onMessageRemoved()</a>
+        and
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractPolicyEngineMessageHandler.html#onMessageRecovered(com.camerontec.catalys.server.breakout.policyengine.HandlerContext,%20com.camerontec.catalys.server.breakout.BrokenOutMessageData,%20com.camerontec.catalys.server.breakout.policyengine.PerSessionIndicies)" target="_top">onMessageRecovered()</a>).
+        They are the same four methods that you can find on the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/IBreakOutPolicyEngine.html" target="_top">IBreakOutPolicyEngine</a>
+        interface though they all take a few more parameters. In this case we have implemented the two most
+        interesting ones, although we could have implemented none and had the same effect since we are not doing
+        anything different from the default implementations.
+      </p><p>
+        <code class="code">determineRelatedMessageAction()</code> is called when
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/IBreakOutBox.html#breakOutIfRelated(com.camerontec.catalys.server.processor.IFIXMessageProcessor,%20com.camerontec.catalys.core.message.IFIXMessage)" target="_top">breakOutIfRelated()</a>
+        is called by the message processor. It's job is to decide whether the message <code class="code">mess</code> is related to
+        some other message in the <code class="code">BreakOutBox</code> and if so, what to do about it. In this case, there's
+        nothing to do so we return a <code class="code">RelatedMessagePolicyAction</code> that tells the <code class="code">BreakOutBox</code>
+        box to do nothing. The arguments to the <code class="code">RelatedMessagePolicyAction</code> are:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><code class="code">stopProcessing</code> is the value returned by
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/IBreakOutBox.html#breakOutIfRelated(com.camerontec.catalys.server.processor.IFIXMessageProcessor,%20com.camerontec.catalys.core.message.IFIXMessage)" target="_top">breakOutIfRelated()</a>,
+          it tells the message processor whether it should stop processing the message.
+        </li><li class="listitem"><code class="code">breakOut</code> tells the <code class="code">BreakOutBox</code> to break out the message.</li><li class="listitem"><code class="code">reponseMessage</code> is a message to send out in response to this one.</li><li class="listitem"><code class="code">messageToRemove</code> is a message in the <code class="code">BreakOutBox</code> to remove.</li></ol></div><p>
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractPolicyEngineMessageHandler.html#onMessageAdded(com.camerontec.catalys.server.breakout.policyengine.HandlerContext,%20com.camerontec.catalys.server.breakout.BrokenOutMessageData,%20com.camerontec.catalys.server.breakout.policyengine.PerSessionIndicies)" target="_top">onMessageAdded()</a>
+      is called when the message is added to the<code class="code">BreakOutBox</code>. In this case we just call
+      <code class="code">super.onMessageAdded()</code> which calls <code class="code">getIDTags()</code> to get a list of ID tags for this
+      message, in this case the <code class="code">ClOrdID</code> tags, and adds an entry into <code class="code">indices</code> for the
+      message that was added (see
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/PerSessionIndices.html" target="_top">PerSessionIndices</a>
+        and
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/BrokenOutMessageData.html" target="_top">BrokenOutMessageData</a>
+        ) and then returns a
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/MessageAddedPolicyAction.html" target="_top">MessageAddedPolicyAction</a>
+        which is a subset of
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/RelatedMessagePolicyAction.html" target="_top">RelatedMessagePolicyAction</a>
+        instructing the <code class="code">BreakOutBox</code> to do nothing more.
+      </p><p>
+        The other two methods,
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractPolicyEngineMessageHandler.html#onMessageRemoved(com.camerontec.catalys.server.breakout.policyengine.HandlerContext,%20com.camerontec.catalys.server.breakout.BrokenOutMessageData,%20com.camerontec.catalys.server.breakout.policyengine.PerSessionIndicies)" target="_top">onMessageRemoved()</a>
+        and
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/breakout/policyengine/AbstractPolicyEngineMessageHandler.html#onMessageRecovered(com.camerontec.catalys.server.breakout.policyengine.HandlerContext,%20com.camerontec.catalys.server.breakout.BrokenOutMessageData,%20com.camerontec.catalys.server.breakout.policyengine.PerSessionIndicies)" target="_top">onMessageRecovered()</a>
+        are quite similar to <code class="code">onMessageAdded()</code>. <code class="code">onMessageRemoved()</code>
+        removes the message from the indices. <code class="code">onMessageRemoved()</code>
+        adds the message, but doesn't return an action.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5404"></a>ExampleOrderCancelHandler</h4></div></div></div><pre class="programlisting">public class ExampleOrderCancelHandler extends AbstractPolicyEngineMessageHandler
+{
+  public RelatedMessagePolicyAction determineRelatedMessageAction(
+    HandlerContext context,
+    IFIXMessageProcessor source,
+    Message mess,
+    PerSessionIndicies indices) throws MessageException
+  {
+    String origClOrdID = mess.getStringFieldValue(Constants.TAGiOrigClOrdID);
+
+    // Look in the indices, is there a related order?
+    BrokenOutMessageData relatedOrderData = indices.getData(Constants.TAGiClOrdID, origClOrdID);
+    if (relatedOrderData != null)
+    {
+      // There is a related order ...
+      // Send a Cancelled execution report and remove the Order.
+      Message responseMessage = makeOrderCancelledExecutionReport(context, mess);
+
+      return new RelatedMessagePolicyAction(
+      true, // do stopProcessing this message (the cancel)
+      false, // don't breakout this message
+      responseMessage, // send this response
+      relatedOrderData); // remove the order from the box
+    }
+    else
+    {
+      // It's not related, don't do anything.
+      return new RelatedMessagePolicyAction(
+      false, // don't stop processing
+      false, // don't break out this message
+      null, // no response message
+      null); // nothing to remove
+    }
+  }
+
+  private Message makeOrderCancelledExecutionReport(HandlerContext context, Message mess)
+    throws MessageException
+  {
+    Message responseMessage = new Message(Constants.MSGExecution);
+    responseMessage.setField(Constants.TAGiOrdStatus, Constants.ORDSTATUS_Cancelled);
+    responseMessage.setField(Constants.TAGiExecType, Constants.EXECTYPE_Cancelled);
+    responseMessage.setField(Constants.TAGiExecTransType, Constants.EXECTRANSTYPE_New);
+    responseMessage.setField(Constants.TAGiClOrdID,
+    mess.getStringFieldValue(Constants.TAGiClOrdID));
+    responseMessage.setField(Constants.TAGiOrderID,
+    context.getOrderIdGenerator().nextId());
+    // ...
+    return responseMessage;
+  }
+
+  protected int[] getIDTags()
+  {
+    // Don't index this message at all.
+    return new int[0];
+  }
+}</pre><p>
+        This class is a little more complicated. <code class="code">determineRelatedMessageAction()</code> looks in the indices
+        to see if there is a message already in there with the original <code class="code">ClOrdId</code>. If there is, it makes an
+        order cancelled Execution Report, sends it back and removes the original order from the
+        <code class="code">BreakOutBox</code>. If there is no message in the indices, then it does nothing. <code class="code">getIDTags()</code>
+        returns an empty list, which means that an OrderCancel will not be added to the indices.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_breakout_box-example_configuration"></a>6.8.4.&nbsp;Configuration</h3></div></div></div><p>
+      A <code class="code">BreakOutBox</code> is configured by adding a <code class="code">BreakOutBox</code> element into the
+      <code class="code">Services</code> element of the <code class="code">Application</code>, e.g.
+    </p><pre class="programlisting">&lt;Application&gt;
+  &lt;Services&gt;
+    &lt;BreakOutBox
+      id="myBreakOutBox"
+      persistenceFile="bb_persist"
+      policyEngineClass=
+        "com.camerontec.catalys.server.breakout.policyengine.ExampleBreakOutPolicyEngine"
+      /&gt;
+  &lt;/Services&gt;
+  ...
+&lt;/Application&gt;</pre><p>
+      For a complete list of configuration attributes, see the
+      <a href="config_reference.html#config_ref_BreakOutBox" title="BreakOutBox">BreakOutBox Configuration Reference</a>.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s07.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.7.&nbsp;Data Encryption&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.9.&nbsp;Market Compliance</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

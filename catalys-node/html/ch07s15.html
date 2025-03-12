@@ -1,0 +1,277 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.15.&nbsp;Microsoft .NET API</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s14.html" title="7.14.&nbsp;C/C++ API"><link rel="next" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s14.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_api_dotnet"></a>7.15.&nbsp;Microsoft .NET API</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_api_dotnet-intro"></a>7.15.1.&nbsp;Introduction</h3></div></div></div><p>
+      The .NET API enables .NET-based systems to connect directly to the Node. It uses a lightweight object
+      hierarchy for creating and transforming FIX messages and a lightweight protocol for interfacing with the Node
+      without any dependencies on COM or other third-party interoperability solutions.
+    </p><p>
+      The Node has a simple .NET API available, which is fully managed code,
+      and can be used in any language that is a first-class citizen in the Microsoft Common Language
+      Infrastructure.
+    </p><p>
+      The current implementation performs the Java-to-.NET interoperability using a socket layer,
+      and a byte-array representation of the message, and as such, the .NET client need not be on the
+      same machine as the Node running the Socket Adapter to which the .NET adapter connects.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_api_dotnet-install"></a>7.15.2.&nbsp;Installation</h3></div></div></div><p>
+      The .NET API requires that the <a href="ch07.html#adapter_socket" title="7.1.&nbsp;Socket Adapter">Socket Adapter</a> be configured.
+    </p><p>The machine running the .NET client must have the .NET 2.0 or newer runtime installed.</p><p>
+      The supplied template requires that you have the Microsoft .NET SDK 2.0 (or later) installed to
+      operate. If you wish to look at the template source code, you will need to have Microsoft Visual Studio
+      2008 or newer installed.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_api_dotnet-gettingstarted"></a>7.15.3.&nbsp;Getting Started</h3></div></div></div><p>
+      Refer to the template in <span class="emphasis"><em>templates/DotNetAdapter/windows</em></span>. We include a sample program,
+      <span class="emphasis"><em>AdapterClient&shy;Example.exe</em></span>, that demonstrates how to use the .NET API.
+    </p><p>On the machine that is running the FIX engine:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Start the sell-side server by running <span class="emphasis"><em>sell.bat</em></span> or <span class="emphasis"><em>sell.sh</em></span></li><li class="listitem">
+        Start the buy-side server by running <span class="emphasis"><em>buy.bat</em></span> or <span class="emphasis"><em>buy.sh</em></span></li></ol></div><p>On the machine that will be hosting the .NET client:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Launch the correct <span class="emphasis"><em>AdapterClientExample.exe</em></span> executable based on your Windows version.
+      </li><li class="listitem">
+        Check this program's console for output showing the client connecting to the Node as well as sending and
+        receiving messages and events.
+      </li></ol></div><p>
+      The .NET client is now established to the buy side and receiving all incoming messages and events.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_api_dotnet-netapi"></a>7.15.4.&nbsp;The Catalys Node .NET API</h3></div></div></div><p>
+      The sample console application demonstrates the basic operation of the API, which is described
+      in more detail here. What follows is a step-by-step guide to implementing a .NET FIX client.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9454"></a>AdapterProperties</h4></div></div></div><p>
+        Create an instance of <code class="code">AdapterProperties</code> object with the appropriate connection details
+        and settings to the underlying Socket Adapter. This object is used to initialise the <code class="code">AdapterClient</code>
+        class, which is the main class for interacting with the Node.
+      </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Properties</th><th>Notes</th></tr></thead><tbody><tr><td>ARG_HOSTNAME</td><td>
+                The IP or hostname of the host running the Node.
+  
+                <p>This field is required.</p>
+              </td></tr><tr><td>ARG_PORT</td><td>
+                The port the SocketAdapter is listening on.
+  
+                <p>This field is required.</p>
+              </td></tr><tr><td>ARG_USE_ACKS</td><td>
+                Boolean setting to determine if the .NET client should await acknowledgement from the  Node
+                for sent messages and also send acknowledgements for received messages. Should a message not be
+                acknowledged within time specified by <code class="code">ARG_ACK_TIMEOUT</code>, the client will issue an
+                <code class="code">ExceptionEvent</code> to your exception callback, allowing you to handle the event and recover
+                the message that was not acked.
+  
+                <p>The default value is <code class="code">false</code>.</p>
+              </td></tr><tr><td>ARG_ACK_TIMEOUT</td><td>
+                The time in milliseconds that the Client will wait for acknowledgement from the Node.
+  
+                <p>The default value is 10000 ms (10 secs).</p>
+              </td></tr><tr><td>ARG_USE_LARGE_SIZE</td><td>
+                Boolean setting that determines whether or not large message sizes should be used in transmission
+                to and from the Socket Adapter. This should be set to <code class="code">true</code> if messages will be sent/received
+                that are greater in size than 999999 bytes. The corresponding attribute <code class="code">largeMessages</code> should
+                also be set on the Socket Adapter to match this setting.
+  
+                <p>The default value is <code class="code">false</code>.</p>
+              </td></tr><tr><td>ARG_LOGFILE</td><td>
+                The logfile which will be used for logging informational messages. If this attribute is not set
+                then the log information will be written to the console. The log file can either be in the current
+                directory (e.g. <span class="emphasis"><em>logfile.txt</em></span>) or a full path and file name (e.g.
+                <span class="emphasis"><em>c:\logfile.txt</em></span>).
+              </td></tr><tr><td>ARG_BUFFERING_OFF</td><td>
+                Boolean setting to enable or disable the TCP NoDelay flag.
+  
+                <p>The default value is <code class="code">false</code>, i.e. buffering is on.</p>
+              </td></tr><tr><td>ARG_PING_INTERVAL</td><td>
+                The time in milliseconds between pings during periods of inactivity. The client will ping
+                the Node, and if it does not respond within 100ms, the client will disconnect.
+  
+                <p>The default value is 10000 ms (10 secs). To disable, set to 0.</p>
+              </td></tr></tbody></table></div><pre class="programlisting">// Instantiate an AdapterProperties object and set the properties
+AdapterProperties props = new AdapterProperties();
+props[AdapterProperties.ARG_HOSTNAME] = Host.Text;
+props[AdapterProperties.ARG_PORT] = int.Parse(Port.Text);
+props[AdapterProperties.ARG_USE_ACKS] = true;
+props[AdapterProperties.ARG_USE_LARGE_SIZE] = true;
+props[AdapterProperties.ARG_LOGFILE] = LogName.Text;
+props[AdapterProperties.ARG_PING_INTERVAL] = 3000;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9509"></a>IAdapterClient</h4></div></div></div><p>
+        The <code class="code">IAdapterClient</code> interface defines the interface that should
+        be implemented by all .NET clients to the Node. The
+        current implementation provided uses sockets to communicate
+        between the FIX engine and .NET. This reduces the dependency on
+        any external software needed for ease of integration. To
+        initialise an <code class="code">IAdapterClient</code> with an <code class="code">AdapterProperties</code> use:
+      </p><p>
+        </p><pre class="programlisting">IAdapterClient client = new SocketClient(props);</pre><p>
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9517"></a>Event Handling</h4></div></div></div><p>
+        The <code class="code">IAdapterClient</code> interface defines three .NET callbacks for
+        handling the arrival of messages, exceptions, connection status and
+        acknowledgments from the Node. The events are called
+        <code class="code">MessageEventHandler</code>, <code class="code">ExceptionEventHandler</code> and <code class="code">ConnectionEventHandler</code>.
+        They require methods with a specific signature. To implement these events,
+        create the following methods with the correct signatures within your class:
+      </p><pre class="programlisting">private void IncomingException(object sender, ExceptionEventArgs args)
+{
+  this.logger.error("Exception received from adapter",args.RaisedException);
+}
+
+private void IncomingMessage(object sender, MessageEventArgs args)
+{
+  this.logger.info("Message received: "+ args.FixMessage.ToString());
+}
+
+static void ConnectionEvent(object sender, ConnectionEventArgs args)
+{
+  this.Logger.info("Connection Event " + args.Status);
+}</pre><p>
+        If you are also using the attribute <code class="code">fullMessageAcks</code> in the
+        Socket Adapter, in order to receive an acknowledgement when a message is sent out over FIX, you should
+        also use the method:
+      </p><pre class="programlisting">private void IncomingAck(object sender, MessageEventArgs args)
+{
+  this.logger.info("Acknowledgement received. Message sent.");
+}</pre><p>
+        And then register the methods with the appropriate handlers once you have created the client:
+      </p><pre class="programlisting">// Register the IncomingMessage method to the list of observers
+client.MessageEvent += new MessageEventHandler(IncomingMessage);
+client.ExceptionEvent += new ExceptionEventHandler(IncomingException);
+client.ConnectionEvent += new ConnectionEventHandler(ConnectionEvent);
+//if required
+client.MessageAckEvent += new MessageEventHandler(IncomingAck);</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9530"></a>Sending and Receiving Messages</h4></div></div></div><p>
+        Once you have initialised a client, you may start receiving
+        messages (and possibly exceptions) by issuing a <code class="code">Connect()</code> call to
+        the FIX engine. Call <code class="code">Disconnect()</code> to stop receiving messages and
+        sever the link to the FIX engine. The <code class="code">Send(Message msg)</code> call is used to send messages.
+      </p><pre class="programlisting">client.Connect();
+// You should start receiving messages into your callback method now
+// Create a message using the Message class.
+// The Constants class contains a definition of every Field and Message
+// type defined in the FIX protocol specification.
+FIX.Message message = new FIX.Message();
+message.SetField(Constants.TAGMsgType, Constants.MSGOrder);
+message.SetField(Constants.TAGOrderQty, "1000");
+message.SetField(Constants.TAGPrice, "12.34");
+message.SetField(Constants.TAGSide, Constants.SIDE_Buy);
+message.SetField(Constants.TAGSymbol, "CAM");
+
+// Send the message
+client.SendMessage(message);
+
+// Request Session Status
+client.getSessionStatus();</pre><p>
+        When sending a message, you can choose to receive acknowledgments from the Node when the message is sent out
+        over FIX (i.e. when it has finished all pre-processing, including the addition of the sequence number). To do
+        this, you can set the attribute <code class="code">fullMessageAcks</code> on the Socket Adapter and add an event listener
+        for the acknowledgement as described in the preceding section.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9539"></a>Handling and Transforming messages</h4></div></div></div><p>
+        The callback methods described earlier get called whenever a
+        message arrives. A <code class="code">Message</code> object is a lightweight .NET object
+        that represents the fields of the message, but you may wish to
+        convert it to another format. The <code class="code">ITransformer</code> interface is
+        designed to accommodate a broad range of message formats and
+        convert them into and from this internal format that is used
+        throughout the .NET API. All message data
+        fields are transformed by an <code class="code">ITransformer</code>
+        implementation. The .NET API provides an
+        implementation called the <code class="code">RawTransformer</code>, however you may wish to
+        provide your own implementation to convert to a proprietary
+        format. The <code class="code">RawTransformer</code> takes raw FIX messages in the
+        form of byte arrays and converts them into <code class="code">Message</code> objects and
+        vice versa, from which you may create strings, MSMQ messages,
+        write to DataSources etc.
+      </p><p>To convert a FIX message within a callback event handler:</p><pre class="programlisting">private void IncomingMessage(object sender, MessageEventArgs args)
+{
+  ITransformer transformer = new RawTransformer();
+
+  // Get the message from the event args
+  FIX.Message fixMessage = args.FixMessage;
+
+  //Iterate through a list of fields
+  List&lt;Field&gt; fields = fixMessage.Fields;
+  for(Field f in fields) {
+    this.logger.info(f.Name + "= " + f.Value);
+  }
+
+  // Transform the message to a byte array
+  byte[] msgBytes = (byte[])transformer.toObject(fixMessage);
+
+  // DefaultEncoding defined elsewhere to be UTF8
+  String msgStr = SocketClient.DefaultEncoding.GetString(msgBytes);
+  this.logger.info("Message received: " + msgStr);
+}</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_api_dotnet-config"></a>7.15.5.&nbsp;Catalys Node Configuration</h3></div></div></div><p>
+      The .NET API interacts with the Node via the Socket Adapter, which reduces its dependency on
+      external software requirements for Java/.NET interoperability. The following is an example configuration:
+    </p><pre class="programlisting">&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE Config SYSTEM "CatalysConfig.dtd"&gt;
+&lt;Config&gt;
+  &lt;Application&gt;
+    &lt;Sessions&gt;
+      &lt;Session fixversion="4.2"
+               heartbeat="60"
+               counterpartycompid="Bigbroker"
+               compid="FatsFast Market"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="sc" listenport="2000"/&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors&gt;
+            &lt;SocketAdapter id="dotNet_socket_adapter"
+                           port="7201"
+                           ackTimeout="1000"
+                           alwaysUseMsgId="true"/&gt;
+          &lt;/SourceMessageProcessors&gt;
+          &lt;ListenerMessageProcessors&gt;
+            &lt;MessageProcessorReference id="dotNet_listener"
+                                       refid="dotNet_socket_adapter"/&gt;
+          &lt;/ListenerMessageProcessors&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre><p>
+      The above XML configuration file defines the <code class="code">SocketAdapter</code> as a message processor. The port
+      attribute defines the listening port to which the .NET client application will connect.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9556"></a>Socket Adapter Attributes</h4></div></div></div><p>
+        The main <a href="ch07.html#adapter_socket" title="7.1.&nbsp;Socket Adapter">Socket Adapter</a> attributes to be considered when using
+        in conjunction with .NET API are shown below.
+      </p><div class="note"><h3 class="title">Note</h3><p>
+          The .NET API requires the <code class="code">alwaysUseMsgId</code> attribute to be set to <code class="code">true</code>.
+        </p></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attribute</th><th>Notes</th></tr></thead><tbody><tr><td>ackTimeout</td><td>
+                The Socket Adapter can be configured to wait for
+                acknowledgments from the client. When configured to do
+                so, when the server sends a <code class="code">SocketMessage.RECV_MESSAGE</code>,
+                the client should respond with a <code class="code">SocketMessage.SEND_ACK</code>
+                as soon as it is done processing the message. The
+                <code class="code">ackTimeout</code> indicates the amount of time (in
+                milliseconds) the server should wait for the
+                acknowledgment before it considers the connection dead
+                and disconnects.
+  
+                <p>
+                  The default is "0", indicating the server should not wait for any acknowledgments.
+                </p>
+  
+                <p>Optional.</p>
+              </td></tr><tr><td>port</td><td>
+                This is the port on which the Socket Adapter should
+                listen for a client connection.
+  
+                <p>The default port is "5005".</p>
+              </td></tr><tr><td>alwaysUseMsgId</td><td>
+                This is a <code class="code">boolean</code> attribute available for backward compatibility. If true, acknowledgments
+                from the socket client are expected to just include the message id from the original message. Otherwise
+                the body of the original message is expected. Default is <code class="code">false</code>, but this must be set to
+                <code class="code">true</code> when using the .NET API.
+              </td></tr><tr><td>largeMessages</td><td>
+                This is a <code class="code">boolean</code> attribute available for backward
+                compatibility. If true, the <code class="code">MessageLength</code> field will be
+                9 bytes. If false it will be 6 bytes. This needs to be
+                set to true to allow messages of size greater than
+                999999 bytes to be transmitted. Default is <code class="code">false</code>.
+  
+                <p>
+                  Optional. If this is set, the corresponding property
+                  <code class="code">AdapterProperties.ARG_USE_LARGE_SIZE</code> should also be set.
+                </p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9599"></a>Implementation Note</h4></div></div></div><p>
+        If your Socket Adapter and .NET client are configured to use
+        acknowledgments and your code sends messages upon receiving
+        another message, e.g. it replies with ExecutionReport on receiving
+        NewOrderSingle message, then you should decouple sending by
+        using separate thread to send a message reply.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s14.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.14.&nbsp;C/C++ API&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;8.&nbsp;Programming Guide</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:40+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

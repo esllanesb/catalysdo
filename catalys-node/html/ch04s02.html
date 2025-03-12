@@ -1,0 +1,472 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 4.2.&nbsp;Monitoring the Node</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch04.html" title="Chapter&nbsp;4.&nbsp;Operations and Monitoring"><link rel="prev" href="ch04.html" title="Chapter&nbsp;4.&nbsp;Operations and Monitoring"><link rel="next" href="ch04s03.html" title="4.3.&nbsp;Configuration Model and Runtime Changes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch04.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;4.&nbsp;Operations and Monitoring</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch04s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="operations_monitoring"></a>4.2.&nbsp;Monitoring the Node</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_monitoring-intro"></a>4.2.1.&nbsp;Introduction</h3></div></div></div><p>
+      There are numerous ways to monitor a running Node: MIS/Dashboard, command line,
+      JMX API, custom monitor class, log files, etc. There are several different aspects
+      of the Node that can be monitored: server and FIX session events, application events, memory usage,
+      disk space, latency and more.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_monitoring-command-line"></a>4.2.2.&nbsp;Command-Line Interface</h3></div></div></div><p>
+      The Node's command-line interface (CLI) allows users to issue commands directly to a running Node
+      through a console prompt. The CLI is available from the console where the server was started, or
+      remotely via JMX. The system is designed to allow other custom components to extend the command line.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1625"></a>Configuring the Console</h4></div></div></div><p>
+        By default the CLI is available through the console window where the Node is running. This option can be
+        disabled in the XML configuration file:
+      </p><pre class="programlisting">&lt;Application console="none"&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1629"></a>Command Results</h4></div></div></div><p>
+        When a command is issued successfully, the console will output three parts: header, separator and results:
+      </p><pre class="programlisting">Header1              Header2
+-------------------- --------------------
+Results_for_Header1  Results_for_Header2</pre><p>
+        When a command does not execute successfully, the command name and a description of the problem will be printed:
+      </p><pre class="programlisting">Command Description
+------- ------------------------------------------------
+s_list  Failed to find a matching session. Session: #444</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1635"></a>Command Completion</h4></div></div></div><p>
+        Due to the length of some command names, the CLI provides automatic command completion for most
+        commands (except for <code class="code">exit</code>). This saves typing large commands, for example:
+      </p><pre class="programlisting">&gt; s_out_seq_number #10 1001</pre><p>Can be entered as:</p><pre class="programlisting">&gt; s_out #10 1001</pre><p>
+        The general rule is that only the first three to four characters need to be typed in order to uniquely
+        identify the correct command. If for any reason the console doesn't understand the command, it will
+        print a description of the error in the command results.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1643"></a>Listing and Getting Help on Commands</h4></div></div></div><p>
+        To get a complete list of available commands enter <code class="code">?</code> or <code class="code">help</code>.
+      </p><p>
+        To get help for a specific command enter <code class="code">? &lt;command&gt;</code>. For example:
+      </p><pre class="programlisting">&gt; ? s_list
+Command Description
+------- ---------------------------------------------------------------------
+s_list &lt;all | session&gt;: list a session</pre><p>The arguments listed in the description follow these rules:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="code">&lt;arg&gt;</code> means that the argument should be substituted with literal text
+        </li><li class="listitem"><code class="code">[arg]</code> means that the argument is optional
+        </li><li class="listitem"><code class="code">|</code> indicates that the arguments are alternatives
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1659"></a>Reserved Characters</h4></div></div></div><p>
+        Certain characters are reserved for use by the command-line processor:
+      </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Character</th><th>Usage</th></tr></thead><tbody><tr><td>*</td><td>Wildcard</td></tr><tr><td>all</td><td>Wildcard</td></tr><tr><td>:</td><td>
+                Demarcates the boundary between an application ID and a session name when specifying a session
+              </td></tr><tr><td>.</td><td>
+                Demarcates the boundaries between IDs when specifying a session
+              </td></tr><tr><td>/</td><td>
+                Strictly matches the session with empty parameter (as opposed to matching sessions regardless of the
+                value of this parameter)
+              </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="operations_monitoring-cli-default"></a>4.2.2.1.&nbsp;Default Commands</h4></div></div></div><p>
+        Some commands are only available if a certain feature is configured. The following commands, however,
+        are always available via the CLI regardless of which features are configured.
+      </p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Command</th><th>Arguments</th><th>Description</th></tr></thead><tbody><tr><td>? or help</td><td>&lt;command | all&gt;</td><td>Get help on a command or list all commands</td></tr><tr><td>exit</td><td>&nbsp;</td><td>Shut down the Node</td></tr><tr><td>exit_gracefully</td><td>&nbsp;</td><td>Logs out all sessions and shut down the Node</td></tr><tr><td>config_reload</td><td>&nbsp;</td><td>
+                Dynamically reload configuration into the runtime of the Node.
+                <p>
+                  If there are modified sessions then these need to be "reloadable" for this command to succeed. A
+                  session is "reloadable" if it is stopped (disconnected and de-activated) and blocked from receiving
+                  any further connections. This can be achieved using the
+                  <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_make_reloadable</a>
+                  command. Sessions can be restored to their previous state using
+                  <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_unblock_and_activate</a>.
+                </p>
+              </td></tr><tr><td>level_of_logging</td><td>&lt;logger name | all&gt; &lt;level&gt;</td><td>Set the level for a given logger</td></tr><tr><td>license_reload</td><td>&nbsp;</td><td>Reload the current license file</td></tr><tr><td>logger</td><td>&lt;logger name | all&gt; &lt;level&gt;</td><td>List the level of a given logger</td></tr><tr><td>memory</td><td>&nbsp;</td><td>Show used and available memory</td></tr><tr><td>ping</td><td>&nbsp;</td><td>Confirms that server is alive</td></tr><tr><td>threads</td><td>&lt;stackTrace&gt;</td><td>List all the threads in the system</td></tr><tr><td>version</td><td>&nbsp;</td><td>List version and build information</td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1747"></a>4.2.2.2.&nbsp;Component Commands</h4></div></div></div><p>
+        Many Node components implement a simple
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/IComponent.html" target="_top">IComponent</a>
+        interface that can be accessed from the command line. This allows the user to close and activate/de-activate
+        individual components.
+      </p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Command</th><th>Arguments</th><th>Description</th></tr></thead><tbody><tr><td>c_activate</td><td>&lt;name | all&gt;</td><td>Activate a component</td></tr><tr><td>c_de_activate</td><td>&lt;name | all&gt;</td><td>Deactivate a component</td></tr><tr><td>c_list</td><td>&nbsp;</td><td>List all of the registered components in the system</td></tr><tr><td>c_properties</td><td>&lt;name | all&gt;</td><td>List the components properties</td></tr><tr><td>c_refresh</td><td>&lt;name | all&gt;</td><td>Refresh a component</td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="operations_monitoring-command-line-session"></a>4.2.2.3.&nbsp;Session Commands</h4></div></div></div><p>
+        Session commands can be issued for a specific session or for all sessions. Most session commands require
+        that you type the command followed by <code class="code">all</code> or a <code class="code">session_id</code> argument. The
+        <code class="code">session_id</code> argument can be specified one of two ways: hash identifier or the full target/sender ID
+        combination.
+      </p><p>
+        The following is an example of a range of sessions with different Target/Sender Comp, Sub,
+        and Location IDs:
+      </p><pre class="programlisting">&gt; s_list all
+#   TargetCompId TargetSubId TargetLocation  SenderCompId SenderSubId SenderLocation
+--- ------------ ----------- --------------- ------------ ----------- --------------
+73  SellSide1                                BuySide1
+161 SellSide4    subid4      locationid4     BuySide4
+44  SellSide9                                BuySide9                 BuyLocationid9
+5   SellSide7    SellSubid7  SellLocationid7 BuySide7     BuySubid7   BuyLocationid7</pre><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e1790"></a>Hash Identifier</h5></div></div></div><p>
+          From the above example, you can see the far left column has a unique hash ID that can be used
+          at the command line to uniquely identify a session. Here are some examples:
+        </p><pre class="programlisting">&gt; s_list #161
+#   TargetCompId TargetSubId TargetLocation SenderCompId SenderSubId SenderLocation
+--- ------------ ----------- -------------- ------------ ----------- --------------
+161 SellSide4    subid4      locationid4     BuySide4
+
+&gt; s_in #44 100
+#  TargetCompId SenderCompId Status InSeqNo OutSeqNo
+-- ------------ ------------ ------ ------- --------
+44 SellSide9    BuySide9     DOWN   100     0</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e1794"></a>Full Name identification</h5></div></div></div><p>
+          Sessions can be uniquely identified by a set of six parameters. The <code class="code">SessionCommandLineProcessor</code>
+          uses the following syntax to uniquely define a session:
+        </p><p>TargetCompId.TargetSubId.TargetLocationId/SenderCompId.SenderSubId.SenderLocationId</p><p>
+          To see the full names of all configured sessions, issue the <code class="code">s_fullname</code> command. Here is the
+          same list of sessions from above shown via this command:
+        </p><pre class="programlisting">&gt; s_fullname
+#   Full Name
+--- ----------------------------------------------------------------------
+73  SellSide1/BuySide1
+161 SellSide4.subid4.locationid4/BuySide4
+44  SellSide9/BuySide9..BuyLocationid9
+5   SellSide7.SellSubid7.SellLocationid7/BuySide7.BuySubid7.BuyLocationid7</pre><p>Here are some examples of identifying a session using its name:</p><pre class="programlisting">&gt; s_s SellSide7/BuySide7
+# TargetCompId SenderCompId Status InSeqNo OutSeqNo
+- ------------ ------------ ------ ------- --------
+5 SellSide7    BuySide7     DOWN   0       0
+
+&gt; s_s ..locationid4
+#   TargetCompId SenderCompId Status InSeqNo OutSeqNo
+--- ------------ ------------ ------ ------- --------
+157 SellSide4    BuySide4     DOWN   0       0
+
+&gt; s_s /..BuyLocationid7
+#   TargetCompId SenderCompId Status InSeqNo OutSeqNo
+--- ------------ ------------ ------ ------- --------
+105 SellSide7    BuySide7     DOWN   0       0</pre><p>
+          As you can see from the example, the full name of the session is not required to uniquely
+          identify it. In fact, if two sessions have the same TargetLocationId and the only information
+          entered at the command line is the TargetLocationId, both sessions will be selected.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="operations_monitoring-cli-session-ref"></a>Session Command Reference</h5></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Command</th><th>Arguments</th><th>Description</th></tr></thead><tbody><tr><td>s_block</td><td>&lt;all | session&gt;</td><td>Blocks connections on this session</td></tr><tr><td>s_connect</td><td>&lt;all&gt; | &lt;session&gt; &lt;connection #&gt;</td><td>
+                  Enable any automatic connection mechanism that has been previously disabled
+                  via <code class="code">s_disconnect</code>. Note: All inactive sessions will be ignored.
+                  <p>
+                    An optional connection number starting from 1, indicating the index amongst all available connections,
+                    may be specified.  If that's the case, an attempt to establish a connection will be performed once,
+                    and in case of failure, the default behaviour will be used
+                    (i.e. using the first connection only, according to configuration order).
+                  </p>
+                </td></tr><tr><td>s_disconnect</td><td>&lt;all | session&gt; [&lt;reason &gt;]</td><td>
+                  Disconnect a session by sending a logout message. This also disables any
+                  automatic reconnect mechanism. If optional reason is specified it is included 
+                  in Text (58) tag in Logout message. Note: All inactive sessions will be ignored.
+                </td></tr><tr><td>s_drop</td><td>&lt;all | session&gt;</td><td>Force a session to drop immediately. Note: All inactive sessions will be ignored.</td></tr><tr><td>s_end_of_day</td><td>&lt;all | session&gt; [&lt;parameter&gt;]</td><td>
+                  Sequentially invokes the end of day procedure on all message processors in the
+                  message processing pipeline of the selected session(s). This usually involves purging
+                  or compacting data in persistent files.
+                  <p>
+                    The optional parameter is used in a component specific manner by the message processor
+                    executing the procedure. For those components that use MarketMirror storage, this parameter
+                    is interpreted as a clearing condition specified using the Rules Expression Language. It is
+                    only needed if a value different from that specified by the component's
+                    <code class="code">endOfDayClearingCondition</code> attribute is required.
+                  </p>
+                  <p>
+                    By implementing the
+                    <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXMessageProcessor.html" target="_top">IFIXMessageProcessor</a> interface
+                    and its
+                    <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IEndOfDayPerformer.html#performEndOfDayProcedure(com.camerontec.catalys.core.session.IConnectionPoint, java.lang.String)" target="_top">performEndOfDayProcedure</a>
+                    method, custom message processors can hook into this mechanism and provide their own end-of-day
+                    logic, if necessary.
+                  </p>
+                </td></tr><tr><td>s_force_reload</td><td>&lt;all | session&gt;</td><td>
+                  Forces one or more sessions into the reloadable state, loads changes to
+                  the XML configuration into the Node's runtime, then restores the previous state
+                  of the session(s).
+                </td></tr><tr><td>s_full_name</td><td>&nbsp;</td><td>List the full name of each session</td></tr><tr><td>s_in_seq_number</td><td>&lt;all | session&gt; &lt;seq_number&gt;</td><td>
+                  Set the inbound sequence number of a session. This is the next expected sequence number from a
+                  counterparty. Note: All inactive sessions will be ignored.
+                  <p>
+                    To update sequence numbers of an active session:
+                    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                        Block the session(s_block)
+                        </li><li class="listitem">
+                        Disconnect the session(s_disconnect)
+                      </li><li class="listitem">
+                        Update sequence numbers
+                      </li><li class="listitem">
+                        Unblock session(s_unblock)
+                      </li><li class="listitem">
+                        Connect the session(s_connect)
+                      </li></ul></div><p>
+                  </p>
+                </td></tr><tr><td>s_list</td><td>&lt;all | session&gt;</td><td>List all the sessions in the system</td></tr><tr><td>s_lock</td><td>&lt;all | session&gt;</td><td>
+                  Locks connections on this session. A locked session acts like a blocked one.
+                  The difference is that the locked state is not persisted and only valid during
+                  the life of the FIX server.
+                </td></tr><tr><td>s_make_reloadable</td><td>&nbsp;</td><td>
+                  Puts one or more sessions into the reloadable state. That is, disconnects
+                  the session(s), deactivates their session manager(s) and blocks the session(s)
+                  from receiving any further connections.
+                </td></tr><tr><td>s_out_seq_number</td><td>&lt;all | session&gt; &lt;seq_number&gt;</td><td>
+                  Set the outbound sequence number of a session. The will be the sequence
+                  number of the next message sent to a counterparty. Note: All inactive sessions
+                  will be ignored.
+                  <p>
+                    To update sequence numbers of an active session:
+                    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                        Block the session(s_block)
+                      </li><li class="listitem">
+                        Disconnect the session(s_disconnect)
+                      </li><li class="listitem">
+                        Update sequence numbers
+                      </li><li class="listitem">
+                        Unblock session(s_unblock)
+                      </li><li class="listitem">
+                        Connect the session(s_connect)
+                      </li></ul></div><p>
+                  </p>
+                </td></tr><tr><td>s_reload</td><td>&lt;all | session&gt;</td><td>
+                  Loads changes to the XML configuration of one or all sessions into the
+                  Node's runtime. The specified sessions must be in a reloadable state for this
+                  command to succeed.
+                </td></tr><tr><td>s_reprocess</td><td>&lt;session&gt; &lt;beginSeq&gt; [&lt;endSeq&gt;]</td><td>
+                  Reprocess incoming messages. Available on sessions having a persister
+                  configured to persist input messages (e.g. JournalingPersister configured
+                  with <code class="code">persistInputMessages</code> set to <code class="code">true</code>).
+
+                  <p>
+                    For example, if orders with sequence numbers from 100 to 105 were received but lost by the internal
+                    OMS, you could issue <code class="code">s_reprocess &lt;session&gt; 100 105</code>. This would scan the persister
+                    for messages between 100 and 105, inclusive, and send messages (except heartbeat, test request,
+                    resend request, and sequence reset) to <code class="code">ListenerMessageProcessors</code>.
+                  </p>
+                  <p>
+                    If <code class="code">endSeq</code> is not specified, only one message will be reprocessed:
+                    <code class="code">beginSeq</code>. Note: All inactive sessions will be ignored.
+                  </p>
+                </td></tr><tr><td>s_resend</td><td>&lt;session&gt; &lt;beginSeq&gt; [&lt;endSeq&gt;]</td><td>
+                  Trigger a resend of messages from the sessions persistence as if the counterparty had requested it
+                  (with a FIX Resend Request). Only one message is resent when only <code class="code">beginSeq</code> is specified.
+                  Otherwise, a range of messages is sent, from <code class="code">beginSeq</code> to <code class="code">endSeq</code>, inclusive.
+                  Note: All inactive sessions will be ignored.
+                </td></tr><tr><td>s_reset</td><td>&lt;all | session&gt;</td><td>
+                  Set the sequence numbers of a session back to 1. Note: All inactive sessions will be ignored.
+                </td></tr><tr><td>s_stats</td><td>&lt;all | session&gt;</td><td>
+                  Get the current statistics of a session. This includes connection status and sequence numbers.
+                </td></tr><tr><td>s_unblock</td><td>&lt;all | session&gt;</td><td>Unblocks connections on this session</td></tr><tr><td>s_unblock_and_activate</td><td>[&lt;session&gt;] &lt;session&gt;</td><td>
+                  Unblocks and activates one or more sessions. This command is used in conjunction with
+                  <code class="code">s_make_reloadable</code>.
+                </td></tr><tr><td>s_unlock</td><td>&lt;all | session&gt;</td><td>Unlocks connections on this session</td></tr></tbody></table></div></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_monitoring-remote-command-line"></a>4.2.3.&nbsp;Remote Command-Line Interface</h3></div></div></div><p>
+      The Node's Remote Command Line can execute commands on any Node instance remotely
+      without being logged onto the server. JMX is the communication layer used between the Node and the
+      Remote Command Line utility. It can also be so configured to authenticate the Remote Command Line utility
+      to be authenticated before connecting.
+    </p><p>
+      If you used the Node installer and selected the 'Node Instances' option, the example instance is configured to
+      startup the remote CLI. Once you start this instance use the <span class="emphasis"><em>start-cli.[sh.bat]</em></span> script
+      located in the <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/example/scripts</em></span> directory.
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1937"></a>4.2.3.1.&nbsp;Configuring the JMX Service</h4></div></div></div><p>
+        To be able to communicate with an instance of a Node remotely we need to be able to connect to
+        a JMX Service exposing the command line of that server. There are three ways to do that:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">An instance of a Node directly</li><li class="listitem">A LMA, bundling several Node instances on the same machine</li><li class="listitem">A MA (MIS), bundling several LMAs across the whole network</li></ol></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e1944"></a>Automatic Detection of a Service</h5></div></div></div><p>
+          The Remote Command Line utility will try to connect to the specified host (parameter <code class="code">-jmxHost</code>)
+          on the specified port (parameter <code class="code">-jmxPort</code>). If no host is provided, <code class="code">localhost</code> will
+          be used. If no port is provided, the default MA port (10000) will be used and if that connection fails, the
+          default LMA port (10002) will be tried.
+        </p><p>
+          There is no default to connect to an instance of a Node as the port will be unknown
+          to the Remote Command Line. You can configure the JMXManagementService in the Node to expose the command
+          line via JMX on a particular port with the following:
+        </p><pre class="programlisting">&lt;Services&gt;
+  &lt;JMXManagementService 
+    id="JMXManagementService"
+    jmxServiceURL="service:jmx:jmxmp://localhost:1500"
+    alwaysKeepJMXConnectorServerRunning="true"/&gt;
+&lt;/Services&gt;</pre><p>
+          This will expose the JMXManagementService on port 1500. This port can then be addressed via arguments
+          in the RemoteCommandLine utility. The attribute <code class="code">alwaysKeepJMXConnectorServerRunning</code> must be
+          <code class="code">true</code> in order to keep the JMXConnector alive, even if not connected to an LMA.
+        </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1955"></a>Connecting and Executing a Command</h4></div></div></div><p>The syntax of the <code class="code">RemoteCommandLine</code> class is:</p><pre class="programlisting">
+java -cp "../lib/catalys-node.jar:../resources" \
+     com.camerontec.catalys.server.management.client.commandline.RemoteCommandLine \
+     [-jmxHost &lt;host&gt;] [-jmxPort &lt;port&gt;] [-d(ebug)] [-h &lt;host&gt;] [-i &lt;instance&gt;] \
+     &lt;command&gt; &lt;cmd args&gt;</pre><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>-jmxHost</td><td>
+                The host where the JMX service is running on. This parameter is optional and <code class="code">localhost</code>
+                will be used if not specified.
+              </td></tr><tr><td>-jmxPort</td><td>
+                The port where the JMX service is listening on. The parameter is optional and the MA/MIS and
+                LMA defaults will be used if not specified.
+              </td></tr><tr><td>-console</td><td>Run in console mode</td></tr><tr><td>-h</td><td>
+                The host name of the Node where the command should be execute on. This parameter is only
+                required when connected to an MA/MIS. When connecting to a Node directly, the attribute
+                will be ignored.
+              </td></tr><tr><td>-i</td><td>
+                The instance name of the Node the command should be executed on. This parameter is only
+                required when connected to an MA/MIS and LMA. When connecting to a Node directly, the attribute
+                will be ignored.
+              </td></tr><tr><td>&lt;command&gt;</td><td>The command to be executed </td></tr><tr><td>&lt;cmd args&gt;</td><td>Possible arguments to be passed into the command executed</td></tr><tr><td>-?</td><td>Display help results</td></tr><tr><td>-d</td><td>Enable DEBUG output</td></tr><tr><td>-u</td><td>
+                Username with which to connect to the Node server.This parameter is optional. If not used,
+                Remote command line utility will not be authenticated before connecting to the Node server.
+              </td></tr><tr><td>-p</td><td>
+                Password with which to connect to the Node server. This parameter is optional and used 
+                along with <code class="code">-u</code> option.
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2004"></a>Running in Console Mode</h4></div></div></div><p>
+        When the <code class="code">-console</code> parameter is included the Remote Command Line utility will run in console mode.
+        When successfully connected, a prompt will appear and commands can be executed against that particular instance
+        of the Node.
+      </p><div class="note"><h3 class="title">Note</h3><p>To exit the Remote Command Line console, type <code class="code">exit</code>.</p></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2011"></a>Using authenticated JMX access to connect to the server</h4></div></div></div><p>
+        Remote Command Line utility can be configured to connect to the Node server on which JMX authentication is 
+        required for connecting. For this, both <code class="code">-u</code> and <code class="code">-p</code> options need to be set correctly.
+        If used, the Node instance to which this utility client is connecting will have to be already
+        configured for authenticated jmx access. Catalys Node server jmx authentication configuration <a href="ch04s02.html#operations_monitoring-jmx-server" title="4.2.5.3.&nbsp;JMX authentication">here</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2017"></a>Remote Command Line Template</h4></div></div></div><p>
+        A template located in <span class="emphasis"><em>templates/src/RemoteCommandLine/</em></span> demonstrates how to use the
+        utility.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_monitoring-extending-command-line"></a>4.2.4.&nbsp;Custom CLI Commands</h3></div></div></div><p>
+      It is possible to extend the list of commands by implementing the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/commandline/ICommandLineProcessor.html" target="_top">ICommandLineProcessor</a>
+      interface. This can be helpful for printing information related to a custom message processor or service.
+    </p><p>See the custom <a href="ch08s02.html" title="8.2.&nbsp;CLI Commands">CLI</a> example in the Programming Guide.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_monitoring-jmx"></a>4.2.5.&nbsp;Monitoring via JMX</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2029"></a>4.2.5.1.&nbsp;Introduction</h4></div></div></div><p>
+        The Catalys management infrastructure provides a Java-based solution for scalable monitoring of the Node by
+        utilizing
+        <a href="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html" target="_top">the standard management extension for Java</a>,
+        which is known as JMX. The infrastructure consists of:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          The Local Management Agent (LMA), which runs as a service on any host where a Node is running.
+        </li><li class="listitem">
+          The Management Agent (MA), which is a JMX management agent that connects to one or more LMAs and provides an
+          aggregated management API of each registered Node.
+
+          <div class="note"><h3 class="title">Note</h3><p>
+              The MA is implemented in the Catalys MIS, which must be running to fully take advantage of all monitoring
+              features.
+            </p></div></li></ul></div><p>
+        The management API is exposed through JMX and can be browsed with any JMX-compliant monitoring console (IBM
+        Tivoli, HP OpenView, et al.).
+      </p><p>
+        This section provides the specifications of the JMX API from the perspective of a third-party monitoring system
+        which would connect to the MA. We assume that the reader is familiar with JMX, the Catalys Node and the FIX
+        protocol.
+      </p><p>
+        It would be possible for any JMX-enabled application to connect directly to the LMA and even to the Node via
+        JMX, but the third-party system would not benefit from the main features of the MA, namely:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          Convention over configuration approach (no configuration required to manage a new FIX engine)
+        </li><li class="listitem">Discovery of new manageable applications</li><li class="listitem">Consistent naming scheme</li><li class="listitem">Persistence layer</li><li class="listitem">Ability to start processes remotely</li><li class="listitem">
+          Scalability:
+          <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">One central point of contact for any number of managed applications</li><li class="listitem">Metadata-driven caching system aimed at reducing the load on managed applications</li><li class="listitem">Distributed asynchronous model for the processing of logs data</li><li class="listitem">Firewall-friendly</li></ul></div></li></ul></div><p>Therefore we strongly recommend that third-party systems interface with the MA.</p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2054"></a>4.2.5.2.&nbsp;Available Features</h4></div></div></div><p>
+        The JMX API is meant to provide sufficient information to allow third-party and internal systems
+        to deliver monitoring functionality for clients who elect to not use the Dashboard. Not all
+        aspects of Catalys monitoring and management can be achieved via the JMX API though; some of them are
+        only accessible from the Dashboard. The following table provides a comparison:
+      </p><div class="informaltable"><table border="1"><colgroup><col><col><col><col></colgroup><thead><tr><th>Category</th><th>Functionality</th><th>Catalys Dashboard</th><th>JMX API</th></tr></thead><tbody><tr><td>Overall</td><td>Audit trail</td><td>Available</td><td>N/A</td></tr><tr><td>Overall</td><td>Role-based access control</td><td>Available</td><td>N/A</td></tr><tr><td>Server management</td><td>View server information and configuration</td><td>Available</td><td>Available</td></tr><tr><td>Server management</td><td>Start/stop servers</td><td>Available</td><td>Available</td></tr><tr><td>Server management</td><td>Command-line access</td><td>Available</td><td>Available</td></tr><tr><td>Server management</td><td>Startup script details</td><td>Available</td><td>Available</td></tr><tr><td>Server management</td><td>View HA cluster details and trigger failover</td><td>Available</td><td>Available</td></tr><tr><td>Session management</td><td>Sessions action (Start, stop, block...)</td><td>Available</td><td>Available</td></tr><tr><td>Session management</td><td>FIX Protocol admin actions</td><td>Available</td><td>Available</td></tr><tr><td>Log management</td><td>View log details</td><td>Partly Available</td><td>Available</td></tr><tr><td>Log management</td><td>Enable/disable log streaming</td><td>Available</td><td>Available</td></tr><tr><td>Log management</td><td>View contents of logs</td><td>Available</td><td>N/A</td></tr><tr><td>MA management</td><td>Mount points, managed hosts</td><td>Available</td><td>Available</td></tr><tr><td>Events management</td><td>Subscribe to change notifications</td><td>N/A</td><td>Partly Available</td></tr><tr><td>Platform management</td><td>JVM information</td><td>N/A</td><td>Available</td></tr><tr><td>Custom Message processors</td><td>Custom attributes</td><td>Available</td><td>Available</td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="operations_monitoring-jmx-server"></a>4.2.5.3.&nbsp;JMX authentication</h4></div></div></div><p>
+      JMX connections can be configured to be authenticated before they exchange data. To enable the authentication, changes 
+      would have to be done for both the client side and the server side. Catalys Node acts as a client when connecting to
+      LMA and as a server when connecting to jconsole or any other jmx client. Credentials properties file would have to be 
+      specified on the client side. Whereas, on the server side, access and password files will have to be specified.
+    </p><p>
+      For catalys node instance to act as a jmx server, two environment variables will have to be created. Firstly, 
+      <span class="emphasis"><em>JMX_REMOTE_X_ACCESS_FILE</em></span>, which specifies the absolute location of the jmx access file 
+      and secondly, <span class="emphasis"><em>JMX_REMOTE_X_PASSWORD_FILE</em></span> which specifies the absolute location of the
+      jmx password file. 
+      For instance, environment variables can be the following:
+      For access file:
+      </p><pre class="programlisting">
+        JMX_REMOTE_X_ACCESS_FILE=C:\Itiviti\Catalys\Node\resources\jmxremote.access
+      </pre><p>
+      For password file:
+      </p><pre class="programlisting">
+        JMX_REMOTE_X_PASSWORD_FILE=C:\Itiviti\Catalys\Node\resources\jmxremote.password
+      </pre><p>
+      
+      The password file should have restrictive permissions. Only the owning user should have access to this file.
+      JMX access file contains the usernames and their corresponding access levels (readwrite is required for proper
+      operations) and JMX password file should contain the usernames and their corresponding passwords.
+      For example, 
+      </p><p>
+        JMX access file can contain the following:
+      </p><p>
+      </p><p>
+      <span class="bold"><strong>        
+		username readwrite
+      </strong></span>
+      </p><p>
+	  (where username is the user for which the access level is to be set. readwrite defines access level 
+	    to be granted to the user)
+	  
+      </p><p>
+        And JMX password file can contain the following entry:
+      </p><p>
+      </p><p>
+       <span class="bold"><strong>          
+		  username username_password
+       </strong></span>
+     </p><p>
+	 (where username is the user against which the JMX authentication will be done
+       and username_password is the password of this user)
+    </p><p>
+      For Catalys Node instance to act as a jmx client, <span class="emphasis"><em>JMX_CLIENT_CREDENTIALS_FILE</em></span> environment variable 
+      will have to be set. The value of this variable is the absolute path of the credentials properties file.
+      For instance, the environment variable can be the following:
+      </p><pre class="programlisting">
+         JMX_CLIENT_CREDENTIALS_FILE=C:\Catalys\windows\jmxHostsCredentials.properties
+      </pre><p>
+    </p><p>
+      Credentials property file should be defined in below format :
+      </p><p>
+        <span class="bold"><strong> localhost=username:password</strong></span>
+      </p><p>
+     (where localhost is a hostname of the device where we are accessing the jmx server.
+     And username:password is the username and password of the user which will be used to connect to the jmx server.
+     Alternative delimiters permitted to be used in the java properties files can also be used)
+   
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2170"></a>4.2.5.4.&nbsp;Modes of Interaction</h4></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2172"></a>Polling and Notifications</h5></div></div></div><p>
+          From the perspective of the third-party application, the JMX API provides two approaches to receive data:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Active polling</li><li class="listitem">Passive notification</li></ul></div><p>
+          Active polling requires that client applications should query the MA on a regular basis to receive
+          an updated snapshot of the data.
+        </p><p>
+          Passive notification is enabled for some data based on technical availability and relevance. Typically,
+          notifications are issued when the data does not change too frequently (to limit the number of notifications)
+          and when a change in the data is likely to trigger an immediate reaction from the third-party client, such
+          as issuing an alert.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2180"></a>Caching and Persistence</h5></div></div></div><p>
+          The MA provides a sophisticated model for caching and persisting MBean attributes. For
+          every private MBean in the managed application the MA publishes a public MBean. This public MBean is not
+          just a simple proxy for the private MBean, it also ensures the caching and persistence of the private MBean's
+          attributes.
+        </p><p>
+          By default, each attribute has a caching of 1 second and is not persisted. Therefore if a third-party
+          system polls the value of the attribute in the public MBean 50 times in one second, the public MBean will
+          only forward one call to the private MBean, and will return the cached value 49 times. The fact that the
+          attribute is not persisted means that if MA is restarted and the managed instance of the Node is
+          not running when the MA restarts, the public MBean will still be available, but the attribute's value will
+          be null until the connection is reestablished.
+        </p><p>
+          These default caching and persistence settings are overridden for selected Node MBeans based
+          on operational relevance. Here are the possible scenarios:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+            First some attributes are configured for infinite caching.
+            This is used in cases where a change in the attribute's value
+            is only possible if the containing MBean's identity changes.
+            For example, a session-specific MBean will not exist if the
+            definition of the session, such as the SenderCompID, is
+            altered.
+          </li><li class="listitem">
+            Secondly, some attributes are cached every minute. Those
+            represent values which are unlikely to change, or whose
+            intrinsic granularity is in itself no finer than a minute.
+          </li><li class="listitem">
+            Then there exists a group of attributes with 5 seconds of
+            caching. These are typically used for notifications, as
+            described above. Polling of these attributes is discouraged,
+            partly because it is unnecessary, but also because these
+            attributes may be presented as complex data structure whose
+            size may affect network traffic. Reliance on notification is
+            the recommended approach.
+          </li><li class="listitem">
+            Finally, a group of attributes are cached for 1 second.
+            These attributes are good candidates for regular polling and
+            their size is also adequate to limit any impact on network
+            traffic.
+          </li></ul></div><p>
+          As a further optimization, the MA always fetches attributes by batch, and the batching of attributes
+          is based on caching duration. Therefore, when a third-party application requests the value of attribute
+          of one element of the group, all attributes in the group will be refreshed and cached, and a further
+          request for another attribute in the same batch during the caching period will not generate any incremental
+          call to the managed Node.
+        </p><div class="note"><h3 class="title">Note</h3><p>
+            Caching and persistence values can be customized even further, although this can have a significant
+            impact on performance. This customization is possible through the use of metadata descriptors, which are
+            XML files placed in the MA's classpath at runtime and which have names that correspond to the private
+            MBeans' names. Please contact your local support office if you believe that specific caching and
+            persistence values should be overridden for your deployment.
+          </p></div></div><p>
+        See <a href="apf.html" title="Appendix&nbsp;F.&nbsp;JMX MBean Reference">JMX MBean Reference</a>
+        for information about the individual MBeans that are available.
+      </p><p>
+        See the <a href="ch08s08.html" title="8.8.&nbsp;JMX API Advanced Operations">Programming Guide</a> for details on how to
+        programmatically interact with the MA.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_monitoring-mis"></a>4.2.6.&nbsp;Monitoring via the Dashboard</h3></div></div></div><p>
+      Please see the documentation for the Catalys MIS and Dashboard.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_monitoring-custom-monitor"></a>4.2.7.&nbsp;Developing a Custom Monitor Class</h3></div></div></div><p>
+      It is possible to monitor the Node in-process by developing a custom monitor class. Custom monitor classes are
+      application level objects, so they receive events for all FIX sessions. See the
+      <a href="ch08.html#prog_components" title="8.1.&nbsp;Custom Components">Programming Guide</a> for more details.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch04.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch04.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch04s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;4.&nbsp;Operations and Monitoring&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;4.3.&nbsp;Configuration Model and Runtime Changes</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

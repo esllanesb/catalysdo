@@ -1,0 +1,28 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 5.4.&nbsp;FIX Drop Copy</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="prev" href="ch05s03.html" title="5.3.&nbsp;FIX Routing"><link rel="next" href="ch05s05.html" title="5.5.&nbsp;Message Buffering"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05s03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;5.&nbsp;Standard Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="stdfeature_dropcopy"></a>5.4.&nbsp;FIX Drop Copy</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_dropcopy-introduction"></a>5.4.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Node supports the "drop copy" of FIX messages. In general, to drop copy a message is to copy a FIX message
+      from one FIX session and send it outbound on another FIX session. The copied message can be an exact duplicate,
+      or it can be modified by adding, removing or altering tags.
+    </p><p>
+      A common use case for drop copy is for a broker to copy all fills on live trading FIX sessions and send them to
+      an internal risk system.
+    </p><div class="mediaobject"><img src="../resources/DropCopy.png"></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_dropcopy-methods"></a>5.4.2.&nbsp;Drop Copy Methods</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2990"></a>Rules Engine</h4></div></div></div><p>
+        The <a href="ch06s02.html" title="6.2.&nbsp;Catalys Rules Engine">Catalys Rules Engine</a> has built-in drop copy support.
+        Drop copy rules of varying complexity can be created to meet your requirements by taking advantage of the
+        built-in conditions and expression language. Multiple copies of one message can be made and sent outbound on
+        any number of sessions.
+      </p><p>
+        See the <a href="ch06s02.html#optfeature_rules_engine_actions-actionDropCopyTo" title="ActionDropCopyTo">Drop Copy Action</a> in the Rules
+        Engine for more details.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2996"></a>Custom Message Processor</h4></div></div></div><p>
+        A custom message processor can be used to make a clone of the original message, modify it and
+        send it out one or more other sessions.
+      </p><p>
+        If no session match is found, a Reject is generated and sent back to the inbound session
+        where the original message came in on.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch05.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.3.&nbsp;FIX Routing&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;5.5.&nbsp;Message Buffering</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:34+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

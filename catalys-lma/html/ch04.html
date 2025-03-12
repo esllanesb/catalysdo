@@ -1,0 +1,24 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys LMA User Guide &#151; Chapter&nbsp;4.&nbsp;API</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys LMA User Guide"><link rel="up" href="index.html" title="Catalys LMA User Guide"><link rel="prev" href="ch03s05.html" title="3.5.&nbsp;SSL"><link rel="next" href="ch04s02.html" title="4.2.&nbsp;JavaDoc"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch03s05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;4.&nbsp;API</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch04s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="Local_Management_Agent_API"></a>Chapter&nbsp;4.&nbsp;API</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="ch04.html#Local_Management_Agent_API-JMX_API">4.1. JMX API</a></span></dt><dt><span class="section"><a href="ch04s02.html">4.2. JavaDoc</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_API-JMX_API"></a>4.1.&nbsp;JMX API</h2></div></div></div><p>
+      The LMA JMX API uses only open MBeans to avoid introducing any
+      binary dependency between the management console and manageable applications.
+    </p><p>
+      JMX is a self-descriptive management technology. Each MBean
+      exposes its metadata, which fully describes its management API.
+      For more details on JMX, please refer to the
+      <a href="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html" target="_top">JMX Technology Home Page</a>.
+    </p><p>To inspect the LMA JMX API, start the LMA and connect a jconsole to it.</p><p>
+      For example, any <a href="ch03s04.html" title="3.4.&nbsp;LMA Scripts">scripts</a>
+      added to the <span class="emphasis"><em>scripts</em></span> directory of the LMA installation are
+      published as attributes of the "LMA.Scripts" MBean. The results
+      of these scripts can be used to generate events in the MIS by
+      configuring an interest that inspects the MBean. The freespace
+      script that is provided with the LMA installation is one such
+      application, the results of which can be utilized by configuring
+      a numeric gauge interest in the MIS.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch03s05.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch04s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">3.5.&nbsp;SSL&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;4.2.&nbsp;JavaDoc</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2022-04-05T14:53:01+02:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2022 CameronTec</div></div></body></html>

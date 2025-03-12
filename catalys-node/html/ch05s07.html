@@ -1,0 +1,64 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 5.7.&nbsp;FIX Dictionaries</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="prev" href="ch05s06.html" title="5.6.&nbsp;Message Throttling"><link rel="next" href="ch05s08.html" title="5.8.&nbsp;Inbound Message Validation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05s06.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;5.&nbsp;Standard Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05s08.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="stdfeature_fix_dictionaries"></a>5.7.&nbsp;FIX Dictionaries</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_fix_dictionaries-intro"></a>5.7.1.&nbsp;Introduction</h3></div></div></div><p>
+      FIX dictionaries provide a way to define and access FIX field and message information. This is particularly
+      useful in message transformers that need to access information about field tags, names, data types and expected
+      values. A set of default dictionaries is bundled with the Node, but they can be customized as needed.
+    </p><p>Features of the dictionaries include:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Simple XML-based implementation</li><li class="listitem">Customizable for use in transformers and other custom code</li><li class="listitem">Open interface for custom implementations</li><li class="listitem">Access to message structure information</li><li class="listitem">Access to message field and field group information</li><li class="listitem">Access to field value information</li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_fix_dictionaries-gettingstarted"></a>5.7.2.&nbsp;Getting Started</h3></div></div></div><p>
+      The FIX dictionaries define field groups for each message type for each FIX version specification. These
+      dictionaries are automatically generated from the FPL FIX repositories.
+    </p><p>
+      The dictionary files are packaged inside the <span class="emphasis"><em>catalys-node.jar</em></span> library. If you do not need to
+      add custom dictionaries or modify the dictionaries there is nothing you have to do &#8212; the Node will find
+      and use the proper dictionary inside the jar by default.
+    </p><p>
+      A copy of the dictionary files can be found in the <span class="emphasis"><em>resources/dictionary</em></span> directory of the Node
+      distribution. The dictionaries are in an XML format specified by <span class="emphasis"><em>dictionary.dtd</em></span>, which can
+      be found in the same directory.
+    </p><p>
+      You can use this copy as a starting point if you need to make modifications or create your own custom
+      dictionaries.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_fix_dictionaries-custom"></a>5.7.3.&nbsp;Custom Dictionaries</h3></div></div></div><p>
+      The preferred method of writing a custom dictionary is to use XML.
+    </p><p>
+      To define your custom fields, field groups, or messages in a custom XML dictionary the following steps are
+      required:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Create a new XML file (e.g. <span class="emphasis"><em>fix.4.4.cust.xml</em></span>) in the
+        <span class="emphasis"><em>resources/dictionary</em></span> directory.
+      </li><li class="listitem">
+        Add the new definitions to this file according to the format given in
+        <span class="emphasis"><em>resources/dictionary.dtd</em></span>.
+      </li><li class="listitem">
+        Prepend the <span class="emphasis"><em>resources</em></span> directory to the Java classpath of the Node application so that it
+        can find your custom file at runtime.
+      </li></ol></div><p>
+      To enable extra debugging when loading and using your custom dictionary, set the
+      <a href="ch03s02.html#config_logging-logback-configuration" title="3.2.3.&nbsp;Logback Configuration">loggers</a> for
+      <span class="emphasis"><em>com.camerontec.catalys.util.dictionary</em></span> to <code class="code">DEBUG</code> level. All information
+      regarding the creation of fields, field groups and messages will then be sent to those loggers.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_fix_dictionaries-config"></a>5.7.4.&nbsp;Configuration of Custom Dictionary</h3></div></div></div><p>
+      Once the new dictionary has been created and included in the classpath of the application, it can be configured
+      into the Node by setting the <code class="code">dictionaryName</code> attribute of the <code class="code">Session</code> element:
+    </p><pre class="programlisting">&lt;Session dictionaryName="fix.4.4.cust" ...&gt;
+  ...
+&lt;/Session&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_fix_dictionaries-api"></a>5.7.5.&nbsp;Dictionaries API</h3></div></div></div><p>
+      Custom code can access the new dictionary via the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/dictionary/XMLDictionaryFactory.html#getDictionary(java.lang.String)" target="_top">XMLDictionaryFactory.getDictionary(name)</a>
+      method. For example:
+    </p><pre class="programlisting">IDictionary myDictionary = XMLDictionaryFactory.getInstance().getDictionary("fix.4.4.cust");</pre><p>
+      The <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/dictionary/IDictionary.html" target="_top">IDictionary</a>
+      interface provides methods to get the field, field group and message information associated with the dictionary.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_fix_dictionaries-non-xml"></a>5.7.6.&nbsp;Non XML-based Dictionaries</h3></div></div></div><p>
+      To make non XML-based dictionaries available to your custom components (e.g. message processor) you need
+      to write an implementation of
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/dictionary/IDictionaryFactory.html" target="_top">IDictionaryFactory</a>
+      which reads/produces the dictionaries from an alternate source.
+    </p><p>
+      You can then use this factory and the dictionaries it produces in your own code. Note that it is not possible to
+      override the XML dictionaries used by the Node for internal purposes.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s06.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch05.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.6.&nbsp;Message Throttling&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;5.8.&nbsp;Inbound Message Validation</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:34+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

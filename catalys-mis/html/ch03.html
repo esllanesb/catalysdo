@@ -1,0 +1,770 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys MIS User Guide &#151; Chapter&nbsp;3.&nbsp;Configuration And Maintenance</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys MIS User Guide"><link rel="up" href="index.html" title="Catalys MIS User Guide"><link rel="prev" href="ch02s04.html" title="2.4.&nbsp;Installation"><link rel="next" href="ch03s02.html" title="3.2.&nbsp;Maintenance"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch02s04.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;3.&nbsp;Configuration And Maintenance</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch03s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="ConfigurationAndMaintenance"></a>Chapter&nbsp;3.&nbsp;Configuration And Maintenance</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="ch03.html#mis_configuration">3.1. Configuration</a></span></dt><dd><dl><dt><span class="section"><a href="ch03.html#mis_configuration-terminology">3.1.1. Terminology</a></span></dt><dt><span class="section"><a href="ch03.html#mis_configuration-Configuration_file">3.1.2. Configuration File</a></span></dt><dt><span class="section"><a href="ch03.html#mis_configuration-script-configuration">3.1.3. Script Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#mis_configuration-dashboard-timeout-configuration">3.1.4. Dashboard timeout Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#mis_configuration-MIS-Secure-Access">3.1.5. MIS Secure Access</a></span></dt></dl></dd><dt><span class="section"><a href="ch03s02.html">3.2. Maintenance</a></span></dt><dd><dl><dt><span class="section"><a href="ch03s02.html#mis_maintenance-logging">3.2.1. Logging</a></span></dt><dt><span class="section"><a href="ch03s02.html#mis_maintenance-mbeans">3.2.2. Browse CameronTec MBeans</a></span></dt><dt><span class="section"><a href="ch03s02.html#mis_maintenance-performance-and-scalability">3.2.3. Performance and Scalability</a></span></dt><dt><span class="section"><a href="ch03s02.html#mis_maintenance-clean-up">3.2.4. Logs Clean-up</a></span></dt></dl></dd><dt><span class="section"><a href="ch03s03.html">3.3. Management Information Server API</a></span></dt><dd><dl><dt><span class="section"><a href="ch03s03.html#mis_API-JMX_API">3.3.1. JMX API</a></span></dt><dt><span class="section"><a href="ch03s03.html#operations_monitoring-jmx-server">3.3.2. JMX authentication</a></span></dt><dt><span class="section"><a href="ch03s03.html#mis_API-eventCustomAction">3.3.3. Custom Escalation Actions</a></span></dt><dt><span class="section"><a href="ch03s03.html#mis_API-Log_Events_Repository_Client">3.3.4. Log Events Repository Client</a></span></dt><dt><span class="section"><a href="ch03s03.html#mis_API-customUserProvider">3.3.5. Custom User Provider</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="mis_configuration"></a>3.1.&nbsp;Configuration</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_configuration-terminology"></a>3.1.1.&nbsp;Terminology</h3></div></div></div><p>The following terminology will be used in this section:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a name="mis_configuration-jmx-service-url"></a>
+        JMX Service URL: It represents an URL of a JMX service and has the following format:
+        <code class="code">service:jmx:<span class="emphasis"><em>protocol</em></span>://<span class="emphasis"><em>[host[</em></span>:
+          <span class="emphasis"><em>port]][url-path].</em></span>
+        </code>
+
+        Please visit
+        <a href="http://download.oracle.com/javase/1.5.0/docs/api/javax/management/remote/JMXServiceURL.html" target="_top">this page</a>
+        to find out more about JMX Service URLs.
+      </li><li class="listitem">JMX Connector Server: It is a connector which is attached
+        to an MBean server and listens for connection requests from JMX
+        clients on a given JMX Service URL. It can be based on various
+        protocols (HTTP, RMI, JMXMP, WS, SMTP...) which is indicated in
+        its JMX Service URL
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_configuration-Configuration_file"></a>3.1.2.&nbsp;Configuration File</h3></div></div></div><p>
+      The start-up scripts of the MIS set the configuration file to <span class="emphasis"><em>conf/mis.conf</em></span> by default. To
+      modify this default, change the <code class="code">-Dmis.configuration-file</code> property. If the file specified by
+      this property does not exists then the MIS will create it.
+    </p><p>The MIS configuration file contains lines of the form:</p><pre class="programlisting">&lt;property name&gt; = &lt;property value&gt;</pre><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-dashboard-configuration"></a>3.1.2.1.&nbsp;Dashboard Configuration</h4></div></div></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-dashboard-refresh-rate"></a>3.1.2.1.1.&nbsp;Dashboard Refresh Rate</h5></div></div></div><p>
+          By default the Dashboard refreshes its data every 8 seconds. This can be changed by setting the
+          <code class="code">dashboard.ui/refreshRateInSeconds</code> property. The value must be between 1 and 60. If a value
+          outside of this range is used then the property reverts to its default. For example:
+        </p><pre class="programlisting">dashboard.ui/refreshRateInSeconds=5</pre></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-dashboard-log-refresh-rate"></a>3.1.2.1.2.&nbsp;Dashboard Log Refresh
+          Rate
+        </h5></div></div></div><p>When refreshing live log views the Dashboard polls the server
+          every 2 seconds by default. This can be changed by setting this property:
+        </p><pre class="programlisting">dashboard.ui/logRefreshRateInSeconds=5</pre></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-dashboard"></a>3.1.2.1.3.&nbsp;Dashboard Address and Port</h5></div></div></div><p>
+          By default the Dashboard listens on all network interfaces. To listen on a particular interface, specify the
+          IP address of via this property:
+        </p><pre class="programlisting">dashboard.webServer/host = 187.23.2.101</pre><p><a name="mis_configuration-dashboard-port"></a>
+          By default the Dashboard listens on port 8080. To change this settings, modify this property:
+        </p><pre class="programlisting">dashboard.webServer/port = 8081</pre></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-dashboard-user-authentication"></a>3.1.2.1.4.&nbsp;Dashboard User Authentication</h5></div></div></div><p>By default the Dashboard authenticates users against a local database.</p><p>Alternatively, the Dashboard can be configured to use JAAS or
+          LDAP-based user authentication against an external directory
+          server. This approach is limited to authentication; authorization
+          is still performed locally by the Dashboard. Note that users need
+          to be added via the Dashboard Admin tab whether they are
+          authenticated locally or via JAAS or LDAP.
+        </p><p>Authentication in the Dashboard always tries to make use of
+          authenticators in the same order: the JAAS authenticator first,
+          then the LDAP authenticator, then the default, UMS-based,
+          authenticator.
+        </p><p>Two properties can be set to control the maximum number of concurrent users and sessions:</p><pre class="programlisting">dashboard.maxNumberOfConcurrentUsers = 0</pre><pre class="programlisting">dashboard.onlyAllowOneSessionPerLoggedUser = false</pre><p>If <span class="emphasis"><em>dashboard.maxNumberOfConcurrentUsers</em></span> is greater than 0, then only that number of 
+          users are allowed to be logged on at the same time.</p><p>If <span class="emphasis"><em>dashboard.onlyAllowOneSessionPerLoggedUser</em></span> is set to true, then only one session 
+          per user is allowed.</p><p>These two properties default to 0 and false respectively, and work independently.</p><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="d5e873"></a>3.1.2.1.4.1.&nbsp;JAAS Authentication</h6></div></div></div><p>
+            JAAS user authentication is configured by specifying the following two properties. The first is the path to
+            a JAAS login configuration file; the second is the name of a login module defined in the file.
+          </p><pre class="programlisting">dashboard.security.jaas.authenticator/loginConfigurationFile=/tmp/jaas-login.conf
+dashboard.security.jaas.authenticator/loginContextName=Dashboard</pre><p>Where the file <span class="emphasis"><em>/tmp/jaas-login.conf</em></span> contains:</p><pre class="programlisting">Dashboard {
+  com.sun.jmx.remote.security.FileLoginModule required \
+    passwordFile="/tmp/dashboard-passwords.properties";
+};</pre><p>And the passwords file <span class="emphasis"><em>/tmp/dashboard-passwords.properties</em></span> contains:</p><pre class="programlisting">user1=password1
+user2=password2
+...</pre><p>
+            JAAS comes with a number of predefined login modules, as well as allowing custom modules to be written.
+          </p></div><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="d5e884"></a>3.1.2.1.4.2.&nbsp;LDAP Authentication</h6></div></div></div><p>Simple LDAP authentication is supported (rather than SASL-based authentication).</p><p>
+            Mixed-mode authentication is permitted, whereby some users are
+            authenticated by the LDAP server and the rest are authenticated
+            locally. If LDAP-based authentication is configured but the
+            Distinguished Name (DN) resolution fails, then the MIS will
+            attempt to authenticate the user locally.
+          </p><p>
+            LDAP-based user authentication is configured by specifying this property:
+          </p><pre class="programlisting">dashboard.security.ldap.authenticator/ldapServerURL=ldap://mydirectoryserver.mycompany.com:389</pre><p>
+            More than one LDAP URL can be specified in the <code class="code">ldapServerURL</code> property in order to enable
+            automatic failover; each URL must be separated by a space. The URLs will be tried in the
+            listed order until a successful attempt is made or all URLs fail.
+          </p><p>
+            By default, connection attempts to inaccessible or unresponsive LDAP servers will not timeout until
+            the underlying TCP socket times out. The following properties can be set to change this behavior.
+          </p><pre class="programlisting"># 10 second timeout when connecting to the server
+dashboard.security.ldap.authenticator/ldapServerConnectTimeout=10000
+
+# 5 second timeout when waiting for response after successful connection is established
+dashboard.security.ldap.authenticator/ldapServerReadTimeout=5000</pre><p>
+            In order to bind to the LDAP server, the Dashboard needs to resolve the Distinguished Name (DN) by which a
+            user attempting to authenticate is known to the LDAP server. Once resolved, this DN and the user-supplied
+            password are used to perform the bind operation. There are two ways to resolve the DN of a username:
+            mapping patterns or a search. Note that it is possible to mix these two methods. The Dashboard will try
+            mapping patterns first and then the search, stopping as soon as a DN is found.
+          </p><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="mis_configuration-username-to-DN-mapping"></a>3.1.2.1.4.2.1.&nbsp;Resolve DN with a username to DN mapping</h6></div></div></div><p>
+              This approach is the simplest but it does require a simple
+              pattern to derive a DN from a username. For example, all DNs in
+              an organization may look like the following:
+            </p><pre class="programlisting">CN=&lt;user name&gt;,OU=Users,DC=mycompany,DC=com</pre><p>
+              The property <code class="code">userDNMappingPatterns</code> is used to specify this mapping. This property's value is a
+              comma-separated list of patterns, where each occurrence of the <code class="code">{0}</code> placeholder will be
+              replaced by the user-supplied username. For the example above:
+            </p><pre class="programlisting">dashboard.security.ldap.authenticator/userDNMappingPatterns=CN=\{0\},OU=Users,DC=mycompany,DC=com</pre><p>
+              If the DN is more complicated then extra patterns can be
+              added. For example, the DN may have an extra OU field specifying
+              the location of the user:
+            </p><pre class="programlisting">dashboard.security.ldap.authenticator/userDNMappingPatterns=CN=\{0\}, \
+  OU=London,OU=Users,DC=mycompany,DC=com, \
+  CN=\{0\},OU=New York,OU=Users,DC=mycompany,DC=com, \
+  CN=\{0\},OU=Sydney,OU=Users,DC=mycompany,DC=com
+</pre><p>The Dashboard will use each pattern in turn to attempt to bind to the LDAP server.</p><div class="note"><h3 class="title">Note</h3><p>
+                If multiple patterns are specified then these must be separated by exactly one comma and one space.
+              </p></div></div><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="mis_configuration-ldap-search"></a>3.1.2.1.4.2.2.&nbsp;Resolve DN with an LDAP search</h6></div></div></div><p>
+              If the mapping approach is not usable because, for example,
+              the DNs take so many different forms that configuring them all
+              through patterns would not be maintainable, or the DNs do not
+              contain a username that is suitable for authentication purposes,
+              an LDAP search can be used.
+            </p><p>
+              LDAP searches use expressions written in the LDAP expression language, as specified by RFC 4515. Such
+              expressions typically make use of LDAP attributes that are not part of user DNs. The search is specified
+              with the following property:
+            </p><pre class="programlisting">dashboard.security.ldap.authenticator/userDNSearchExpression= \
+  (&amp;(objectClass=user)(sAMAccountName=\{0\})
+</pre><p>where once again the <code class="code">{0}</code> placeholder will be replaced by the user-supplied username.</p><p>
+              Most directory servers do not permit searching from the root directory. The
+              <code class="code">userDNSearchBase</code> property specifies a base DN under which to search. For example:
+            </p><pre class="programlisting">dashboard.security.ldap.authenticator/userDNSearchBase=OU=Users,DC=mycompany,DC=com</pre><p>Alternatively the base can be appended to the LDAP Server URL. For example:</p><pre class="programlisting">dashboard.security.ldap.authenticator/ldapServerURL= \
+  ldap://mydirectoryserver.mycompany.com:389/OU=Users,DC=mycompany,DC=com</pre><p>
+              Most directory servers also disallow anonymous searches. The <code class="code">authenticatedSearchUserDN</code>
+              and <code class="code">authenticatedSearchUserPassword</code> properties specify a special user account (typically the
+              administrator account) with which to do the search. Below is a complete configuration based on an LDAP
+              search that uses a base DN and an authenticated search:
+            </p><pre class="programlisting">dashboard.security.ldap.authenticator/ldapServerURL= \
+  ldap://mydirectoryserver.mycompany.com:389
+dashboard.security.ldap.authenticator/authenticatedSearchUserDN= \
+  CN=Administrator,OU=Users,DC=mycompany,DC=com
+dashboard.security.ldap.authenticator/authenticatedSearchUserPassword= \
+  encryptme://{th1s1s4sup3rs4f34dm1np4ssw0rd}
+dashboard.security.ldap.authenticator/userDNSearchExpression= \
+  (&amp;(objectClass=user)(sAMAccountName=\{0\}))
+dashboard.security.ldap.authenticator/userDNSearchBase= \
+  OU=Users,DC=mycompany,DC=com
+</pre><p>
+              See the <a href="ch03.html#mis_configuration-encrypted-properties" title="3.1.2.9.&nbsp;Encrypted Properties">Encrypted Properties</a>
+              section for details of the <code class="code">encryptme</code> functionality.
+            </p></div></div></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-dashboard-user-details"></a>3.1.2.1.5.&nbsp;Dashboard User Details
+          Provider
+        </h5></div></div></div><p>By default, the Dashboard manages user details internally
+          using an embedded H2 database.
+        </p><p>User details include:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Username</li><li class="listitem">Whether the user is enabled</li><li class="listitem">Groups that the user belongs to</li><li class="listitem">Permissions</li><li class="listitem">First name, last name, email address, locale</li><li class="listitem">(Optionally) Password. For security users passwords are
+            often not stored with the rest of the user information, but
+            rather are retrieved from an LDAP server.
+          </li></ul></div><p>
+          User details can also be provided by a custom class, which implements the
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/mis/ums/ICustomUserDetailsProvider.html" target="_top">ICustomUserDetailsProvider</a>
+          interface.
+        </p><p>This class, and any properties of that class, are configured by
+          setting the following properties:
+        </p><pre class="programlisting">ums/customProviderImplementationClassName=custom user details provider class
+ums/customProviderProperties[&lt;property name 1&gt;]=property value 1
+ums/customProviderProperties[&lt;property name 2&gt;]=property value 2
+</pre><p>The Dashboard requires a user called "admin" to exist in the
+          UMS. Custom user details providers must ensure that they support
+          an "admin" user, possibly by mapping this user name to some other
+          user defined in the back-end that has administration
+          privileges.
+        </p><p>
+          A very basic sample custom user details provider, the
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/mis/ums/ldap/SampleLDAPUserDetailsProvider.html" target="_top">SampleLDAPUserDetailsProvider</a>
+          comes with the MIS installation. Full source code for this class can be found at:
+          <span class="emphasis"><em>src/com/camerontec/catalys/mis/ums/ldap/SampleLDAPUserDetailsProvider.java</em></span>.
+        </p><p>This component is configured by setting the following
+          properties:
+        </p><pre class="programlisting">ums/customProviderImplementationClassName= \
+  com.camerontec.catalys.mis.ums.ldap.LDAPUserDetailsProvider
+ums/customProviderProperties[ldapServerURL]=ldap://mydirectoryserver.mycompany.com:389
+ums/customProviderProperties[authenticationDN]=CN=Administrator,OU=Users,DC=mycompany,DC=com
+ums/customProviderProperties[authenticationPassword]=encryptme://{thisIsMyPassword}
+ums/customProviderProperties[userDNSearchBase]=OU=Users,DC=mycompany,DC=com
+ums/customProviderProperties[userDNSearchPattern]=(&amp;(objectClass=user)(sAMAccountName=%s))</pre><p>For further detail regarding the custom user provider API,
+          refer to the
+          <a href="ch03s03.html#mis_API-customUserProvider" title="3.3.5.&nbsp;Custom User Provider">API</a>
+          documentation.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-dashboard-ssl"></a>3.1.2.1.6.&nbsp;Configuring Dashboard for SSL</h5></div></div></div><p>
+          The MIS uses Jetty as its internal web server, which can be configured for SSL. You may wish to do this in
+          order
+          to encrypt user credentials that are passed to the MIS. General information can be found
+          <a href="http://www.eclipse.org/jetty/documentation/current/configuring-ssl.html" target="_top">here</a>.
+          The actual configuration changes must be made in
+          <span class="emphasis"><em>web/etc/CameronWeb.xml</em></span>
+          and you can find
+          example configurations in the above link.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-managed-hosts-configuration"></a>3.1.2.2.&nbsp;Managed Hosts
+        Configuration
+      </h4></div></div></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-Managed_Hosts"></a>3.1.2.2.1.&nbsp;Managed Hosts</h5></div></div></div><p>This configuration entry defines a list of hosts that will be
+          manageable through the MA. The MA will connect to the LMA running
+          on each host using the default URL:
+          <span class="emphasis"><em>service:jmx:jmxmp://&lt;host&gt;:10002</em></span> or the JMX
+          Service URL configured for this host, and will aggregate the data
+          exposed by each LMA and make it accessible through its API.
+        </p><p>
+          Note that this configuration can also be changed via the <a href="ch04s07.html" title="4.7.&nbsp;Admin">Dashboard</a>.
+          However, if this configuration is changed via the Dashboard, the configuration file is re-ordered and
+          re-written.
+        </p><p>Below is an example configuration that defines one managed
+          host using the default JMX Service URL and one managed host that
+          uses a non-default JMX Service URL:
+        </p><pre class="programlisting">ma/managedHosts = \
+    &lt;set&gt;\
+    &lt;value&gt;\
+    &lt;host&gt;host1&lt;/host&gt;\
+    &lt;/value&gt;\
+    &lt;value&gt;\
+    &lt;host&gt;host2&lt;/host&gt;\
+    &lt;jmx-service-url&gt;service:jmx:jmxmp://host2:10004&lt;/jmx-service-url&gt;\
+    &lt;/value&gt;\
+    &lt;/set&gt;</pre><p>
+          The MA also exposes a public MBean
+          that can be used to configure the set of managed hosts. This
+          public MBean is registered under name
+          <code class="code">com.camerontec:type="MA"</code>. Changing the set of
+          managed hosts though this MBean also modifies the MIS's
+          configuration file.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-Managed_Hosts_Security"></a>3.1.2.2.2.&nbsp;Managed Hosts Security</h5></div></div></div><p>By default, no security is configured for the connections to a
+          managed host's LMA. If security is configured for a managed host,
+          the LMA running on the managed should also have its security
+          element configured accordingly (see the LMA documentation for
+          more information).
+        </p><p>The example below demonstrates how to configure TLS security
+          for a connection to a managed host called <code class="code">host3</code>:
+        </p><pre class="programlisting">ma/managedHosts = \
+  &lt;set&gt;\
+    &lt;value&gt;\
+      &lt;host&gt;host1&lt;/host&gt;\
+    &lt;/value&gt;\
+    &lt;value&gt;\
+      &lt;host&gt;host2&lt;/host&gt;\
+      &lt;jmx-service-url&gt;service:jmx:jmxmp://host2:10004&lt;/jmx-service-url&gt;\
+    &lt;/value&gt;\
+    &lt;value&gt;\
+      &lt;host&gt;host3&lt;/host&gt;\
+      &lt;security-profile&gt;\
+      &lt;socket-factory&gt;MySocketFactoryClass&lt;/socket-factory&gt;\
+      &lt;protocols&gt;\
+        &lt;protocol&gt;p1&lt;/protocol&gt;\
+      &lt;/protocols&gt;\
+      &lt;cypher-suites&gt;\
+        &lt;cypher-suite&gt;cs1&lt;/cypher-suite&gt;\
+      &lt;/cypher-suites&gt;\
+      &lt;/security-profile&gt;\
+    &lt;/value&gt;\  
+  &lt;/set&gt;</pre><p>
+          For a description of these configuration items, please refer to
+          <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html#CustomizingStores" target="_top">Sun's JSSE reference guide</a>.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-connector-server-configuration"></a>3.1.2.3.&nbsp;Connector Server
+        Configuration
+      </h4></div></div></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-Connector_Server_JMX_Service_URL"></a>3.1.2.3.1.&nbsp;Connector Server
+          URL
+        </h5></div></div></div><p>The <code class="code">mis.jmxConnectorServer/JMXServiceURL</code> property specifies
+          the protocol and port with which the JMX connector server is
+          started by the MIS. By default, this property is set to:
+        </p><pre class="programlisting">mis.jmxConnectorServer/JMXServiceURL=service:jmx:jmxmp://localhost:10000</pre><p>We recommend using the JMXMP protocol as it relies on TCP and
+          Java object serialization. It requires only one port and provides
+          good performance.
+        </p><p>Alternatively, you can also RMI or any other transport
+          protocol supported by JMX. Below is a configuration example with
+          an RMI connector server:
+        </p><pre class="programlisting">mis.jmxConnectorServer/JMXServiceURL=service:jmx:rmi:///jndi/rmi://localhost:10000/jmxrmi</pre></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-Connector_Server_Security"></a>3.1.2.3.2.&nbsp;Connector Server Security</h5></div></div></div><p>By default, no encryption is configured for the MIS connector
+          server. If TLS security is configured on the connector server,
+          applications connecting to this connector server should be
+          configured accordingly.
+        </p><p>The example below demonstrates how to configure TLS security
+          for the connector server :
+        </p><pre class="programlisting">mis.jmxConnectorServer/securityProfile = \
+  &lt;socket-factory&gt;MySocketFactoryClass&lt;/socket-factory&gt;\
+  &lt;protocols&gt;&lt;protocol&gt;protocol1&lt;/protocol&gt;&lt;protocol&gt;protocol2&lt;/protocol&gt;&lt;/protocols&gt;\
+  &lt;cypher-suites&gt;&lt;cypher-suite&gt;cs1&lt;/cypher-suite&gt;&lt;cypher-suite&gt;cs2&lt;/cypher-suite&gt;&lt;/cypher-suites&gt;\
+  &lt;need-client-auth&gt;true&lt;/need-client-auth&gt;\
+  &lt;want-client-auth&gt;false&lt;/want-client-auth&gt;</pre><p>
+          For a description of these configuration items, please refer to
+          <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html#CustomizingStores" target="_top">Sun's JSSE reference guide</a>.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-jms-agent-configuration"></a>3.1.2.4.&nbsp;JMS Agent Configuration</h4></div></div></div><p>The JMS agent is in charge of maintaining the JMS queues used
+        by the LMA to export log events into the MA.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-URI_on_which_the_JMS_Agent_is_listening"></a>3.1.2.4.1.&nbsp;URI on which the
+          JMS Agent is listening
+        </h5></div></div></div><p>You will need to configure the URI on which the JMS agent is
+          listening if your machine has more than one network adapter. By
+          default, this URI is:
+          <span class="emphasis"><em>tcp://&lt;IP address of the first network adapter found&gt;:61616</em></span>
+        </p><p>It is possible to instruct the MA to use a particular URI.
+          Note that changing this setting does not require that you change
+          anything in the configuration of the LMA, since this is taken
+          care of by the handshake protocol between the MA and the LMA.
+        </p><p>Below is an example configuration:</p><pre class="programlisting">ma.jmsAgent/JMSBrokerURI = tcp://192.168.100.100:9999</pre><p>
+          This URI should not point to "localhost" or "127.0.0.1". Instead it should point to an IP address or host
+          name of the MA's host, as seen from the LMA's host. IPv6 addresses need to be enclosed within
+          brackets, as in: <span class="emphasis"><em>tcp://[2001:0:cf2e:308c:10:977:3f57:ffed]:9999</em></span>.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-Memory_limits"></a>3.1.2.4.2.&nbsp;Memory limits</h5></div></div></div><p>In cases where the MA's Log Events Processor (see below) is
+          not fast enough to process the log events streamed by the LMA,
+          the JMS broker will impose a limit on the amount of memory that
+          can be used to hold pending messages. When this memory limit is
+          reached, JMS producers on the LMA side will be blocked until some
+          space becomes available in the JMS broker.
+        </p><p>By default, the memory limit is as follows:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">2 MB per JMS queue (the JMS Agent uses one queue per
+            streamed log file)
+          </li><li class="listitem">64 MB in total</li></ul></div><p>It is possible to change these settings. Below is an example
+          that illustrates how to instruct the MA to use a limit of 8 MB
+          per queue and 256 MB in total:
+        </p><pre class="programlisting">ma.jmsAgent/memoryLimitPerQueue = 8
+ma.jmsAgent/totalMemoryLimit = 256</pre></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-eps-configuration"></a>3.1.2.5.&nbsp;Event Processing Service
+        Configuration
+      </h4></div></div></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-custom-interest-templates"></a>3.1.2.5.1.&nbsp;Custom Interest Templates</h5></div></div></div><p>
+          The Event Processing Service allows observation and escalation of events in the MIS through
+          <span class="emphasis"><em>interests</em></span>. An interest is a definition of a sequence of events and conditions that lead \
+          to an alert within the MIS.
+        </p><p>Pre-configured interests come packaged with the MIS. In
+          addition, if licensed to do so, customers can supply their own
+          interest templates. This configuration property enables those
+          custom interest templates. By default this feature is
+          disabled.
+        </p><pre class="programlisting">eps.interestTemplateLibrary/loadCustomerInterestTemplates = true</pre><p>If this feature is enabled, the MIS searches the class path
+          for a directory called <span class="emphasis"><em>customer-interest-templates</em></span>. Files
+          with the
+          <span class="emphasis"><em>.epl</em></span>
+          suffix are loaded.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-email-action-configuration"></a>3.1.2.5.2.&nbsp;Email Action Configuration</h5></div></div></div><p>One of the actions that the Event Processing Service can
+          perform as part of an escalation sequence is to email a list of
+          recipients.
+        </p><p>To utilize this feature, the MIS must be configured with the
+          details of the email server. In addition there are a number of
+          configuration properties associated with the processing of
+          emails.
+        </p><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="d5e1028"></a>3.1.2.5.2.1.&nbsp;Email Server Configuration</h6></div></div></div><p>
+            To utilize the email action, configuration of an external email server is required using the following
+            properties.
+          </p><p>Set the hostname of the email server:</p><pre class="programlisting">eps.emailSender/mailServerHostName = smtp.mycompany.com</pre><p>Set the username of the mail account to be used for sending:</p><pre class="programlisting">eps.emailSender/mailServerUserName = jsmith</pre><p>
+            Set the password of the account. This property can be encrypted using
+            the <a href="ch03.html#mis_configuration-encrypted-properties" title="3.1.2.9.&nbsp;Encrypted Properties">encryptme</a> directive.
+          </p><pre class="programlisting">eps.emailSender/mailServerPassword = encryptme://{password}</pre><p>Set the port number of the server:</p><pre class="programlisting">eps.emailSender/mailServerHostPort= 587</pre><p>Set the name of the account that the emails are sent from:</p><pre class="programlisting">eps.emailSender/mailServerFromName = Jane Smith</pre><p>Set the address of the sender:</p><pre class="programlisting">eps.emailSender/mailServerFromAddress = jsmith@mycompany.com</pre><p>Enable TLS if the server supports it:</p><pre class="programlisting">eps.emailSender/mailServerUsesTLS = true</pre><div class="simplesect"><div class="titlepage"><div><div><h6 class="title"><a name="d5e1046"></a>Sending Email Using Microsoft Exchange SMTP</h6></div></div></div><p>Microsoft Exchange SMTP servers use a proprietary authentication mechanism known as NTLM.</p><p>
+              The MIS bundles the Geronimo Javamail library published under the Apache License 2.0, which does not
+              support the NTLM authentication scheme.
+            </p><p>To send emails to an MS Exchange SMTP server, download the
+              free Javamail implementation published by Sun (Oracle) under the
+              CDDL License:
+            </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+                Download <a href="http://www.oracle.com/technetwork/java/javamail/index.html" target="_top">Javamail from Oracle</a>.
+              </li><li class="listitem">Unzip the Sun Javamail archive and copy the
+                <span class="emphasis"><em>mail.jar</em></span>
+                file into
+                <span class="emphasis"><em>&lt;mis-install-dir&gt;/ext</em></span></li><li class="listitem">Edit the
+                <span class="emphasis"><em>&lt;mis-install-dir&gt;/conf/mis-wrapper.conf</em></span>
+                file
+              </li><li class="listitem">
+                Change <span class="emphasis"><em>geronimo-javamail_1.4_mail-1.8.2.jar</em></span> to <span class="emphasis"><em>mail.jar</em></span>.
+              </li></ol></div></div></div><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="d5e1062"></a>3.1.2.5.2.2.&nbsp;Email Batching</h6></div></div></div><p>
+            Emails are sent to recipients via an outbox unless the number to send exceeds a configurable maximum, in
+            which case they are batched and sent out at a slower rate. A number of configuration properties are
+            provided for this feature, although the default values for these properties should suffice for most
+            scenarios.
+          </p><p>
+            The following property allows you to set the maximum number of emails that can be sent to a group of
+            recipients in a specific time period (<code class="code">batchCheckPeriod</code>) before email batching occurs. It
+            defaults to 5.
+          </p><pre class="programlisting">eps.emailHandler/maxNumberEmailsToSendPerRecipients = 5</pre><p>
+            If a specified number of emails (<code class="code">maxNumberEmailsToSendPerRecipients</code>) has been
+            sent to a group of recipients within this time period (in milliseconds) then email batching starts.
+            Defaults to 60000 (1 minute).
+          </p><pre class="programlisting">eps.emailHandler/batchCheckPeriod = 60000</pre><p>
+            The number of iterations of a normal outbox check that occurs before a batch outbox check
+            occurs. For example if <code class="code">outboxPollPeriod</code> is 5000 and this value is 6, the batch outbox will be
+            checked approximately every 30 seconds. Defaults to 6.
+          </p><pre class="programlisting">eps.emailHandler/numberOutboxIterationsBeforeBatchCheck = 6</pre><p>
+            The time interval between checks on the email outbox. Defaults to 5000 (5 seconds).
+          </p><pre class="programlisting">eps.emailHandler/outboxPollPeriod = 5000</pre><p>
+            If more than this number of emails is in the outbox email directory, then an error will be reported and no
+            emails will be sent. If this value is -1 then no check will be performed. Defaults to 1000 (1 second).
+          </p><pre class="programlisting">eps.emailHandler/maxNumberOutboxEmailsAllowed = 1000</pre><p>The "eps.emailHandler/maxNumberBatchEmailsAllowed" property.
+            Defaults to 2000. If more than this number of emails is in the
+            batch outbox email directory, then an error will be reported and
+            no emails will be sent. If this value is -1 then no check will be
+            performed. For example:
+          </p><pre class="programlisting">eps.emailHandler/maxNumberBatchEmailsAllowed= 2000</pre><p>The "eps.emailHandler/permittedNumberResends" property.
+            Defaults to 3. If an email fails to be sent to the mail server at
+            the first attempt it is inserted into the resend outbox. A resend
+            is then attempted this number of times. Once the limit has been
+            reached the email is then moved to the failed emails directory.
+            For example:
+          </p><pre class="programlisting">eps.emailHandler/permittedNumberResends = 3</pre><p>The "eps.emailHandler/maxNumberFailedEmails" property.
+            Defaults to 10. This is the maximum number of failed emails that
+            can exist in the failed emails directory. If greater than this
+            number of emails are inserted into this directory the oldest ones
+            are deleted until this number of emails is left. To keep all
+            emails specify -1. For example:
+          </p><pre class="programlisting">eps.emailHandler/maxNumberFailedEmails = 10</pre><p>The "eps.emailHandler/maxNumberEmailsInBatchEmail" property.
+            Defaults to 100. This is the maximum number of individual emails
+            that can be batched into a batch email. The maximum this
+            parameter can be is 200. If a number greater than 200 is
+            configured then it is ignored and 200 is used. For example:
+          </p><pre class="programlisting">eps.emailHandler/maxNumberEmailsInBatchEmail = 100</pre></div><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="mis_configuration-email-template-configuration"></a>3.1.2.5.2.3.&nbsp;Custom Email Template
+            Configuration
+          </h6></div></div></div><p>If the email action is configured, an email is sent each time
+            the state of the event changes: when the event is first
+            triggered, when the event is acknowledged, and when it is
+            closed.
+          </p><p>The contents of the email messages are defined in templates
+            which are located in the
+            <span class="emphasis"><em>resources/email-templates</em></span>
+            directory of the MIS installation. There is one template for each
+            event state.
+          </p><p>By default, the templates contain text identifying the event
+            state and the details of the event. The details of the event are
+            encapsulated by the ${onEventMessage} property, which is an
+            interest-specific string, the default values of which are given
+            in the
+            <a href="ch04s03.html#dashboard_events-appendixA" title="4.3.9.&nbsp;Appendix A: Interest Definitions">Dashboard
+              Events
+            </a>
+            documentation. For example, see the
+            <a href="ch04s03.html#dashboard_events-licenseInterestDefaultMessages" title="4.3.9.1.3.2.&nbsp;Default Messages">License Interest Default Messages</a>.
+            The templates also contain the date and time of the event, which is encapsulated by the
+            ${onEventDateAndTime} property.
+          </p><p>These templates can be customized. In addition to the above
+            properties, the ${interestType} property can be used to add the
+            name of the interest to the email message.
+          </p><p>The value of the ${onEventMessage} property can also be
+            customized through the Dashboard. See the
+            <a href="ch04s03.html#dashboard_events-customMessages" title="Custom Messages">Dashboard Custom
+              Messages
+            </a>
+            documentation for more information.
+          </p></div></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-custom-action-configuration"></a>3.1.2.5.3.&nbsp;Custom Action Configuration</h5></div></div></div><p>
+          Custom Actions are loaded into the MIS, by adding them to the class path of the MIS, and setting the
+          "dashboard.remote-services.remoteEventService/customActionClassBasePackage" property to the base package of
+          the
+          custom action class(es). All implementations of
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/mis/eps/escalationpaths/runtime/actions/IAction.html" target="_top">IAction</a>
+          contained in sub-packages of this base are loaded. For example:
+        </p><pre class="programlisting">dashboard.remote-services.remoteEventService/customActionClassBasePackage=com.cameronclient</pre></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-probe-configuration"></a>3.1.2.5.4.&nbsp;Probe Configuration</h5></div></div></div><p>The Events Processing Service accesses underlying events of
+          monitored servers using "Probes". There are two types of probes:
+          the logs probe, which reads the logs database to determine if and
+          when an event has occurred; and the JMX probe, which queries JMX
+          Mbeans. The configuration of these probes are given below. Please
+          note that in most cases, these parameters should not require
+          modification.
+        </p><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="mis_configuration-logs-probe-configuration"></a>3.1.2.5.4.1.&nbsp;Logs Probe Configuration</h6></div></div></div><p>The "eps.logsProbe/pollPeriod" property specifies the time
+            period (in mS) between polls on the logs database. This property
+            defaults to 200mS (2 seconds). Setting this value higher will
+            decrease the load on the system, with a corresponding delay in
+            the values being reported. For example:
+          </p><pre class="programlisting">eps.logsProbe/pollPeriod = 500</pre><p>The "eps.logsProbe/logBatchSize" specifies the number of log
+            lines to retrieve per poll on the logs database. This property
+            defaults to 10000 lines. For example:
+          </p><pre class="programlisting">eps.logsProbe/logBatchSize = 10000</pre></div><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="mis_configuration-jmx-probe-configuration"></a>3.1.2.5.4.2.&nbsp;JMX Probe Configuration</h6></div></div></div><p>The "eps.jmxProbe/pollPeriod" property specifies the time
+            period between polls on the Management Agent (MA), which is
+            polled to retrieve mbean attributes. This property defaults to
+            2000mS (2 seconds). Setting this value higher will decrease the
+            load on the system, with a corresponding delay in the values
+            being reported. For example:
+          </p><pre class="programlisting">eps.jmxProbe/pollPeriod = 1000</pre><p>The "eps.jmxProbe/cacheRefreshPeriod" property specifies the
+            refresh period (in mS) for the cache of MBeans which have an
+            attribute change notification associated with them. Instead of
+            being polled, the value of these MBeans is stored in the cache
+            when a change notification is received. If an notification has
+            not been received within the value of this property then the
+            MBean is polled. For example:
+          </p><pre class="programlisting">eps.jmxProbe/cacheRefreshPeriod = 20000</pre><p>The "eps.jmxProbe/pollThreadPoolSize" property specifies the
+            maximum number of threads to use to retrieve bean attributes. A
+            thread is allocated to each object name pattern in the probe. If
+            there are more object name patterns than there are threads in the
+            pool, then the remaining object name patterns are queued. This
+            property defaults to 5 threads. For example:
+          </p><pre class="programlisting">eps.jmxProbe/pollThreadPoolSize = 6</pre></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-logs-configuration"></a>3.1.2.6.&nbsp;Logs Configuration</h4></div></div></div><p>The MIS stores and indexes log events so that they can be
+        accessed in sequence, searched, and grouped into "conversations"
+        i.e. messages that are not sequential but are related to each
+        other. For example executions, cancels and amends of an original order.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-logs-replication"></a>3.1.2.6.1.&nbsp;Replication</h5></div></div></div><p>Before they are stored and indexed on the MIS, logs are replicated from the source that
+          generated them. The logs replication functionality consists of two parts: a client and a server.
+          The client is the host that is the destination of the replicated files (in most cases the MIS)
+          and the server is the host that is the source of the logs files (in most cases the LMA).
+        </p><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="mis_configuration-logs-replication-client"></a>3.1.2.6.1.1.&nbsp;Client Settings</h6></div></div></div><p>The "lrs.logsReplicationServiceClient/fileWriteBlockSize" property
+            specifies the file write block size (in bytes) when logs files are
+            written to disk. It defaults to 1MB or 1048576 bytes. To change this
+            to 2MB:
+          </p><pre class="programlisting">lrs.logsReplicationServiceClient/fileWriteBlockSize=2097152</pre><p>The "lrs.logsReplicationServiceClient/connectionManagerListenPortRangeStart"
+            property specifies the start of the range of ports on which the client attempts to
+            create a listening socket to which the replication server connects.
+            It defaults to 12000. To change this to 13000:
+          </p><pre class="programlisting">lrs.logsReplicationServiceClient/connectionManagerListenPortRangeStart=13000</pre><p>The "lrs.logsReplicationServiceClient/connectionManagerListenPortRangeEnd"
+            property specifies the end of the range of ports on which the client
+            attempts to create a listening socket to which the replication server
+            connects. It defaults to 12500. To change it to 13500:
+          </p><pre class="programlisting">lrs.logsReplicationServiceClient/connectionManagerListenPortRangeEnd=13500</pre><p>The "lrs.logsReplicationServiceClient/connectDelayLimit" property
+            specifies the time (in mS) that the client will wait for the server
+            to connect after the client has sent its request. It defaults to
+            10000 (10 seconds). To change it to 20 seconds:
+          </p><pre class="programlisting">lrs.logsReplicationServiceClient/connectDelayLimit=20000</pre><p>The "lrs.logsReplicationServiceClient/homeDirectory" property
+            specifies the home directory for the replicated files. It defaults to
+            ${mis.data-store}/replicatedLogs, where ${mis.data-store} is
+            substituted with the value of this
+            <a href="ch03.html#mis_configuration-ma-data-folder" title="3.1.2.10.1.&nbsp;MIS Data Folder">property</a>.
+            To change it to a different location:
+          </p><pre class="programlisting">lrs.logsReplicationServiceClient/homeDirectory=/tmp/data/logs</pre><p>The "lrs.logsReplicationServiceClient/connectionManagerBindAddress"
+            property specifies the address that the log replication client sends
+            to its log replication server. By default the client sends its first
+            IP address that is up (and is not the loopback address). To change it
+            to another address:
+          </p><pre class="programlisting">lrs.logsReplicationServiceClient/connectionManagerBindAddress=192.168.1.36</pre><p>The "lrs.logsReplicationServiceClient/socketReceiveBufferSize"
+            specifies the size of the socket buffer that the logs replication
+            client uses when receiving files from the server. When this value
+            is set to 0 (the default), the client uses the platform default.
+          </p></div><div class="section"><div class="titlepage"><div><div><h6 class="title"><a name="mis_configuration-logs-replication-server"></a>3.1.2.6.1.2.&nbsp;Server Settings</h6></div></div></div><p>The "lrs.logsReplicationServiceServer/fileReadBlockSize" property
+            specified the amount of data (in bytes) that the server reads each time
+            it accesses the log files on disk. It defaults to 1MB or 1048576 bytes.
+            To change this to 2MB:
+          </p><pre class="programlisting">lrs.logsReplicationServiceClient/fileReadBlockSize = 2097152</pre><p>The "lrs.logsReplicationServiceServer/threadPoolSize" property
+            specifies the number of client requests that the server can process
+            at one time. It defaults to 4. To change it to 8:
+          </p><pre class="programlisting">lrs.logsReplicationServiceServer/threadPoolSize=8</pre><p>The "lrs.logsReplicationServiceServer/useCompression" property
+            specifies whether the data is compressed before sending it to the client.
+            It defaults to true. To set it to false:
+          </p><pre class="programlisting">lrs.logsReplicationServiceServer/useCompression=false</pre><p>The "lrs.logsReplicationServiceServer/socketSendBufferSize"
+            specifies the size of the socket buffer that the logs replication
+            server uses when sending files to the server. When this value
+            is set to 0 (the default), the server uses the platform default.
+          </p></div></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-Log_Events_Repository"></a>3.1.2.6.2.&nbsp;Log Events Repository</h5></div></div></div><p>The Log Events Repository works out of the box without
+          requiring any particular configuration. By default it stores its
+          data on the local file system under the MIS data folder (see
+          section
+          <a href="ch03.html#mis_configuration-Data_store" title="3.1.2.10.&nbsp;Data Folders">Data folder</a>
+          for details) and
+          uses a 512 MB memory cache to speed up the indexing when high
+          volumes of logs data are encountered.
+        </p><p>The Logs Events Repository has the following settings:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">"ma.logEventsRepositoryAccessor/storageLocation": specifies
+            an alternate on-disk storage location for the Log Events
+            Repository. If a relative file path is used, it is interpreted
+            relatively to the location from which the MIS was started.
+            Defaults to: &lt;MIS data folder&gt;/log-events-repository
+          </li><li class="listitem">"ma.logEventsRepositoryAccessor/memoryLimit": specifies the
+            amount of memory (in MB) that the Log Events Repository is
+            allowed to consume to speed-up the indexing of incoming data.
+            Defaults to 512 MB
+          </li><li class="listitem">"ma.logEventsRepositoryAccessor/commitPeriodicity":
+            specifies the periodicity, in milliseconds, at which the Log
+            Events Repository should commit newly added data to disk, in
+            order to make it visible to external readers. This is not
+            required when all MIS components run in the same process.
+            Defaults to zero, which means that the Log Events Repository
+            does not perform periodic commits
+          </li><li class="listitem">"ma.logEventsRepositoryAccessor/commitFrequency": instructs
+            the Log Events Repository to commit newly added data to disk
+            after a certain number of log events have been processed. This
+            guarantees that, should the MIS terminate abruptly, only a
+            relatively small number of log events will need to be streamed
+            again. Defaults to 10000
+          </li></ul></div><p>For example, set an alternative storage location for log
+          events, increase the memory limit of the log index, set a value
+          for the period after which log events are committed to disk, and
+          set a smaller value for the frequency of commits, so that less
+          log events are lost on termination of the MIS:
+        </p><pre class="programlisting">ma.logEventsRepositoryAccessor/storageLocation=/tmp/logs
+ma.logEventsRepositoryAccessor/memoryLimit=1024
+ma.logEventsRepositoryAccessor/commitPeriodicity=100
+ma.logEventsRepositoryAccessor/commitFrequency=1000</pre><p>
+          As well as being able to be viewed via the Dashboard, the
+          repository can be queried by external applications using the
+          <a href="ch03s03.html#mis_API-Log_Events_Repository_Client" title="3.3.4.&nbsp;Log Events Repository Client">Log Events Repository Client</a>.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-Log_Events_Cleaner"></a>3.1.2.6.3.&nbsp;Log Events Cleaner</h5></div></div></div><p>This is a component whose purpose is to cleanup Log Events
+          when the MIS starts up and periodically thereafter. The cleanup
+          operation consists of removing those logs whose timestamp is
+          older than a configurable retention period from the time at which
+          cleanup is performed, i.e. that satisfy the
+          equation:
+        </p><pre class="programlisting">timestamp &lt;= NOW - retention</pre><p>By default the cleaner will cleanup only at startup using a
+          retention of 24 hours. This behavior can be altered through the
+          configuration of these parameters:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">"cleanupAtStartup": a boolean that enables cleanup at start
+            up, defaults to true
+          </li><li class="listitem">"cleanupPeriodically": a boolean that enables cleanup
+            periodically, defaults to false
+          </li><li class="listitem">"retention": a long which defaults to 86400000 (24 x 3600 x
+            1000 or 24 hours)
+          </li><li class="listitem">"periodicity": a long which defaults to 1800000 (30 x 60 x
+            1000 or 30 minutes)
+          </li></ul></div><p>When "cleanupPeriodically" is enabled, a cleanup is run every
+          "periodicity" milliseconds to remove logs that are older than
+          "retention" milliseconds. Cleanup can be disabled altogether by
+          setting both "cleanupPeriodically" and "cleanupAtStartup" to
+          false. The excerpt bellow is an example configuration that
+          disables the cleanup at startup and enables it to run
+          periodically every 2 hours:
+        </p><pre class="programlisting">mis.logEventsCleaner/cleanupAtStartup = false
+mis.logEventsCleaner/cleanupPeriodically = true
+mis.logEventsCleaner/periodicity = 7200000</pre></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-custom-correlators-configuration"></a>3.1.2.7.&nbsp;Custom Correlators Configuration</h4></div></div></div><p>
+        The MIS provides the ability to configure custom correlators that can be used in the conversations.
+      </p><p>
+        There are 5 placeholders that can be leveraged for custom correlators:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">ler.fixIdConversationCorrelator.1</li><li class="listitem">ler.fixIdConversationCorrelator.2</li><li class="listitem">ler.fixIdConversationCorrelator.3</li><li class="listitem">ler.fixIdConversationCorrelator.4</li><li class="listitem">ler.fixIdConversationCorrelator.5</li></ul></div><p>
+      </p><p>
+        Adding the following properties in the mis configuration file will customize and enable a placeholder
+        correlator:
+      </p><p>To enable a specific correlator:</p><pre class="programlisting">ler.fixIdConversationCorrelator.2/enabled=true</pre><p>To define the correlation between the messages:</p><pre class="programlisting">ler.fixIdConversationCorrelator.2/conversationTags=9001:9001</pre><p>To define which message types are included in the conversation:</p><pre class="programlisting">ler.fixIdConversationCorrelator.2/allowedMsgTypes=D,8</pre><p>To define which are the default message types for the conversation:</p><pre class="programlisting">ler.fixIdConversationCorrelator.2/defaultMessageTypes=D,8</pre><p>
+        To specify a different display name for the correlator (Default is <span class="emphasis"><em>PlaceHolder #</em></span>):
+      </p><pre class="programlisting">ler.fixIdConversationCorrelator.2/displayName=Custom_9001_Correlation</pre><p>
+        For a complete list of already defined correlators refer to the
+        <a href="ch04s04.html#dashboard_correlators" title="4.4.4.&nbsp;Correlators">Correlators</a> section.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-database-configuration"></a>3.1.2.8.&nbsp;Database Configuration</h4></div></div></div><p>The MIS uses a database to persist a number of
+        items:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">User authentication and authorization data</li><li class="listitem">User preferences</li><li class="listitem">Persistent HTTP cookies used by the Dashboard's security
+          layer
+        </li></ul></div><p>The MIS uses an in-process H2 instance to store this user
+        data. Other databases may be supported in future releases.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-encrypted-properties"></a>3.1.2.9.&nbsp;Encrypted Properties</h4></div></div></div><p>
+        The <code class="code">encryptme</code> directive is available to protect sensitive information in the configuration file.
+        For example:
+      </p><pre class="programlisting">dashboard.security.ldap.authenticator/authenticatedSearchUserPassword= \
+  encryptme://{th1s1s4sup3rs4f34dm1np4ssw0rd}
+</pre><p>This directive requires a password, which is either fixed in
+        the MIS software, or (more securely) set via the environment
+        variable CATALYS_MIS_ENCRYPTION_PASSWORD (note this is an
+        environment variable not a system property). For example:
+      </p><pre class="programlisting">export CATALYS_MIS_ENCRYPTION_PASSWORD=th1s1sth33ncrpt10np4ssw0rd</pre><p>When the MIS starts up, it detects the "encryptme" directive,
+        encrypts the password, and writes the encrypted value back into
+        the config file enclosed by the "encrypted" tag. For example:
+      </p><pre class="programlisting">dashboard.security.ldap.authenticator/authenticatedSearchUserPassword= \
+  encrypted://{OvsqOOH7JasWiRzb1IyWVw==}
+</pre><p>Note that when an element in the configuration file is
+        encrypted by this method, the whole configuration file will be
+        parsed and re-written, causing some re-ordering of the
+        configuration properties in the file.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-Data_store"></a>3.1.2.10.&nbsp;Data Folders</h4></div></div></div><p>Note that if specified as relative paths, these locations are
+        relative to the location of the MIS startup script, which is the
+        <span class="emphasis"><em>bin</em></span>
+        directory of the installation.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-ma-data-folder"></a>3.1.2.10.1.&nbsp;MIS Data Folder</h5></div></div></div><p>The MIS needs to store data on the local file system in order
+          to:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Persist log data.</li><li class="listitem">Persist user-related data (only when an in-process h2
+            database engine is used).
+          </li><li class="listitem">Provide a persistence mechanism used to record snapshots of
+            the values of published MBean attributes.
+          </li><li class="listitem">Persist event configuration and data.</li></ul></div><p>By default, the MIS will store its data in a folder called
+          <span class="emphasis"><em>../data</em></span>, relative to the start-up directory of the
+          MIS.
+        </p><p>To change this location from the default use the
+          "mis.data-store" property. For example:
+        </p><pre class="programlisting">mis.data-store = /tmp/mis.data</pre><p>If the MIS cannot find its data folder, it will attempt to
+          create it automatically.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-dashboard-data-folder"></a>3.1.2.10.2.&nbsp;Dashboard Web Application
+          Folder
+        </h5></div></div></div><p>The Dashboard web application is delivered in the
+          <span class="emphasis"><em>web</em></span>
+          directory of the installation (
+          <span class="emphasis"><em>../web</em></span>
+          relative to the MIS
+          startup location). If the web application is moved to a different
+          location then the "dashboard.webServer/home" property must be set
+          to reflect the new location. For example:
+        </p><pre class="programlisting">dashboard.webServer/home = /tmp/web</pre></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-distributed"></a>3.1.2.11.&nbsp;Distributing the Components of the MIS</h4></div></div></div><p>By default all components of the MIS run together in the same
+        instance of the MIS. However the MIS can run such that each of
+        these components are distributed across multiple instances of the
+        MIS. When the MIS is distributed, any interfaces to the remote
+        components must be given in the configuration. These are
+        specified below for each component.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-remote-dashboard"></a>3.1.2.11.1.&nbsp;Dashboard</h5></div></div></div><p>When the Dashboard is running locally:</p><pre class="programlisting">mis/startDashboard = true</pre><p>When the Dashboard is running remotely, there are no external
+          interfaces to specify:
+        </p><pre class="programlisting">mis/startDashboard = false</pre></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="mis_configuration-remote-ma"></a>3.1.2.11.2.&nbsp;Management Agent</h5></div></div></div><p>When the Management Agent is running locally:</p><pre class="programlisting">mis/startMA = true</pre><p>When the Management Agent is running remotely, the
+          configuration must specify the MA's JMX access point and the
+          location of the log indexes. Note that the location of the
+          indexes must be a locally accessible directory (configured with
+          mount points if necessary). For example:
+        </p><pre class="programlisting">mis/startMA=false
+mis.maAccessParameters.jmx/JMXServiceURL=service:jmx:jmxmp://localhost:10000
+mis.logEventRepositoryAccessParameters.index/storageLocation = \
+  /tmp/mis-data/log-events-repository/log-events-index</pre></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-remote-ums"></a>3.1.2.12.&nbsp;User Management Service</h4></div></div></div><p>When the User Management Service is running locally:</p><pre class="programlisting">mis/startUMS=true</pre><p>When the User Management Service is running remotely, the
+        configuration must specify the JMX access point of the UMS:
+      </p><pre class="programlisting">mis/startUMS=false
+mis.umsAccessParameters/JMXServiceURL=service:jmx:jmxmp://localhost:10000</pre></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mis_configuration-remote-eps"></a>3.1.2.13.&nbsp;Event Processing Service</h4></div></div></div><p>When the Events Processing Service is running locally:</p><pre class="programlisting">mis/startEPS=true</pre><p>When the Event Processing Service us running remotely, the
+        configuration must specify the JMX access point of the EPS:
+      </p><pre class="programlisting">mis/startEPS=false
+mis.epsAccessParameters/JMXServiceURL=service:jmx:jmxmp://localhost:10000</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_configuration-script-configuration"></a>3.1.3.&nbsp;Script Configuration</h3></div></div></div><p>
+      The MIS executes any scripts it finds in its
+      <span class="filename">scripts</span>
+      directory of the MIS
+      installation, and reports the results of the execution via attributes of the "MA.Scripts" MBean.
+    </p><p>
+      Under Unix, a script is any file with the 'x' permission. Under Windows, it is any file in this directory,
+      although the .bat extension is recommended.
+    </p><p>
+      The scripts directory is only scanned at MIS startup, so to add new scripts, the MIS must be re-started.
+    </p><p>
+      The MA.Scripts MBean contains one attribute for each script, where the attribute name is the same as the script
+      name except that dot extensions are replaced with an underscore. For example, the result of the freespace.sh/bat
+      script provided with the distribution is given by the freespace_sh/bat MBean attribute.
+    </p><p>
+      Each script is executed whenever the attribute is accessed, and the value of the attribute is the output of the
+      script.
+    </p><p>Note: The results of the script are not cached.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_configuration-dashboard-timeout-configuration"></a>3.1.4.&nbsp;Dashboard timeout Configuration</h3></div></div></div><p>
+      MIS dashboard is configured to log out the current user automatically if there is no user activity 
+      (clicks,button presses etc) for a configured amount of time. This timeout interval can be specified in minutes.
+      This property is to be specified in web.xml, the web application configuration file. This file is by default located
+      in the following drectory:
+      </p><pre class="programlisting">{MIS_INSTALLATION_DIR}/web/webapps/dashboard/WEB-INF/</pre><p>
+    </p><p>
+      To set this attribute, change the value of timeout entity in the declaration section at the top of the file.
+      </p><pre class="programlisting"> &lt;!ENTITY timeout "1"&gt; </pre><p>
+      This value is set to 30 minutes by default.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_configuration-MIS-Secure-Access"></a>3.1.5.&nbsp;MIS Secure Access</h3></div></div></div><p>
+      To access MIS securely using HTTPS, the changes must be made in CameronWeb.xml file which is located in the
+      following directory:
+      </p><pre class="programlisting">{MIS_INSTALLATION_DIR}/web/etc</pre><p>  
+      MIS uses Jetty as it's internal web server, which can be configured for SSL.The steps are as follows:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+      SSL can be configured as follows:
+      The connector block that was pertaining to the http connection should be commented out and the following SSL connector block
+      should be added as follows:
+      </p><pre class="programlisting">
+   &lt;Call name="addConnector"&gt;
+     &lt;New id="sslConnector" class="org.eclipse.jetty.server.ServerConnector"&gt;
+       &lt;Arg name="server"&gt;&lt;Ref refid="Server"/&gt;&lt;/Arg&gt;
+       &lt;Arg name="acceptors" type="int"&gt;&lt;Property name="jetty.ssl.acceptors" 
+       deprecated="ssl.acceptors" default="-1"/&gt;&lt;/Arg&gt;
+       &lt;Arg name="selectors" type="int"&gt;&lt;Property name="jetty.ssl.selectors" 
+       deprecated="ssl.selectors" default="-1"/&gt;&lt;/Arg&gt;
+       &lt;Arg name="factories"&gt;
+       &lt;Array type="org.eclipse.jetty.server.ConnectionFactory"&gt;
+       &lt;/Array&gt;
+     &lt;/New&gt;
+   &lt;/call&gt;
+      </pre><p>
+    </p></li><li class="listitem"><p>
+      We should add HTTPConfig and sslHTTPConfig elements, we can add the HTTPConfig block under the connector block or create a separate one but we
+      should change the attribute secureScheme as follows:
+      </p><pre class="programlisting"> 
+   &lt;New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration"&gt;
+      &lt;Set name="secureScheme"&gt;https&lt;/Set&gt;
+      &lt;Set name="securePort"&gt;&lt;Property name="jetty.secure.port" default="8443"/&gt;&lt;/Set&gt;
+   &lt;/New&gt;
+  
+   &lt;New id="sslHttpConfig" class="org.eclipse.jetty.server.HttpConfiguration"&gt;
+      &lt;Arg&gt;
+         &lt;Ref refid="httpConfig"/&gt;
+      &lt;/Arg&gt;
+      &lt;Call name="addCustomizer"&gt;
+        &lt;Arg&gt;
+           &lt;New class="org.eclipse.jetty.server.SecureRequestCustomizer"&gt;&lt;/New&gt;
+        &lt;/Arg&gt;
+      &lt;/Call&gt;
+   &lt;/New&gt;
+      </pre><p>
+      SecureScheme attribute in this configuration will change the URL that we use to access the dashboard, from HTTP to HTTPS.
+      We can use MIS dashboard with HTTPS  by going to the following URL: https://localhost:8443
+    </p></li><li class="listitem"><p>
+      We should create the SslContextFactory element in the CameronWeb.xml file. SslContextFactory is responsible for managing keystore access, managing truststore access, 
+      managing protocol selection via Excludes/Includes list, managing Cipher Suite selection via Excludes/Includes list etc.
+      While creating the SslContextFactory element we should make sure that the SSL certificate is placed on the web/etc directory.
+    </p></li><li class="listitem"><p>
+      We should configure the HTTPS connector using the configured ID on the connector block as follows:
+      </p><pre class="programlisting">
+   &lt;Ref id="sslConnector"&gt;
+       &lt;Call name="addConnectionFactory"&gt;
+         &lt;Arg&gt;
+           &lt;New class="org.eclipse.jetty.server.SslConnectionFactory"&gt;
+              &lt;Arg name="next"&gt;http/1.1&lt;/Arg&gt;
+              &lt;Arg name="sslContextFactory"&gt;&lt;Ref refid="sslContextFactory"/&gt;&lt;/Arg&gt;
+           &lt;/New&gt;
+         &lt;/Arg&gt;
+      &lt;/Call&gt;
+      
+      &lt;Call name="addConnectionFactory"&gt;
+        &lt;Arg&gt;
+          &lt;New class="org.eclipse.jetty.server.HttpConnectionFactory"&gt;
+             &lt;Arg name="config"&gt;&lt;Ref refid="sslHttpConfig"/&gt;&lt;/Arg&gt;
+          &lt;/New&gt;
+        &lt;/Arg&gt;
+      &lt;/Call&gt;
+   &lt;/Ref&gt;
+      </pre><p>
+      General information about Jetty and configuration can be found <a href="http://www.eclipse.org/jetty/documentation/jetty-9/index.html#configuring-connectors" target="_top">here</a>.
+    </p></li></ul></div></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s04.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch03s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">2.4.&nbsp;Installation&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;3.2.&nbsp;Maintenance</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:53:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

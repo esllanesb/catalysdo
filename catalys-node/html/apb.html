@@ -1,0 +1,54 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; Appendix&nbsp;B.&nbsp;CatalysServer Startup Arguments</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="index.html" title="Catalys Node User Guide"><link rel="prev" href="config_reference.html" title="Appendix&nbsp;A.&nbsp;Configuration Reference"><link rel="next" href="apc.html" title="Appendix&nbsp;C.&nbsp;FIX Session Dialects"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="config_reference.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;B.&nbsp;CatalysServer Startup Arguments</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="apc.html">Next</a></td></tr></table><hr></div><div class="appendix"><div class="titlepage"><div><div><h1 class="title"><a name="catalys_server_arguments"></a>Appendix&nbsp;B.&nbsp;CatalysServer Startup Arguments</h1></div></div></div><p>
+    The following table lists the available arguments when starting the
+    <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/CatalysServer.html" target="_top">CatalysServer</a> class.
+  </p><div class="informaltable"><a name="config_intro-server-args"></a><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>-xmlconfig &lt;<span class="emphasis"><em>config-file</em></span>&gt;</td><td>
+            The path to the configuration file.
+            <p>Required.</p>
+          </td></tr><tr><td>-clusterNode &lt;<span class="emphasis"><em>cluster-node-id</em></span>&gt;</td><td>
+            <p>
+              Identifies which node in a High Availability cluster to start. It must match the <code class="code">id</code> of one
+              of the <code class="code">ClusterNode</code> definitions in the configuration.
+            </p>
+            <p>Optional.</p>
+          </td></tr><tr><td>-resetseq</td><td>
+            <p>Reset sequence numbers for all FIX sessions. This parameter can not be used with High Availability.</p>
+            <p>Optional.</p>
+          </td></tr><tr><td>-lock</td><td>
+            <p>Put all FIX sessions in the locked state.</p>
+            <p>
+              A locked state means that no incoming connection attempts will be accepted and no outbound connection
+              attempts will be made. This state is the same as blocked except it's not persisted and only valid during
+              the life of that FIX server instance. The lock can be released via the <code class="code">s_unlock</code> command.
+            </p>
+            <p>Optional.</p>
+          </td></tr><tr><td>-skipXmlValidation</td><td>
+            Do not perform syntactic validation of the XML configuration against the DTD
+            file.
+            <p>
+              Semantic validation of the configuration is still performed by the Node once the XML configuration has
+              been loaded. Specifying this option allows the server to be configured with elements and attributes
+              which have not been specified in the DTD, which may be applicable for custom components.
+            </p>
+            <p>Optional.</p>
+          </td></tr><tr><td>-doNotBackupConfiguration</td><td>
+            <p>
+              Do not backup the configuration file when configuration changes are made at runtime.
+            </p>
+            <p>
+              By default the configuration is saved in XML format to a timestamped file every time the runtime
+              configuration is changed.
+            </p>
+            <p>Optional.</p>
+          </td></tr><tr><td>-version</td><td>
+            <p>
+              Print the Node version information to stdout and then exit. When specified, all other arguments are
+              ignored.
+            </p>
+            <p>Optional.</p>
+          </td></tr></tbody></table></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="config_reference.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="apc.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Appendix&nbsp;A.&nbsp;Configuration Reference&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Appendix&nbsp;C.&nbsp;FIX Session Dialects</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:50+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

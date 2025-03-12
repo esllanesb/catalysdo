@@ -1,0 +1,113 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.7.&nbsp;Data Encryption</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s06.html" title="6.6.&nbsp;SSL Socket Connection"><link rel="next" href="ch06s08.html" title="6.8.&nbsp;Breakout Box"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s06.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s08.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_data_encryption"></a>6.7.&nbsp;Data Encryption</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_data_encryption-intro"></a>6.7.1.&nbsp;Introduction</h3></div></div></div><p>
+      On most FIX sessions, security is handled by a secure network provider, and so data encryption is unnecessary.
+      For users who intend to host FIX sessions over the Internet or other open networks, however, security is a prime
+      necessity. Encryption of the session will give you that. By encrypting the sensitive fields and digitally
+      signing each message, both counterparties of a session can ensure relative security that their FIX traffic is
+      being exchanged without intrusion from outside or unwanted parties.
+    </p><p>
+      Note that alternatively, encryption of a FIX session can also be achieved with the
+      <a href="ch06s06.html" title="6.6.&nbsp;SSL Socket Connection">SSL Socket Connection</a> option.
+    </p><p>
+      The Node can be used with one of several Java encryption packages. However, the binary distribution comes bundled
+      with the freeware <a href="http://www.cryptix.org/" target="_top">Cryptix</a> cryptography package. As with most Node
+      options, encryption is extensible &#8212; you can provide your own encryption engine implementation via the
+      <code class="code">Encryption</code> element in your session configuration as described below.
+    </p><p>
+      A template can be found in the <span class="emphasis"><em>templates/Encryption</em></span> directory. See the
+      <span class="emphasis"><em>ReadMe.txt</em></span> file in that directory for instructions on running the template.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_data_encryption-configuration"></a>6.7.2.&nbsp;Configuration</h3></div></div></div><p>
+      Encryption is configured via the <code class="code">Encryption</code> element, which is a child of <code class="code">Session</code>. It
+      can contain a <code class="code">PGP-DES-MD5</code> or a <code class="code">DES</code> element. If the <code class="code">Session</code> has no
+      <code class="code">Encryption</code> element then no encryption will be performed on the session.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5232"></a>PGP-DES-MD5 Encryption</h4></div></div></div><p>
+        The following example shows a <code class="code">PGP-DES-MD5</code> element configured on a session using the given
+        encryption key information. This method uses PGP for Logon exchanges, DES for all messages and MD5 for
+        digital signatures.
+      </p><p>
+        For outbound messages, it will also be necessary to specify which FIX fields should be encrypted. In this
+        example, this is done by the <code class="code">EncryptionSource</code> message processor, which calls the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessageSpecifics.html#setTagSecure(int,%20boolean)" target="_top">setTagSecure(int, boolean)</a>
+        method for each field to be encrypted on the outbound <code class="code">IFIXMessage</code>. The source code for this
+        processor can be found in <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test</em></span>.
+      </p><pre class="programlisting">&lt;Session compid="CLIENT" counterpartycompid="SERVER" fixversion="4.2"&gt;
+  &lt;Encryption&gt;
+    &lt;PGP-DES-MD5 class="com.camerontec.catalys.core.crypto.CryptixCrypto"
+                 publickeyring="../pubring.pgp"
+                 secretkeyring="../secring.pgp"
+                 myprivatekeyname="ClientKey"
+                 passphrase="Client passphrase"
+                 otherspublickeyname="ServerKey"/&gt;
+  &lt;/Encryption&gt;
+  &lt;Persister&gt;
+    &lt;JournalingPersister id="jp1" baseDirectoryName="persist/buy"/&gt;
+  &lt;/Persister&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="conn1" hostname="10.1.1.1" port="2000" /&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;EncryptionSource encrypt.fields="11,21,55,54,38,40,44"&gt;
+        &lt;SampleMessageSource checkBeforeSend="true" interval="5000"/&gt;
+      &lt;/EncryptionSource&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+        For a complete list of configuration attributes, see the
+        <a href="config_reference.html#config_ref_PGP_DES_MD5" title="PGP_DES_MD5">PGP_DES_MD5 Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5244"></a>DES Encryption</h4></div></div></div><p>The following example shows a <code class="code">DES</code> Encryption element configured on a session.</p><p>
+        For outbound messages, it will also be necessary to specify which FIX fields should be encrypted. In this
+        example, this is done by the <code class="code">EncryptionSource</code> message processor, which calls the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessageSpecifics.html#setTagSecure(int,%20boolean)" target="_top">setTagSecure(int, boolean)</a>
+        method for each field to be encrypted on the outbound <code class="code">IFIXMessage</code>. The source code for this
+        processor can be found in <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test</em></span>.
+      </p><pre class="programlisting">&lt;Session counterpartycompid="MARKET" compid="BROKER" fixversion="4.4" heartbeat="60"&gt;
+  &lt;Encryption&gt;
+    &lt;DES class="com.camerontec.catalys.core.crypto.CryptixCrypto"/&gt;
+  &lt;/Encryption&gt;
+  &lt;Persister&gt;
+    &lt;JournalingPersister id="jp1" baseDirectoryName="persist/buy"/&gt;
+  &lt;/Persister&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="conn1" hostname="localhost" port="2000"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;EncryptionSource encrypt.fields="11,21,55,54,38,40,44,447" id="idN65590"&gt;
+        &lt;SampleMessageSource interval="15000" checkBeforeSend="true" id="idN65593"/&gt;
+      &lt;/EncryptionSource&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+        For a complete list of configuration attributes, see the
+        <a href="config_reference.html#config_ref_DES" title="DES">DES Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5256"></a>Logging</h4></div></div></div><p>
+        All messages are logged in encrypted format. However, all inbound messages reach the message processor later
+        with both decrypted and encrypted data.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e5259"></a>6.7.3.&nbsp;Encryption Keys</h3></div></div></div><p>
+      There are two sample programs that show how keys can be generated and put into the PGP key ring files.
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><span class="bold"><strong>PGPKeyGen</strong></span> - used to generate keys given an encryption key strength (in bits),
+        a passphrase, and a string of characters used to randomize the process of generting the keys.
+      </li><li class="listitem"><span class="bold"><strong>PGPKeyGenApp</strong></span> - GUI version of PGPKeyGen.</li></ol></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_data_encryption-troubleshoooting"></a>6.7.4.&nbsp;Troubleshooting</h3></div></div></div><p>Problems encountered usually include the following:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        If the PGP key ring files are not found, you will get a <code class="code">FileNotFoundException</code>.
+      </li><li class="listitem">
+        If the PGP key ring files do not contain the keys declared in the configuration <span class="emphasis"><em>config.xml</em></span>
+        an unknown key exception will be displayed.
+      </li><li class="listitem">
+        You must also make sure your FIX counterparty is using the same encryption method as configured on your Node
+        for a given session.
+      </li><li class="listitem">
+        When Cryptix cryptography is being used, some security providers may need to be disabled, as they are not
+        supported by Cryptix. In this case, the following exception will be thrown:
+
+        <pre class="programlisting">(CODE:202) Crypto configuration failed; nested exception is:
+            java.security.NoSuchAlgorithmException:
+              algorithm RSA/ECB/PKCS1Padding is not available
+              from provider Cryptix;</pre><p>In this situation, these security providers must be disabled.</p></li></ul></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s06.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.6.&nbsp;SSL Socket Connection&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.8.&nbsp;Breakout Box</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

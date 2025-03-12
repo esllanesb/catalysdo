@@ -1,0 +1,10 @@
+com.camerontec.catalys.mis.eps.escalationpaths.runtime
+com.camerontec.catalys.mis.eps.escalationpaths.runtime.actions
+com.camerontec.catalys.mis.eps.events
+com.camerontec.catalys.mis.eps.jmx
+com.camerontec.catalys.mis.ler
+com.camerontec.catalys.mis.ler.client
+com.camerontec.catalys.mis.ums
+com.camerontec.catalys.mis.ums.ldap
+com.camerontec.util.data
+com.camerontec.util.logger

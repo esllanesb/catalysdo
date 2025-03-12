@@ -1,0 +1,1084 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.12.&nbsp;EMX Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s11.html" title="7.11.&nbsp;RMI Adapter"><link rel="next" href="ch07s13.html" title="7.13.&nbsp;EMX Delimited File Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s11.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s13.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_emx"></a>7.12.&nbsp;EMX Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_emx-intro"></a>7.12.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Catalys Node <span class="nobr">EMX Integrator</span> is a complete
+      package that will connect to the EMX mutual fund trading service.
+      It is developed by ReadySolve (http://www.readysolve.com/) and distributed by
+      CameronTec.
+    </p><p>
+      Most EMX Integrator clients use the Node to run
+      their FIX engine. This permits a stand alone and independent
+      server to make a connection to EMX and to accept and present the
+      messages through a technology adapter. CameronTec has a selection
+      of technology adapters available and new ones can easily be
+      written to connect to any message source.
+    </p><p>
+      The EMX Integrator
+      is also available as a set of
+      Java class libraries that enable a Java application developer to
+      connect to EMX without needing to attend to the details of the
+      FIX protocol or, in particular, the particular FIX protocol
+      modifications that the EMX service requires. In this form it is
+      ideal for embedding into integrated systems.
+    </p><p>Whether you are using the Catalys Node Server or writing a
+      Java class that extends the
+      <span class="nobr">EMX Integrator's</span>
+      base
+      class, your first task is to install the
+      <span class="nobr">EMX
+        Integrator
+      </span>
+      and get the demonstration programs running as
+      described below. You can then write whatever program code you
+      need to link the
+      <span class="nobr">EMX Integrator</span>
+      to your existing
+      computer systems. This may possibly be none at all, if you use
+      the Catalys Node Server and choose the
+      <a href="ch07s13.html" title="7.13.&nbsp;EMX Delimited File Adapter">EMX Delimited File Adapter</a>
+      as your technology adapter (which used the same format of
+      tab-delimited files as the EMX web site's file upload/download
+      facility). Finally, you need to test your programs against
+      Euroclear's EMX trialling system and to go through their
+      compliance procedures.
+    </p><p>Most users of the
+      <span class="nobr">EMX Integrator</span>
+      need only refer
+      to this documentation and a few parts of the core Catalys Node
+      documentation. Those using the Catalys Node Server will need to
+      refer to its documentation as well.
+    </p><p>For reference, the Catalys Node components that comprise the
+      <span class="nobr">EMX Integrator</span>
+      are:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">The Catalys Node EMX Add-On, described here.</li><li class="listitem">
+        The Catalys Node core implementation of the
+        <a class="javadocplain" href="../javadoc/com/camerontec/catalys/server/package-summary.html" target="_top">FIX</a>
+        protocol.
+      </li><li class="listitem">The
+        <a href="ch06s06.html" title="6.6.&nbsp;SSL Socket Connection">Catalys Node SSL</a>
+        Secure Socket Layer implementation.
+      </li><li class="listitem">The <a href="ch05.html#stdfeature_persistence" title="5.1.&nbsp;Session Persistence">Catalys Node Session
+        Persistence</a>.
+      </li><li class="listitem">The Catalys Node Server documentation (if being used).</li></ul></div><p>Your EMX Integrator installation also includes:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Sample working programs with full source code in the
+        <code class="filename">templates</code>
+        directory.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8471"></a>7.12.2.&nbsp;Introducing the EMX Integrator</h3></div></div></div><p>The
+      <span class="nobr">EMX Integrator</span>
+      provides the following:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">For those developers who wish to have an
+        <span class="nobr">in-process</span>
+        FIX engine that will connect to EMX, we
+        provide a base class,
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/manager/EMXClient.html" target="_top">EMXClient</a>,
+        for you to extend. This base class will connect
+        to the EMX system, maintain a connection and manage all of the
+        message traffic. Your extension of the base class will define
+        the actions that should be taken when an EMX message is
+        received and will generate outgoing EMX messages that will be
+        passed to the base class for sending to the EMX Hub.
+      </li><li class="listitem">For those who wish to use the Catalys Node Server to
+        connect to EMX, we provide a ConnectionManager,
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/manager/EMXConnectionManager.html" target="_top">EMXConnectionManager</a>,
+        which plugs in to the Catalys Node
+        Server in place of the standard ConnectionManager. It does
+        everything that the Catalys Node Server's standard
+        ConnectionManager does (in fact, it is an extension of it) but
+        has additional behaviour to support EMX's protocol.
+      </li><li class="listitem">Support for SSL with Client Authentication, which EMX
+        requires.
+      </li><li class="listitem">Signing and verification of all EMX messages, according to
+        EMX's custom message signing protocol. This is built in to the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/manager/EMXClient.html" target="_top">EMXClient</a>.
+        For users of the Catalys Node Server, we provide
+        MessageProcessors that perform the signing and verification of
+        EMX messages. Your Catalys Node Server configuration file just
+        needs to indicate that these MessageProcessors should be used
+        and the Catalys Node Server will use them automatically.
+      </li><li class="listitem">
+        Support for EMX's Mutual Fund FIX messages, implemented through an
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/message/EMXMessage.html" target="_top">EMXMessage</a>
+        class that implements the Catalys Node
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessage.html" target="_top">IFIXMessage</a>
+        interface.
+      </li></ul></div><p>Two sample programs are provided, to illustrate the use of the
+      <span class="nobr">EMX Integrator</span>. These are:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/test/DemoIFAClient.html" target="_top">com.camerontec.catalys.server.adapter.emx.test.DemoIFAClient</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/test/DemoProviderClient.html" target="_top">com.camerontec.catalys.server.adapter.emx.test.DemoProviderClient</a></li></ul></div><p>There is also a configured Catalys Node Server demonstration
+      application. These demonstration programs are <a href="ch07s12.html#adapter_emx-demo" title="7.12.4.&nbsp;Running the Demonstration Programs">described below</a>.
+    </p><p>Users of the Catalys Node Server will not need to refer to the
+      detailed documentation of the underlying Java classes, although
+      some may want to. Users of the EMXClient toolkit approach will
+      certainly need to, however. Full on-line documentation is
+      provided for the complete set of Java classes that comprise the
+      EMX Add-On. The most useful classes are:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/manager/EMXClient.html" target="_top">com.camerontec.catalys.server.adapter.emx.manager.EMXClient</a>.
+      </li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/message/package-summary.html" target="_top">com.camerontec.catalys.server.adapter.emx.message</a>
+        package.
+      </li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/configuration/EMXConstants.html" target="_top">com.camerontec.catalys.server.adapter.emx.configuration.EMXConstants</a>.
+      </li></ul></div><p>There are also some further classes, which deal with message
+      signing and key management:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/emx/security/package-summary.html" target="_top">com.camerontec.catalys.server.adapter.emx.security</a>
+        package.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_emx-install"></a>7.12.3.&nbsp;Installation</h3></div></div></div><p>You must have Java 8 or later installed.</p><p>The
+      <span class="nobr">EMX Integrator</span>
+      classes are bundled with the
+      Catalys Node package. This package needs to be installed before
+      you can run the EMX Integrator.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_emx-demo"></a>7.12.4.&nbsp;Running the Demonstration Programs</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8515"></a>7.12.4.1.&nbsp;First Steps</h4></div></div></div><p>Demonstration programs are provided for you, to get you up and
+        running quickly. You should ensure that these programs are
+        running before attempting anything else.
+      </p><p>There are four demonstration applications. All users should
+        get the first three programs working first. The final
+        demonstration is provided for Catalys Node Server users only and
+        need not be used by those clients who are not using the Catalys
+        Node Server.
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">A "Basic EMX Hub Emulator", that you can connect your
+          programs to during your development and initial testing
+          phases.
+        </li><li class="listitem">A Fund Provider demonstration, that responds to order and
+          request messages.
+        </li><li class="listitem">An Intermediary demonstration, that generates order and
+          request messages and displays the responses to them.
+        </li><li class="listitem">For clients that are using the Catalys Node Server as an
+          Intermediary, there is a configuration file that will make a
+          connection to the Basic EMX Hub Emulator and allow you to send
+          and receive messages in EMX's standard
+          <span class="nobr">upload/download</span>
+          format.
+        </li></ol></div><p>The demonstrations are ready to run. You will be starting
+        three concurrent programs, which will connect with each other in
+        this way:
+      </p><div class="table"><table align="center"><tbody><tr>
+            <td align="center">
+              <span class="phrase">DemoIFA&shy;Client</span>
+              (CAFIX)
+            </td>
+
+            <td>
+              <code class="code">
+                <span class="nobr">-&gt;-&gt;-&gt;</span>
+
+                <span class="nobr">&lt;-&lt;-&lt;-</span>
+              </code>
+            </td>
+
+            <td align="center">
+              <span class="nobr">
+                <span class="phrase">EMX Hub
+                  Emulator
+                </span>
+              </span>
+              (EmuEMX)
+            </td>
+
+            <td>
+              <code class="code">
+                <span class="nobr">-&gt;-&gt;-&gt;</span>
+
+                <span class="nobr">&lt;-&lt;-&lt;-</span>
+              </code>
+            </td>
+
+            <td align="center">
+              <span class="phrase">DemoProvider&shy;Client</span>
+              (CBFIX)
+            </td>
+          </tr></tbody></table></div><p>You will be using an emulator of the EMX Hub during your
+        demonstration and testing phases, since Euroclear will not permit
+        systems under development to connect to their trialling EMX Hub
+        system.
+      </p><p>
+        <span class="phrase">Note:</span>
+        Euroclear discourages clients from using the EMX
+        Client Test system until the client's system is ready for formal
+        compliance testing. Except by prior arrangement, you will be
+        allowed only to log on, log out and send FIX administration
+        messages. If you try to send any EMX application messages they
+        may be ignored. But proving that you can log on and maintain a
+        FIX session with EMX is still a worthwhile first step to take.
+        You will need to verify that your firewall settings have been
+        correctly modified to enable you to connect to the EMX service,
+        for example. When you have succeeded with this, and are using
+        your own Participant IDs, you can ask Euroclear to allow you to
+        send EMX application messages at some agreed time in the
+        future.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e8547"></a>7.12.4.1.1.&nbsp;Locating the Demonstration Programs</h5></div></div></div><p>Demonstration programs are provided with Catalys Node. You can
+          and should test that you have installed Catalys Node correctly by
+          running the EMX Integrator's demonstration programs before you
+          commence any of your own development work.
+        </p><p>The demonstration programs are found in the Catalys Node's
+          <code class="filename">templates/EMX</code>
+          subdirectory. As well
+          as runnable demonstration programs, we include the source code
+          for the demonstration programs themselves in <code class="filename">templates/src</code>. You are welcome to copy this
+          source code to use as a starting point for developing your own
+          system.
+        </p><p>The
+          <code class="filename">templates/EMX</code>
+          directory
+          contains the following subdirectories:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="filename">config</code>: the EMX adapter
+            configuration
+          </li><li class="listitem"><code class="filename">data</code>: the location of the
+            incoming and outgoing message files used by the
+            <a href="ch07s13.html" title="7.13.&nbsp;EMX Delimited File Adapter">EMX Delimited File
+              Adapter
+            </a></li><li class="listitem"><code class="filename">log</code>: application log
+            files
+          </li><li class="listitem"><code class="filename">msg</code>: message log files
+          </li><li class="listitem"><code class="filename">security</code>: 1024-bit and 2048-bit key and trust
+            stores
+          </li><li class="listitem"><code class="filename">seq</code>: sequence number log
+            files
+          </li><li class="listitem"><code class="filename">template</code>: location of file
+            format templates used by the
+            <a href="ch07s13.html" title="7.13.&nbsp;EMX Delimited File Adapter">EMX Delimited File
+              Adapter
+            </a></li><li class="listitem"><code class="filename">unix</code>: scripts to run
+            templates on unix
+          </li><li class="listitem"><code class="filename">windows</code>: scripts to run
+            template on windows
+          </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_emx-run"></a>7.12.4.1.2.&nbsp;Running the Demonstration Programs</h5></div></div></div><p>
+          <span class="emphasis"><em>Note: We use the Windows examples in this tutorial. The
+            Unix examples can be run in a similar fashion.
+          </em></span>
+        </p><p>You should open three command windows, each with
+          <code class="filename">templates/EMX/windows</code>
+          as the current working
+          directory.
+        </p><p>In one window, type the command
+          "
+          <code class="code">
+            <span class="phrase">runEmuEMX</span>
+          </code>
+          ". You should see the EMX Hub
+          Emulator start up and shortly it will tell you "<code class="code">Listening
+            on port 4433...</code>". It is waiting for an EMX client
+          program to connect to it on that port. You will also see a
+          "<code class="code">Command:</code>" prompt, which you should ignore for now.
+          We will now connect two different clients to our EMX Hub
+          Emulator.
+        </p><p>In another window, type the command
+          "
+          <code class="code">
+            <span class="phrase">runCBFIX</span>
+          </code>
+          ". This command starts up an
+          instance of the DemoProviderClient program which has been
+          configured with the EMX Participant ID of "CBFIX". The
+          Participant ID "CBFIX" has been configured as an EMX Mutual Fund
+          Provider service. You should see that this program connects to
+          the EMX Hub Emulator and begins to exchange FIX administration
+          messages. If this fails to occur then there is an error in your
+          installation and you should contact the CameronTec support
+          team.
+        </p><p>In the third window, type the command
+          "
+          <code class="code">
+            <span class="phrase">runCAFIX</span>
+          </code>
+          ". This command starts up an
+          instance of the DemoIFAClient program which has been configured
+          with the EMX Participant ID of "CAFIX". The Participant ID
+          "CAFIX" has been configured as an EMX Mutual Fund Intermediary
+          service. You should again see that this program connects to the
+          EMX Hub Emulator and begins to exchange FIX administration
+          messages. You are ready to exchange EMX application messages
+          between the two client programs via the EMX Hub Emulator.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e8593"></a>7.12.4.1.3.&nbsp;Exchanging Messages</h5></div></div></div><p>Both of the client demonstration programs have a GUI window
+          which shows all EMX application messages that are sent and
+          received and allows you to control the client program. These
+          windows do not show the FIX administration messages, only the EMX
+          application messages, so at present they will both be empty.
+        </p><p>Go to the CAFIX EMXMessageLister window and press the
+          <span class="nobr">"Send Message"</span>
+          button. This button pops up a list of
+          pre-prepared EMX application messages from which you can choose.
+          Select the one labelled "<code class="code">TREQ</code>" and press the "Send"
+          button. You will see the message be sent to the EMX Hub Emulator
+          (EmuEMX) (look at the EmuEMX command window), and shortly
+          afterwards you will get an acknowledgement
+          <code class="code">MACK</code>
+          from
+          EmuEMX. At the same time, EmuEMX will forward the message to your
+          DemoProviderClient FIX engine (CBFIX) that you have previously
+          connected. You will see the
+          <code class="code">TREQ</code>
+          message in the
+          CBFIX EMXMessageLister window and logged in the CBFIX command
+          window.
+        </p><p>The DemoProviderClient (CBFIX) is programmed to respond to the
+          <code class="code">TREQ</code>
+          message by returning a
+          <code class="code">TRES</code>
+          message, and by this time it will have done so. You will see its
+          <code class="code">TRES</code>
+          response listed in the CBFIX EMXMessageLister
+          window under the
+          <code class="code">TREQ</code>
+          message. You will see the same
+          in the CAFIX EMXMessageLister window, since the
+          <code class="code">TRES</code>
+          message is forwarded by EmuEMX to the FIX engine that originated
+          the request, CAFIX.
+        </p><p>You will also see, in each case, a
+          <code class="code">MACK</code>
+          message
+          (an EMX Acknowledgement message). But these are not the same
+          <code class="code">MACK</code>
+          message &#8212; they are two different ones.
+          The EMX Hub Emulator, just as the real EMX Hub does, responds to
+          each EMX application message that it receives with a
+          <code class="code">MACK</code>, if the message is valid and will be forwarded,
+          or a <code class="code">MERR</code>, if the message is in error and will not
+          be forwarded.
+        </p><p>If this
+          <code class="code">TREQ</code>
+          demonstration sequence has completed
+          correctly you may wish to try sending any of the other
+          pre-prepared messages that are available from the list popped up
+          by the
+          <span class="nobr">"Send Message"</span>
+          button. The Intermediary
+          client (CAFIX) can also send
+          <code class="code">OINP</code>
+          and
+          <code class="code">VREQ</code>
+          messages, while the Provider client (CBFIX) can
+          initiate a
+          <code class="code">ECNP</code>
+          message, as well as responding to
+          any of the messages that the Intermediary client sends.
+        </p><p>Playing around with sending a few messages will help you get a
+          feel for how the EMX protocol works. So that you know what is
+          going on, we would like to make you aware of these items:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">When you send any valid message, you will first receive an
+            acknowledgement from EMX (the Emulator in this case) which
+            simply tells you that EMX has received your message and will
+            forward it to the target participant. The
+            <code class="code">MACK</code>
+            acknowledgement
+            <span class="phrase">does not</span>
+            promise that the target
+            participant will be prepared to process the message.
+          </li><li class="listitem">When a Fund Provider receives a message, its system must
+            reply with a
+            <code class="code">MERR</code>
+            message if it is unable to
+            process the message or it rejects the message for any reason.
+            If it accepts the message it will send a positive response
+            (maybe after a short processing delay).
+          </li><li class="listitem">Order messages (<code class="code">OINP</code>) that are accepted by the
+            Fund Provider will first receive a
+            <code class="code">TBKD</code>
+            message
+            (transaction booked), which is a promise that the Fund Provider
+            will execute the order. But since an order is normally not
+            executed in full until after the Fund Provider's next fund
+            repricing cycle, the electronic contract note
+            (<code class="code">ECNP</code>), which contains full details of the
+            processing of the order, will follow some time later. Our
+            DemoPrividerClient implementation emulates this by sending the
+            <code class="code">TBKD</code>
+            response immediately while it batches up the
+            sending of
+            <code class="code">ECNP</code>
+            messages and sends any outstanding
+            ones every two minutes.
+          </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_emx-ExampleDFA"></a>7.12.4.2.&nbsp;A Catalys Node Server Demonstration Example</h4></div></div></div><p>The final demonstration program,
+        <code class="code">
+          <span class="phrase">runCAFIX_DFA</span>
+        </code>
+        , is for use by Catalys Node
+        Server clients in place of the DemoIFAClient demonstration
+        program.
+      </p><p>If you are planning to build your application in Java, using
+        the Catalys Node's class libraries, then you do not need to run
+        this demonstration program.
+      </p><p>However, if (like the majority of our clients) you are
+        planning to use the Catalys Node Server, you should run this
+        demonstration program so that you can be sure that the Catalys
+        Node Server is operating correctly and because you can, in due
+        course, use the demonstration configuration file as a template
+        for your own Catalys Node Server configuration file.
+      </p><p>Once you have the above demonstration working, shut down the
+        CAFIX client (select "Logout" from the menu, then "No" at the
+        reconnect prompt), then run the example
+        <code class="code">
+          <span class="phrase">runCAFIX_DFA</span>
+        </code>
+        instead. This demonstration
+        allows you to upload messages from data files, using the
+        <a href="ch07s13.html" title="7.13.&nbsp;EMX Delimited File Adapter"><code class="code">EMXDelimitedFileAdapter</code></a>.
+        The demonstration is configured to upload any files that you put
+        in the subdirectory
+        <code class="filename">data/CAFIX/outgoing</code>
+        and to write incoming
+        messages into files that will be placed in the directory
+        <code class="filename">data/CAFIX/incoming</code>. A source of
+        data files has been provided for you in the directory
+        <code class="filename">data/CAFIX/resources</code>. You can copy
+        (drag and drop with the
+        <code class="code">Ctrl</code>
+        key pressed if using
+        Windows) files from
+        <code class="filename">resources</code>
+        to
+        <code class="filename">outgoing</code>
+        and the EMX Integrator
+        will immediately begin sending the messages from the file.
+      </p><p>If you are planning to use the EMX Delimited File Adapter as
+        your interface to EMX then you have only to copy this working
+        example and its configuration file to a sensible permanent
+        location on your computer system and make small modifications to
+        the template configuration file and command file. If you are
+        planning to connect your system to the Catalys Node Server using
+        any of the other Catalys Node technology adapter, you should also
+        start by doing this. Then you will need to replace those parts of
+        the template configuration file that refer to the
+        <code class="code">EMXDelimitedFileAdapter</code>
+        with the proper
+        configuration for your choice of technology adapter. You will
+        need to refer to the documentation for your chosen adapter.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8651"></a>7.12.4.3.&nbsp;The Purpose of the Demonstration Programs</h4></div></div></div><p>Running these demonstration programs will ensure that the
+        Catalys Node has been installed correctly on your system. If, at
+        any later stage, you become unsure that your installation is
+        still working correctly, you can (and should) run the
+        demonstration programs again as a check.
+      </p><p>After you have the demonstration example programs working, you
+        have a firm base from which to begin your own system development.
+        If developing an Intermediary application, for example, you can
+        leave the EMX Hub Emulator (EmuEMX) and the DemoProviderClient
+        (CBFIX) in operation but replace the DemoIFAClient (CAFIX) with
+        your own system under development.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8655"></a>7.12.4.4.&nbsp;The Limitations of the Demonstration Programs</h4></div></div></div><p>The EMX Hub Emulator (EmuEMX) does <span class="phrase">very minimal
+        validation</span>. Just because EmuEMX accepts a message and returns
+        a
+        <code class="code">MACK</code>
+        does not mean that the real EMX Hub will also
+        accept the message. Nor is any checking made of the certificates
+        used (see later), other than that the certificate presented by
+        the client has been signed by the key that signed the EmuEMX's
+        certificate.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8660"></a>7.12.4.5.&nbsp;Using the Demonstration Programs during your Development
+        Phase
+      </h4></div></div></div><p>Provided that you take care to create valid EMX Messages, you
+        can do most of your development and testing with the help of the
+        demonstration examples. You will be developing either an
+        Intermediary system or a Fund Provider system. You can connect
+        your system to the EMX Hub Emulator in place of the demo program
+        of the same type and leave the demo program of the other type
+        connected. That gives you a round trip messaging system which
+        will help you in your development and testing.
+      </p><p>You can run any of the example programs on different computer
+        systems. If you do that, you will have to copy the Catalys Node
+        installation to each system and you will need to modify the
+        examples' configuration files, which are found in the
+        <code class="filename">config</code>
+        directory. You will have to
+        change the "<code class="code">hostname</code>" parameter of either of the
+        client programs from "<code class="code">localhost</code>" to whatever is
+        appropriate for your configuration. You are free to change the
+        port number also, though there is little need to do that.
+      </p><p>If you are developing an Intermediary application, you will be
+        able to connect it to EmuEMX and address test messages to CBFIX,
+        which should also be connected to EmuEMX. The CBFIX
+        DemoProviderClient will produce sensible (though trivial)
+        response messages to any request and order messages that your
+        application under development sends to it.
+      </p><p>If you are developing a Fund Provider application you can
+        certainly start by using the CAFIX demonstration program to
+        generate some simple messages for you. But you will not get very
+        far with that. However, the Catalys Node Server Demonstration
+        Example (see above) can send messages of any complexity in a
+        controlled manner. Simple copy and edit the data files in the
+        <code class="filename">resources</code>
+        directory, or create your
+        own data files from scratch in Euroclear's defined EMX format,
+        and you can use them as repeatable test cases to generate
+        messages for sending to your program under development.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e8670"></a>7.12.4.5.1.&nbsp;Updating the demonstration system's properties files</h5></div></div></div><p>The demonstration programs read their configuration details
+          from a "<code class="code">properties</code>" file. You can find the name of
+          the properties file by reading the command file which executes
+          each of the programs. Each "<code class="code">properties</code>" file looks
+          somewhat like this:
+        </p><pre class="programlisting"># Define the EMX Participant ID that we will connect with.
+#
+CompID=
+&lt;emphasis&gt;ParticipantID&lt;/emphasis&gt;
+#
+# Either connect to Trialling Hub...
+#
+#hostname=Test.FIXconnect.emx.co.uk
+#hostport=4433
+#
+# ... or connect to the BasicHub EMX Emulator.
+#
+hostname=localhost
+hostport=4433
+#
+# Specify the location of the keystore and truststore.
+#
+keystore=security/&lt;emphasis&gt;ParticipantID&lt;/emphasis&gt;.keystore
+truststore=security/&lt;emphasis&gt;ParticipantID&lt;/emphasis&gt;.truststore
+#
+# Specify where we want log and persister files written.
+#
+LogBaseDir = .
+Log4JConfig = config/&lt;emphasis&gt;ParticipantID&lt;/emphasis&gt;.log4j.xml
+#
+# The next specification is needed only in the IFAClient.properties file.
+# It specifies the Fund Provider to which our test messages will be sent.
+#
+defaultProviderID=
+&lt;emphasis&gt;ProviderParticipantID&lt;/emphasis&gt;
+#</pre><p>Lines starting with "<code class="code">#</code>" are comments. You can use
+          any text editor to make changes to the properties files. When you
+          copy or move any of the demonstration programs you may well need
+          to make at least some changes.
+        </p></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8678"></a>7.12.5.&nbsp;Developing Your System</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8680"></a>7.12.5.1.&nbsp;Creating a Development Environment</h4></div></div></div><p>You should start developing your own system in your own file
+        area, of course, not in the Catalys Node directory structure.
+        But, as mentioned previously, you may find that connecting to the
+        examples and using the EMX Hub Emulator will be useful to
+        you.
+      </p><p>If you modify any of the examples, you should first copy them
+        to your own file location, otherwise they could be overwritten if
+        you upgrade your Catalys Node release. You should rename all of
+        the files you copy to something that is meaningful to you. Within
+        the copied files you will need to modify some of the path names
+        that refer to the Catalys Node file system, such as the DTD files
+        in the XML configuration files. You can use absolute or relative
+        path names, as you prefer.
+      </p><p>Some of the strategies you can use within which the
+        demonstration examples will be of direct help to you are:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">You can copy and extend the source code of either
+          <code class="code">DemoPrividerClient</code>
+          or <code class="code">DemoIFAClient</code>,
+          which you will find in the
+          <code class="filename">templates</code>
+          directory. You can easily add
+          additional EMX fields to the messages that these programs send
+          and you can customise them to meet your needs. You will need a
+          Java programmer to follow this route.
+        </li><li class="listitem">If you are developing an Intermediary system and you have a
+          friendly relationship with a Fund Provider who uses EMX, you
+          could ask the Fund Provider to connect his test system to your
+          EmuEMX program. You will need to open your firewall to the
+          relevant port, of course. Then you can send messages from your
+          system under development to his test system and receive real
+          response messages.
+        </li><li class="listitem">Likewise, if you are developing a Fund Provider system and
+          you have a friendly relationship with an Intermediary who uses
+          EMX, you could ask the Intermediary to generate messages for
+          you by connecting his test system to your EmuEMX.
+        </li></ol></div><p>If you are asking another party to connect to your copy of
+        EmuEMX, you will need to send him a copy of
+        <code class="code">EmuEMX.keystore</code>
+        (if they are using Catalys Node) or
+        <code class="code">EmuEMX.pfx</code>
+        (if they are using any other software).
+        He will need the keys and certificates contained in those files
+        to communicate with your EMX Hub Emulator.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e8695"></a>7.12.5.1.1.&nbsp;Generating Key Pairs and Keystore Management</h5></div></div></div><p>Note: In 2016/2017 Euroclear announced changes in their Public Key
+          Infrastructure introducing 2048-bit certificates and SHA256 digest
+          algorithm. Catalys Node's EMX add-on fully supports these changes
+          and customers only need to install 2048-bit certificates in order
+          to make use of the upgraded security features. Full set of both 
+          1024-bit and 2048-bit demonstration certificates is provided in 
+          security folder. 
+        </p><p>The Java keytool utility (a command line program that is
+          supplied with Java, so you will have a copy on your system) can
+          generate new key pairs. You do not have to do this, since you can
+          use the keystore and truststore files that were provided with the
+          EMX Integrator's demonstration examples. But, if you want to
+          generate your own security keys, here is the command that we used
+          to generate EmuEMX.keystore. Enter all of the arguments on the
+          same line.
+        </p><pre class="programlisting">keytool -genkeypair -alias EmuEMX \
+        -validity 10000 \
+        -keyalg RSA \
+        -sigalg SHA1withRSA \
+        -keystore EmuEMX.keystore \
+        -storepass password</pre><p>Most of the required parameters are included in that command,
+          and
+          <code class="code">keytool</code>
+          will prompt you for the other things it
+          needs. Enter your own personal and company details, and enter
+          "yes" when asked to confirm that they are correct (or "no" if you
+          need to correct anything). Then press return when asked for the
+          key password, since the default is that it is the same as the
+          store password.
+        </p><p>This creates a Java JKS keystore file, which is perfect for
+          use by the Catalys Node. But if you need to supply any other
+          party with a Microsoft Personal Information Exchange file (PFX),
+          you will need to copy the keystore to the PKCS#12 format used by
+          PFX files. Use the keytool utility as follows:
+        </p><pre class="programlisting">keytool -v -importkeystore \
+        -srckeystore ./EmuEMX.keystore \
+        -srcstoretype JKS \
+        -destkeystore ./EmuEMX.pfx \
+        -deststoretype PKCS12</pre><p>You can send this file to any other party, who will be able to
+          use it in their own software. You will need to tell them that the
+          password is "<code class="code">password</code>".
+        </p><p>If you need to provide another party with a certificate only,
+          and not the private key as well, use
+          <code class="code">keytool</code>
+          to
+          create a PKCS#7 certificate file as follows:
+        </p><pre class="programlisting">keytool -export -file EmuEMX.cer \
+        -alias EmuEMX \
+        -keystore EmuEMX.keystore \
+        -storepass password</pre></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_emx-#KeytoolList"></a>7.12.5.1.2.&nbsp;Using
+          <span class="phrase">
+            <code class="code">keytool</code>
+          </span>
+          to view a keystore
+        </h5></div></div></div><p>The Java
+          <code class="code">keytool</code>
+          utility can be used to list the
+          contents of a keystore or a truststore. You need to specify the
+          <code class="code">-list</code>
+          option and the
+          <code class="code">-v</code>
+          (verbose
+          output) option, and to specify the name of the keystore with the
+          <code class="code">-keystore</code>
+          option. You can also specify the
+          keystore's password on the command line, as illustrated below,
+          but
+          <code class="code">keytool</code>
+          will prompt you for the password if you
+          don't. Copy the command below, changing the name of the keystore
+          file to your own file name. Enter all of the arguments on the
+          same line.
+        </p><pre class="programlisting">keytool -keystore CAFIX.keystore -storepass password -list -v</pre><p>You will see full details of the key and/or certificate listed
+          in the command window.
+        </p><p>It is advisable to list the keystore and truststore that you
+          are using, so that you can be certain that the contents of the
+          keystore and truststore are what you believe you are using, and
+          are not expired or otherwise invalid.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e8722"></a>7.12.5.1.3.&nbsp;Using
+          <span class="phrase">
+            <code class="code">keytool</code>
+          </span>
+          to view a certificate
+        </h5></div></div></div><p>The
+          <code class="code">keytool</code>
+          utility can also display the contents
+          of a certificate file. Copy the command below, changing the name
+          of the keystore file to your own file name. Enter all of the
+          arguments on the same line.
+        </p><pre class="programlisting">keytool -printcert -file certfile.cer</pre><p>You will see full details of the certificate listed in the
+          command window.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8730"></a>7.12.5.2.&nbsp;Connecting to the EMX Trialling System</h4></div></div></div><p>Well in advance of the time when your system development has
+        reached a stage where you are ready to connect to Euroclear's EMX
+        Client Test System, you should apply to Euroclear to obtain a
+        Participant ID and a certificate. Your Euroclear representative
+        will agree a Participant ID with you and will give you the
+        instructions for obtaining a certificate.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_emx-ObtainClientCert"></a>7.12.5.2.1.&nbsp;Obtain an EMX Certificate for
+          your Participant ID
+        </h5></div></div></div><p>The first part of this process can be carried out on any
+          Windows computer, irrespective of whether or not you are running
+          your Catalys Node
+          <span class="nobr">EMX Integrator</span>
+          application on
+          Windows.
+        </p><p>Using Internet Explorer, go to Euroclear's
+          <a href="https://www.euroclear.com/site/public/EUI/EMX" target="_top">EMX web site</a>.
+          Select the "Digital Certificates" option, then select the link labelled
+          "Trial certificate application form". When you have filled in the
+          form, click on the "Submit Request" button. Your browser
+          generates a private/public key pair at this stage, and sends the
+          public key to Euroclear for inclusion in the certificate they
+          will prepare for you. The private key remains in your browser, in
+          a secure location. You should see a confirmation screen.
+          Euroclear may take a day to deal with your request.
+        </p><p>When Euroclear has prepared your certificates, you will
+          receive an email containing a link to Euroclear's server from
+          which you can download the certificate. Clicking the link will
+          install the certificate into Internet Explorer. You must do this
+          on the
+          <span class="phrase">same computer</span>
+          from which you made your
+          application.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e8741"></a>7.12.5.2.2.&nbsp;Make your Certificate available to the
+          <span class="nobr">EMX
+            Integrator
+          </span>
+        </h5></div></div></div><p>Your certificate and your private key will be in Internet
+          Explorer's secure area. You need to export them to a file that
+          you can make available for use by the EMX Integrator. To do
+          this:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Select
+            <code class="code">Tools</code>
+            then
+            <code class="code">Internet
+              Options
+            </code>
+            from the menu bar.
+          </li><li class="listitem">Select the
+            <code class="code">Content</code>
+            tab.
+          </li><li class="listitem">Select <code class="code">Certificates</code>.
+          </li><li class="listitem">Highlight the certificate you want to export and press the
+            <code class="code">Export</code>
+            button.
+          </li><li class="listitem">A "wizard" will ask you some questions. Choose "Export the
+            private key".
+          </li><li class="listitem">Choose PKCS#12 and check "all certificates" and "strong
+            encryption" if offered.
+          </li><li class="listitem">Enter a password of "<code class="code">password</code>" (or your own
+            choice of password).
+          </li><li class="listitem">Enter "
+            <code class="code"><span class="emphasis"><em>yourid</em></span>.pfx
+            </code>
+            " as the filename for
+            the exported file, where
+            <code class="code">
+              <span class="emphasis"><em>yourid</em></span>
+            </code>
+            is the
+            Participant ID for this certificate. Specify that it should be
+            stored in your installations's
+            <code class="filename">security</code>
+            directory (or a location of your
+            choice).
+          </li><li class="listitem">Press the
+            <code class="code">Finish</code>
+            button and the operation will
+            be carried out.
+          </li></ul></div><p>This will create a PFX file on the computer from which you
+          applied for your certificate. You should copy this file to the
+          computer on which you are running the Catalys Node, if different.
+          Update your configuration file by changing the name of the
+          <code class="code">keystore</code>
+          property's value to match the name and
+          location of the PFX file you have exported, and change the name
+          of the
+          <code class="code">truststore</code>
+          property's value to access the
+          <code class="code">EMXRoot.cer</code>
+          file supplied with the EMX Integrator,
+          or a copy of it, or your own EMX Root certificate file if you
+          wish to follow the next optional step.
+        </p><p>
+          <span class="emphasis"><em>
+            <span class="phrase">Note:</span>
+            In earlier versions of the Catalys Node you
+            would have had to perform an additional step, namely the
+            conversion of the PFX file into the JKS keystore format that the
+            Catalys Node would require.
+            <span class="phrase">This is no longer necessary,
+              since the SSL Adapter and the EMX Integrator can now read both
+              PFX files and CER files directly.
+            </span>
+            You may still perform the
+            conversion to JKS process if you wish. But there is really no
+            benefit in doing so.
+          </em></span>
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_emx-ObtainEMXRootCert"></a>7.12.5.2.3.&nbsp;Optional: Download
+          Euroclear's EMX Root Certificate
+        </h5></div></div></div><p>For your convenience, a copy of Euroclear's EMX Root
+          Certificate is delivered with the Catalys Node EMX Integrator.
+          You will find it in the
+          <code class="filename">security</code>
+          subdirectory of the examples you have previously run. You need to
+          copy the
+          <code class="code">EMXRoot.cer</code>
+          file (or the
+          <code class="code">EMXRoot.truststore</code>
+          file if you prefer) to your own
+          directory, or point your configuration to the supplied copy.
+        </p><p>If you would like to download a fresh copy of Euroclear's EMX
+          Root Certificate, or if you need to do so at any time in the
+          future, the instructions are included here for completeness. The
+          EMX Root Certificate has a long validity period, but it will
+          expire eventually and Euroclear will produce a new one which you
+          will need to obtain in this way.
+        </p><p>You can download Euroclear's EMX Root Certificate from
+          Euroclear's Certificate Authority web site:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Click on this link:
+            <a href="https://ca.emx.co.uk/csrweb/certificates/emx_root.crt" target="_top">Install EMX Message System Root Certificate</a>.
+          </li><li class="listitem">Choose "Save" when asked to open or save.</li><li class="listitem">Browse in the file dialog to the location where you wish to
+            save the certificate file. You may change the file name to
+            "<code class="code">EMXRoot.cer</code>" if you wish your name to match this
+            documentation.
+          </li><li class="listitem">When complete, you will be asked "Open", "Open folder" or
+            "Close". You may choose whichever option you prefer. Note that,
+            if you choose Open (which displays the certificate), there is
+            no need to choose "Install", since this certificate only needs
+            to be used with the Catalys Node and does not need to be
+            installed in your browser.
+          </li></ul></div><p>You can now copy or move the EMX Root certificate to the
+          <code class="filename">security</code>
+          directory of your Catalys
+          Node installation, or to any other location that you may have
+          chosen to use. Ensure that your configuration file's
+          <code class="code">truststore</code>
+          property's value refers to the new
+          <code class="code">EMXRoot.cer</code>
+          file that you have downloaded.
+        </p><p>
+          <span class="phrase">Note:</span>
+          As mentioned above, in
+          earlier versions of the Catalys Node you would have next had to
+          create a JKS format truststore file from this certificate file.
+          <span class="phrase">This is no longer necessary, since the SSL Adapter and
+            the EMX Integrator can now read both PFX files and CER files
+            directly.
+          </span>
+          But if you do wish to create a JKS truststore file,
+          simply run the command:
+        </p><pre class="programlisting">keytool -import \
+        -file EMXRoot.cer \
+        -alias EMX \
+        -keystore EMXRoot.truststore \
+        -storepass password</pre></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8798"></a>7.12.6.&nbsp;Performing the EMX Compliance Tests</h3></div></div></div><p>Before Euroclear permits you to connect to the Live EMX Hub
+      system, you must satisfactorily complete Euroclear's compliance
+      tests. You should arrange a compliance test schedule with your
+      Euroclear contact at a time when your system development and
+      testing is nearly complete. You will be given various test
+      scripts that you will be asked to run.
+    </p><p>Most of the tests are concerned with "normal processing",
+      where your Catalys Node client either remains connected to EMX
+      throughout, or where you are asked to break the connection and
+      reconnect without manually changing the FIX message sequence
+      numbers. These tests are easily performed, since Catalys Node's
+      normal behaviour is what is required.
+    </p><p>Some of the tests, however, involve artificially adjusting one
+      or other of the FIX message sequence numbers, in a way that
+      Euroclear will specify to you. The purpose of these tests is to
+      simulate a situation where one of the two FIX engines (either
+      your Catalys Node client or the EMX Hub) has missed some messages
+      that the other party has previously sent. The FIX Protocol allows
+      recovery of missed messages, and Euroclear wants to test that
+      your FIX engine will indeed recover in the expected way.
+    </p><p>The way you adjust the FIX sequence numbers depends on whether
+      you are using the Catalys Node or whether you have built your own
+      Java application built on the EMXClient toolkit.
+    </p><p>Note that you cannot (or should not) reduce the outgoing
+      sequence number or increase the expected incoming sequence
+      number. Neither of these events are expected to be handled by a
+      FIX engine, since they represent a fatal breach of the FIX
+      Protocol.
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8805"></a>7.12.6.1.&nbsp;Specifying sequence numbers when using the Catalys Node
+        Server
+      </h4></div></div></div><p>The Catalys Node Server has a
+        <a href="ch04s02.html#operations_monitoring-command-line" title="4.2.2.&nbsp;Command-Line Interface">Command Line</a>
+        which gives you all of the
+        options you need to make ad-hoc changes to the normal mode of
+        operation. The Command Line is accessed by pressing enter in the
+        terminal where you started the Catalys Node Server. Type
+        "<span class="phrase">help</span>" to get the list of available commands. Type
+        "<span class="phrase">s_list</span>" to get a list of configured sessions. Your
+        session should be able to be identified by
+        <code class="code">TargetCompID=EMX</code>
+        and
+        <code class="code">SenderCompID=CAFIX</code>. You will need the
+        <code class="code">ID</code>
+        of the session for all session commands. This
+        appears on the left hand side of the Command Line output, #9 for
+        example. First of all, type "<span class="phrase">s_drop #9</span>". This simulates a
+        temporary loss of the network connection. the Catalys Node's
+        normal behaviour is to try to reconnect straight away. You will
+        see this occur within a few seconds. Your session carries on
+        without any adverse impact.
+      </p><p>However, this is
+        <span class="phrase">not</span>
+        what you want when you are
+        required to change the FIX sequence numbers. You need to prevent
+        automatic reconnection, and you do that by first typing
+        "<span class="phrase">s_block #9</span>" prior to "<span class="phrase">s_drop #9</span>". The
+        "<span class="phrase">s_block</span>" command prevents automatic reconnection until
+        you later select "<span class="phrase">s_unblock</span>".
+      </p><p>So this time choose "<span class="phrase">s_block #9</span>" and then "<span class="phrase">s_drop
+        #9</span>". The Catalys Node Server will sit idly until you unblock
+        the connection. This gives you time to make any changes you need.
+        Now choose "<span class="phrase">s_out_seq_number #9 50</span>", for example or any
+        sequence number higher than the last sequence number that your
+        FIX engine sent, which you can see on your console or log file
+        output (outgoing sequence numbers are preceded with
+        "<span class="phrase">&gt;</span>", incoming with "<span class="phrase">&lt;</span>"). Then choose
+        "<span class="phrase">s_unblock #9</span>" and "<span class="phrase">s_connect #9</span>". Your FIX engine
+        will reconnect but will be sending a higher sequence number than
+        the other party expects. This will cause the other party (EMX or
+        the EMX Emulator) to send a FIX
+        <code class="code">ResendRequest</code>
+        message, which you will see on your console or log file, because
+        it believes that it has missed receiving all of the messages in
+        between the last sequence number that it received and the
+        artificially high sequence number that it has now received. Your
+        FIX engine will satisfy this
+        <code class="code">ResendRequest</code>
+        by
+        sending a
+        <code class="code">SequenceReset</code>
+        message, which lets the
+        other party know that it has not, in fact, missed any application
+        messages.
+      </p><p>You can also use the same procedure to change the next
+        expected input sequence number. If you enter a number lower than
+        the last sequence number that your FIX engine actually received,
+        and then reconnect ("<span class="phrase">s_unblock</span>" and "<span class="phrase">s_connect</span>"),
+        your FIX engine will receive a higher sequence number from the
+        other party than it now expects and will believe that it has
+        missed some messages from the other party. This results in your
+        FIX engine sending a
+        <code class="code">ResendRequest</code>
+        message, and the
+        other party will resend any application messages in the missing
+        range, together with
+        <code class="code">SequenceReset</code>
+        messages to fill
+        any sequence numbers which have no application messages
+        attached.
+      </p><p>By using the "<span class="phrase">s_block</span>" and "<span class="phrase">s_drop</span>" commands you
+        should be able to perform all of the abnormal processing tests
+        that Euroclear ask for.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8840"></a>7.12.6.2.&nbsp;Specifying sequence numbers when using the EMXClient</h4></div></div></div><p>You can program in your own control of sequence numbers, but
+        you probably don't need to. If you want to break the current
+        session and then restart it with a change to the sequence numbers
+        you can simply kill your FIX client
+        (
+        <span class="nobr">
+          <code class="code">Ctrl-C</code>
+        </span>
+        in the Windows console, or
+        <code class="code">
+          <span class="nobr">kill -9</span>
+        </code>
+        in Unix, etc.).
+      </p><p>If you then restart the EMXClient (or your application class
+        that extends EMXClient), if will reconnect and carry on from
+        where it had got to, which is exactly what you want when a
+        temporary service disruption has occurred. The built-in
+        persistence mechanism implements that behaviour by default.
+      </p><p>But some of the Euroclear compliance tests require you
+        manually to change the starting sequence numbers that the
+        persistence mechanism would have used. To do that, before
+        restarting your application, add one or both of these Java
+        command line options to your startup script:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="nobr">"
+            <span class="phrase">
+              <code class="code">-DoutMsgSeqNum=
+                <span class="emphasis"><em>p</em></span>
+              </code>
+            </span>
+            "
+          </span>
+          :
+          to set the first outgoing sequence number to
+          <span class="phrase">
+            <code class="code">
+              <span class="emphasis"><em>p</em></span>
+            </code>
+          </span>
+          , and/or
+        </li><li class="listitem"><span class="nobr">"
+            <span class="phrase">
+              <code class="code">-DinMsgSeqNum=
+                <span class="emphasis"><em>q</em></span>
+              </code>
+            </span>
+            "
+          </span>
+          :
+          to set the first expected incoming sequence number to
+          <span class="phrase">
+            <code class="code">
+              <span class="emphasis"><em>q</em></span>
+            </code>
+          </span>
+          .
+        </li></ul></div><p>These options only affect the first attempt at connecting to
+        EMX.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8867"></a>7.12.7.&nbsp;Obtaining a Certificate for the Live EMX System</h3></div></div></div><p>When you have successfully passed Euroclear's compliance
+      tests, you will be allowed to apply for a certificate for use in
+      connecting to the Live EMX System. The same EMX Root Certificate
+      is used on all EMX sites, live and test, so you can simply copy
+      your
+      <code class="code">EMXRoot.cer</code>
+      to your live environment. But your
+      live Participant ID will very likely be different from your test
+      ID, and in any case you will need a certificate granting
+      different permissions for connecting to the Live EMX System.
+    </p><p>Go to the same link as given above under the heading <a href="ch07s12.html#adapter_emx-ObtainClientCert" title="7.12.5.2.1.&nbsp;Obtain an EMX Certificate for your Participant ID">Obtain an EMX
+      Certificate for your
+      Participant ID</a>, but this time select the link labelled
+      "Digital certificate application form". Complete and submit the
+      application form in the same way as before.
+    </p><p>When Euroclear notifies you that your certificate is ready,
+      follow exactly the same procedure to download and install the
+      certificate in your live environment.
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8874"></a>7.12.7.1.&nbsp;Renewing your Certificate</h4></div></div></div><p>Your certificate will have an expiry date, probably one or two
+        years after its issue date. When your certificate is nearing
+        expiry, Euroclear will notify you and ask you to apply for a new
+        one. You obtain this in exactly the same way as you obtain your
+        original certificate.
+      </p><p>Similarly, Euroclear will notify you when the EMX Root
+        Certificate is nearing expiry. This has a longer validity date,
+        so the need to renew it only occurs once every five to ten years.
+        You can download a new EMX Root Certificate by following the
+        instructions under the heading <a href="ch07s12.html#adapter_emx-ObtainEMXRootCert" title="7.12.5.2.3.&nbsp;Optional: Download Euroclear's EMX Root Certificate">Download Euroclear's EMX Root
+          Certificate</a>, and use it to replace your current
+        <code class="code">EMXRoot.cer</code>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8880"></a>7.12.8.&nbsp;Other Information</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8882"></a>7.12.8.1.&nbsp;Start &amp; Stop Time</h4></div></div></div><p>The EMX service is operational from 08:00 to 18:00 (UK time)
+        on weekdays. The default behaviour of the
+        <span class="nobr">EMX
+          Integrator
+        </span>
+        is to log out from EMX at 18:00 local time and
+        sleep until 08:00 local time the next day (omitting Saturdays and
+        Sundays).
+      </p><p>If your EMX Integrator system is running on a computer that is
+        NOT using UK time, you will probably want to change the default
+        start and stop times.
+      </p><p>You may also want to change the default start and stop times
+        when you are developing and testing your system. There is no need
+        to stop work at 18:00 &#8212; the EMX Emulator will be running
+        24/7, so why not carry on working!
+      </p><p>Changing the start and stop times is easy, but the methods
+        differ depending on whether you are using the Catalys Node Server
+        or are building your own Java application by extending the
+        EMXClient:
+      </p><p>
+        <span class="phrase">Catalys Node Server:</span>
+        You must edit the command file
+        that starts the Catalys Node Server. Add the following statements
+        to the java command line, directly after the space following
+        "<code class="code">java</code>" at the beginning of the line:
+        "
+        <span class="phrase">
+          <code class="code">
+            <span class="nobr">-DEMXStartTime=08:40</span>
+            <span class="nobr">-DEMXStopTime=23:00</span>
+          </code>
+        </span>
+        ".
+      </p><p>
+        <span class="phrase">EMXClient:</span>
+        You can add two additional configuration
+        lines to your "<code class="code">properties</code>" file:
+        "
+        <span class="phrase">
+          <code class="code">
+            <span class="nobr">StartTime = 08:40</span>
+          </code>
+        </span>
+        ", and
+        "
+        <span class="phrase">
+          <code class="code">
+            <span class="nobr">StopTime = 23:00</span>
+          </code>
+        </span>
+        ".
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8905"></a>7.12.8.2.&nbsp;Catalys Node Scheduler</h4></div></div></div><p>If you are using the Catalys Node Scheduler, the default or
+        custom scheduling of the EMX Integrator (as described in the
+        previous section) is disabled. You must schedule the EMX
+        Integrator using the Catalys Node Scheduler.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s11.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s13.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.11.&nbsp;RMI Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.13.&nbsp;EMX Delimited File Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:40+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

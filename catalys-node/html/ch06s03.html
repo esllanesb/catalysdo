@@ -1,0 +1,194 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.3.&nbsp;File Lookup Service</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s02.html" title="6.2.&nbsp;Catalys Rules Engine"><link rel="next" href="ch06s04.html" title="6.4.&nbsp;Scheduled Order Cache"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_file_lookup_service"></a>6.3.&nbsp;File Lookup Service</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e4866"></a>6.3.1.&nbsp;Introduction</h3></div></div></div><p>
+      The <code class="code">FileLookupService</code> provides a centralized interface to data in a delimited text file. This data
+      can be used by <a class="code" href="ch06s02.html#optfeature_rules_engine_actions-ActionFileLookup" title="ActionFileLookup">ActionFileLookup</a>
+      in the <a href="ch06s02.html" title="6.2.&nbsp;Catalys Rules Engine">Catalys Rules Engine</a> and by a custom message processor. The
+      service parses data from user-defined columns in the text file into key-value pairs &#8212; the caller provides
+      the key and the service returns the corresponding value.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e4872"></a>6.3.2.&nbsp;Basic Configuration Example</h3></div></div></div><p>
+      In this scenario, we are converting symbols in inbound messages prior to routing to another session. Our sample
+      data file:
+    </p><pre class="programlisting">IBM,IBM.X
+MSFT,MSFT.X
+ORCL,ORCL.X</pre><p>
+      To configure the service, first determine which column(s) will serve as the <span class="emphasis"><em>lookup key</em></span>. In
+      this example, the first column (index 0) contains the symbol we are converting from, so this is our lookup key.
+      Now we must choose the <span class="emphasis"><em>result</em></span> column &#8212; this column holds the values we want to
+      retrieve, which is the second column (index 1). Our configuration looks like this:
+    </p><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="app"&gt;
+    &lt;Services&gt;
+      &lt;FileLookupService
+        id="symbolConversion"
+        fileName="/tmp/symbols.csv"
+        delimiter=","
+        lookupKeys="0"
+        resultIndexes="1" /&gt;
+    &lt;/Services&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre><p>
+      For a complete list of configuration attributes, see the
+      <a href="config_reference.html#config_ref_FileLookupService" title="FileLookupService">FileLookupService Configuration Reference</a>.
+    </p><p>
+      When the service starts, it will parse each line of the file and load all key-value pairs into memory (only
+      columns that are configured are loaded; other columns are ignored). The next step is to configure the Catalys
+      Rules Engine to actually use the data. This is done via the <code class="code">ActionFileLookup</code>, which we'll configure
+      to take the value of tag 55 from an incoming message, lookup this value in the <code class="code">FileLookupService</code> and
+      overwrite tag 55 with the result:
+    </p><pre class="programlisting">&lt;RulesPack id="outboundRules"&gt;
+  &lt;Rule direction="outbound" description="Symbol conversion"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions /&gt;
+      &lt;Exclusions /&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionFileLookup fileLookupServiceId="symbolConversion"
+                        lookupKey="0"
+                        lookupTags="55"
+                        resultIndex="1"
+                        tags="55"/&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre><p>
+      The values specified in <code class="code">lookupKey</code> and <code class="code">resultIndex</code> must be one of the the
+      <code class="code">lookupKeys</code> and <code class="code">resultIndexes</code> configured in the corresponding service.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e4891"></a>6.3.3.&nbsp;Configuring Multiple Keys and Results</h3></div></div></div><p>
+      A <code class="code">FileLookupService</code> can be configured with multiple lookup keys and result columns. This is useful
+      when you have a single data file containing different data mappings &#8212; one service can be configured to
+      accommodate multiple <code class="code">ActionFileLookups</code> that refer to different columns in the data file. Furthermore,
+      one lookup key can be comprised of multiple columns. This is referred to as a <span class="emphasis"><em>composite key</em></span>
+      and is notated as <code class="code">{x,y,...,n}</code> where <code class="code">x</code> and <code class="code">y</code> are column indexes. A composite
+      key is used when the values of multiple tags are used to lookup a single result value.
+    </p><p>
+      To illustrate these concepts, we'll convert symbols based on two criteria: the order type and the destination
+      party. Here is the CSV file:
+    </p><pre class="programlisting">IBM,1,IBM.W,IBM.X
+IBM,2,IBM.Y,IBM.Z
+MSFT,1,MSFT.W,MSFT.X
+MSFT,2,MSFT.Y,MSFT.Z</pre><p>
+      For one counterparty, we must convert to the symbol in column 2; for another party, column 3:
+    </p><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="app"&gt;
+    &lt;Services&gt;
+      &lt;FileLookupService
+        id="symbolConversion"
+        fileName="/tmp/symbols.csv"
+        delimiter=","
+        lookupKeys="{0,1}"
+        resultIndexes="1,2"
+        /&gt;
+    &lt;/Services&gt;
+    &lt;RulesPack id="outboundRulesForParty1"&gt;
+      &lt;Rule direction="outbound" description="Symbol conversion for party1"&gt;
+        &lt;Conditions&gt;
+          &lt;Inclusions /&gt;
+          &lt;Exclusions /&gt;
+        &lt;/Conditions&gt;
+        &lt;Actions&gt;
+          &lt;ActionFileLookup fileLookupServiceId="symbolConversion"
+                            lookupKey="{0,1}"
+                            lookupTags="55,40"
+                            resultIndex="1"
+                            tags="55"/&gt;
+        &lt;/Actions&gt;
+      &lt;/Rule&gt;
+    &lt;/RulesPack&gt;
+    &lt;RulesPack id="outboundRulesForParty2"&gt;
+      &lt;Rule direction="outbound" description="Symbol conversion for party2"&gt;
+        &lt;Conditions&gt;
+          &lt;Inclusions /&gt;
+          &lt;Exclusions /&gt;
+        &lt;/Conditions&gt;
+        &lt;Actions&gt;
+          &lt;ActionFileLookup fileLookupServiceId="symbolConversion"
+                            lookupKey="{0,1}"
+                            lookupTags="55,40"
+                            resultIndex="2"
+                            tags="55"/&gt;
+        &lt;/Actions&gt;
+      &lt;/Rule&gt;
+    &lt;/RulesPack&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre><p>
+      The <code class="code">lookupKey</code> for each action is composite &#8212; two pieces of data are required in order to
+      perform the lookup. Therefore we specify two <code class="code">lookupTags</code>: Symbol and OrdType. Note that these must be
+      listed in the same order as the <code class="code">lookupKey</code> columns, and columns in a composite <code class="code">lookupKey</code>
+      should always be specified in ascending order. This configuration implies that tag 55 corresponds to column 0 and
+      tag 40 corresponds to column 1.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e4909"></a>6.3.4.&nbsp;Lookup from a Custom Message Processor</h3></div></div></div><p>
+      An <code class="code">ActionFileLookup</code> is not the only component that can make use of a <code class="code">FileLookupService</code>.
+      A custom message processor can access the service via the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/service/ServiceRegistry.html" target="_top">ServiceRegistry</a>:
+    </p><pre class="programlisting">import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.lookup.FileLookupKey;
+import com.camerontec.catalys.server.lookup.FileLookupService;
+import com.camerontec.catalys.server.processor.FIXListenerBase;
+import com.camerontec.catalys.util.data.MissingDataException;
+import com.camerontec.catalys.util.messaging.MessageEvent;
+import com.camerontec.catalys.util.service.ServiceRegistry;
+import gnu.trove.TIntIntHashMap;
+
+public class LookupProcessor extends FIXListenerBase
+{
+  private final FileLookupKey lookupKey;
+  private final TIntIntHashMap lookupKeyToTag;
+  private FileLookupService service;
+
+  public LookupProcessor()
+  {
+    // lookup using columns 0 and 1
+    lookupKey = new FileLookupKey(0, 1);
+
+    // map column 0 -&gt; Symbol and column 1 -&gt; OrdType
+    lookupKeyToTag = new TIntIntHashMap();
+    lookupKeyToTag.put(0, 55);
+    lookupKeyToTag.put(1, 40);
+  }
+
+  @Override
+  public boolean openComponent() throws Exception
+  {
+    service = (FileLookupService)ServiceRegistry.getInstance()
+      .getService("symbolConversion");
+    return super.openComponent();
+  }
+
+  @Override
+  public void onMessageFromFix(MessageEvent event, IFIXMessage message)
+    throws MissingDataException
+  {
+    if (message.hasField(55))
+    {
+      // retrieve the value in column 2
+      final String newSymbol = service.lookup(lookupKey, lookupKeyToTag, 2, message);
+
+      if (newSymbol != null)
+      {
+        message.setValue(55, newSymbol);
+      }
+    }
+  }
+}</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e4916"></a>6.3.5.&nbsp;Labels</h3></div></div></div><p>
+      To simplify the configuration of <code class="code">FileLookupService</code> and <code class="code">ActionFileLookup</code> via the
+      Dashboard, column labels can be defined for the <code class="code">lookupKeys</code> and <code class="code">resultIndexes</code> values.
+      This allows a Dashboard user to refer to these columns as names rather than numeric column indexes. For example:
+    </p><pre class="programlisting">IBM,1111,2222
+MSFT,3333,4444
+ORCL,5555,6666</pre><pre class="programlisting">&lt;FileLookupService
+  id="symbolConversion"
+  fileName="/tmp/symbols.csv"
+  delimiter=","
+  lookupKeys="0,1"
+  lookupKeyLabels="symbol,isin"
+  resultIndexes="2"
+  resultIndexLabels="sedol" /&gt;</pre><p>
+      With this configuration, Dashboard users will see the available <code class="code">lookupKeys</code> as <code class="code">symbol</code> and
+      <code class="code">isin</code>, and the available <code class="code">resultIndexes</code> will be seen as <code class="code">sedol</code>.
+    </p><div class="note"><h3 class="title">Note</h3><p>
+        The order of the labels must match the order of the specified column indexes.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.2.&nbsp;Catalys Rules Engine&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.4.&nbsp;Scheduled Order Cache</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

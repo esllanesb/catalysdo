@@ -1,0 +1,40 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 8.6.&nbsp;Message Transformers</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="prev" href="ch08s05.html" title="8.5.&nbsp;Message Factories"><link rel="next" href="ch08s07.html" title="8.7.&nbsp;Repeating Groups"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch08s05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08s07.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_msg_trans"></a>8.6.&nbsp;Message Transformers</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10431"></a>8.6.1.&nbsp;Introduction</h3></div></div></div><p>
+      The implementation steps below show how to develop your own message transformer class. Message transformers are
+      used by technology adapters to transform inbound FIX message objects into the data object that the adapter
+      requires and vice versa. All of Catalys Node technology adapters have a default transformers but there are
+      situations when a custom transformer is required.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10434"></a>8.6.2.&nbsp;Implementation</h3></div></div></div><p>To create a custom message transformer:</p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10437"></a>Implement the IMessageTransformer Interface</h4></div></div></div><p>
+        The custom message transformer must implement the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IMessageTransformer.html" target="_top">IMessageTransformer</a>
+        interface.
+      </p><pre class="programlisting">public class CustomMessageTransformer implements IMessageTransformer { ... }</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10442"></a>Message Transformer Methods</h4></div></div></div><p>
+        The <code class="code">setAttributes(...)</code> exist to pass attributes to the custom transformer.
+      </p><p>
+        The <code class="code">toStream(...)</code>, <code class="code">toObject(...)</code> and <code class="code">toObjectList(...)</code> methods exist
+        to convert <code class="code">IFIXMessage</code> objects into the type of Java Object that the adapter requires.
+      </p><p>
+        The <code class="code">toMessage(...)</code> methods exist to convert message objects from the adapter into
+        <code class="code">IFIXMessage</code> message objects.
+      </p><p>
+        The transformer should implement the methods it is required to support and throw unsupported exceptions for
+        implementations it does not support as follows:
+      </p><pre class="programlisting">public List&lt;Object&gt; toObjectList(IFIXMessage[] messages)
+        throws UnsupportedOperationException {
+  throw new UnsupportedOperationException("Method toObjectList() not implemented.");
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10456"></a>Implement the IMessageProcessorEventTransformer Interface</h4></div></div></div><p>
+        To transform event messages for FIX connection status changes, session resets and exception events, you may
+        optionally implement the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IMessageProcessorEventTransformer.html" target="_top">IMessageProcessorEventTransformer</a>
+        interface.
+      </p><pre class="programlisting">public class CustomMessageTransformer implements
+        IMessageTransformer, IMessageProcessorEventTransformer { ... }</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10461"></a>8.6.3.&nbsp;Configuration</h3></div></div></div><p>
+      To configure a custom message processor on a technology adapter, set the <code class="code">transformer</code> attribute on
+      adapter element you are using to the full namespace and class name of your transformer. Every technology adapter
+      is required to support this attribute.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch08s05.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch08.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">8.5.&nbsp;Message Factories&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;8.7.&nbsp;Repeating Groups</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:41+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

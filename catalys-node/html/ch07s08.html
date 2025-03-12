@@ -1,0 +1,105 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.8.&nbsp;Microsoft MQ Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s07.html" title="7.7.&nbsp;TIBCO Rendezvous Adapter"><link rel="next" href="ch07s09.html" title="7.9.&nbsp;JDBC Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s07.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s09.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_msmq"></a>7.8.&nbsp;Microsoft MQ Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_msmq-intro"></a>7.8.1.&nbsp;Introduction</h3></div></div></div><p>
+      The MSMQ Adapter is designed to work with the Node and Microsoft's Message Queuing platform (MSMQ). MSMQ is a
+      messaging infrastructure and environment for running distributed, loosely coupled messaging applications in
+      a Windows environment. Source MSMQ applications place messages on a queue, where they are temporarily stored, then
+      a target MSMQ application consumes the messages from the qeueue for processing. Such applications can communicate
+      across heterogeneous networks and with computers that may be offline temporarily.
+    </p><p>
+      Normally there are two dedicated queues used to distribute information to and from the Node. An "In" queue is
+      where FIX messages sent to the Node are placed and an "Out" queue is where messages that are to be sent by the
+      Node are placed.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_msmq-overview"></a>7.8.2.&nbsp;Overview</h3></div></div></div><p>
+      The following diagram shows how messages are sent between a MSMQ client application and the MSMQ Adapter running
+      on the Node.
+    </p><p>
+      </p><div class="mediaobject"><img src="../resources/MSMQ_Layout.gif"></div><p>
+    </p><p>
+      Because there is no direct access to the MSMQ from Java, we use a JNI layer to create a bridge to the native
+      Windows API.
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Client Application</strong></span> - application which will uses the MSMQ to send and receive
+        messages to/from the Node.
+      </li><li class="listitem"><span class="bold"><strong>MSMQ</strong></span> - This is the Windows messaging framework which manages the queues.
+      </li><li class="listitem"><span class="bold"><strong>JNI Layer</strong></span> - An interface to the MSMQ API contained in one of MSMQWrapper DLLs
+        delivered with the Node.
+      </li><li class="listitem"><span class="bold"><strong>MSMQ Adapter</strong></span> - Technology adapter configured on the Node which sends/receives
+        messages to the MSMQ.
+      </li><li class="listitem"><span class="bold"><strong>ITrasformer</strong></span> - This
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IMessageTransformer.html" target="_top">IMessageTransformer</a>
+        transforms message between MSMQ message objects and Node <code class="code">IFIXMessage</code> objects.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_msmq-install"></a>7.8.3.&nbsp;MSMQ Installation</h3></div></div></div><p>
+      Windows servers usually come with MSMQ pre-installed. If MSMQ is not installed, please review the Administrator
+      Guide for the version of Microsoft Windows Server you are running.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7992"></a>MSMQ Queues</h4></div></div></div><p>
+        Queues to handle inbound and outbound messages from the Node will need to be created on the MSMQ server. These
+        queues should give full access to the user which the Node is running under.
+      </p><p>
+        To create a private MSMQ queue for the example, you need to open
+        <span class="bold"><strong>Computer Management</strong></span>, then select <span class="bold"><strong>Services and
+        Applications</strong></span>, click <span class="bold"><strong>Message Queuing</strong></span>, right-click on
+        <span class="bold"><strong>Private Queues</strong></span>
+        and select <span class="bold"><strong>New</strong></span>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8001"></a>MSMQ Wrapper DLL</h4></div></div></div><p>
+        The requisite 32-bit and 64-bit MSMQ wrapper DLLs
+        (<span class="emphasis"><em>MSMQWrapper32.dll</em></span> and <span class="emphasis"><em>MSMQWrapper64.dll</em></span>) are bundled with the Node
+        in the <span class="emphasis"><em>lib</em></span> directory of your installation. If they are not present, then re-run the
+        Node installer and select the MSMQ option.
+      </p><div class="important"><h3 class="title">Important</h3><p>
+          Choose the appropriate DLL for your Windows server and rename it to <span class="emphasis"><em>MSMQWrapper.dll</em></span>. The
+          Node will only look for a DLL with that name.
+        </p></div><p>
+        In order for the Node to reference the <span class="emphasis"><em>MSMQWrapper.dll</em></span> you will need to put the DLL in
+        your system path (e.g. <span class="emphasis"><em>C:\Windows</em></span>) or you will need to set the
+        <code class="code">-Djava.library.path</code> Java system property in the startup command to the directory where the
+        DLL is located. For example:
+      </p><pre class="programlisting">java -Djava.library.path=D:\FIX\catalys-node\lib\ ...</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_msmq-mq-config"></a>7.8.4.&nbsp;Configuration</h3></div></div></div><p>
+      The MSMQ Adapter does not assume that the client application is written in Java &#8212; it can be written in any
+      programming language that can communicate with MSMQ. By default the body of the MQ messages will contain a raw
+      FIX message for both sending and receiving.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8018"></a>Configuration Elements</h4></div></div></div><p>
+        There are two Node MSMQ message processors:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+            <span class="bold"><strong>MSMQMessageListener</strong></span>  - listens for inbound FIX messages received on a
+            session and writes to an MSMQ queue. For a complete list of attributes, see the
+            <a href="config_reference.html#config_ref_MSMQMessageListener" title="MSMQMessageListener">MSMQMessageListener Configuration Reference</a>.
+          </p></li><li class="listitem"><p>
+            <span class="bold"><strong>MSMQMessageSource</strong></span> - reads messages from an MSMQ queue and sends them
+            out a session. For a complete list of attributes, see the
+            <a href="config_reference.html#config_ref_MSMQMessageSource" title="MSMQMessageSource">MSMQMessageSource Configuration Reference</a>.
+          </p></li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8030"></a>Configuration Example</h4></div></div></div><p>The following example shows an MSMQ Adapter configured on one session:</p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="EXCHANGE" compid="BROKER"
+           fixversion="4.4" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="sc1" hostname="localhost" port="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;MSMQMessageSource queue.formatName="DIRECT=OS:.\private$\out1"
+                           queue.isTransactional="false"
+                           id="msmq_s"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;MSMQMessageListener queue.formatName="DIRECT=OS:.\private$\in1"
+                             queue.isTransactional="false"
+                             id="imsmq_l"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8034"></a>Template</h4></div></div></div><p>
+        There is a working template in the <span class="emphasis"><em>templates/MSMQAdapter</em></span> directory which demonstrates
+        two Node instances exchanging messages via MSMQ. Refer to this template's documentation for full details
+        on how to run it.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_msmq-troubleshoooting"></a>7.8.5.&nbsp;Troubleshooting</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Ensure that you renamed either the <span class="emphasis"><em>MSMQWrapper32.dll</em></span> or
+        <span class="emphasis"><em>MSMQWrapper64.dll</em></span> to <span class="emphasis"><em>MSMQWrapper.dll</em></span>. The Node will only look for a
+        DLL with that name.
+      </li><li class="listitem">
+        Ensure that the <span class="emphasis"><em>MSMQWrapper.dll</em></span> is either in your system path (e.g. in
+        <span class="emphasis"><em>C:\Windows</em></span>) or its directory is referenced in the startup command using the
+        <code class="code">-Djava.library.path</code> Java property.
+      </li></ul></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s07.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.7.&nbsp;TIBCO Rendezvous Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.9.&nbsp;JDBC Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:39+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,11 @@
+This software embeds libraries which are licensed by CameronTec AB from
+Sencha Inc. and protected by United states Copyright laws and
+international Copyright laws, as well as other intellectual property
+laws and treaties. By using this software You agree to the terms and
+conditions of the sub-license granted to You through the license
+granted to CameronTec AB by Sencha Inc. Specifically, You are not
+allowed to use or attempt to use the embedded libraries for any use
+outside of the usage that CameronTec's products may make of them
+under their Original Equipment Manufacturer (OEM) agreement. For
+further details on the sub-license and restrictions attached to it,
+please contact your Account Manager.

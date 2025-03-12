@@ -1,0 +1,278 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.5.&nbsp;Solace Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s04.html" title="7.4.&nbsp;JMS Adapter"><link rel="next" href="ch07s06.html" title="7.6.&nbsp;IBM MQSeries Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s04.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s06.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_solace"></a>7.5.&nbsp;Solace Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_solace-intro"></a>7.5.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Solace Adapter enables the Node to send and receive FIX messages to and from Solace Systems messaging
+      appliances.
+    </p><p>
+      The adapter uses the Solace Message API for Java (known as JCSMP). Versions 6.1, 6.2 and 7.1.0.207 of the JCSMP
+      API are confirmed to be supported by the adapter.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_solace-install"></a>7.5.2.&nbsp;Installation</h3></div></div></div><p>A valid license containing the Solace Adapter feature is required.</p><p>
+      The following JCSMP API jar files must be available on the Node's classpath. These files are not bundled with
+      the Node and must be obtained from Solace.
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">sol-jcsmp-6.x.x.x.jar</li><li class="listitem">sol-common-6.x.x.x.jar</li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_solace-functionality"></a>7.5.3.&nbsp;Functionality</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_solace-delivery-modes"></a>Delivery Modes</h4></div></div></div><p>The adapter has two delivery modes:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Guaranteed</strong></span>: Provides "once and only once" delivery. When publishing messages
+          to an appliance, the adapter expects delivery acknowledgements. When consuming from the appliance, the
+          adapter acknowledges each message. This is the default mode.
+        </li><li class="listitem"><span class="bold"><strong>Direct</strong></span>: Provides "at most once" delivery. No acknowledgements are sent or
+          received, and successful delivery is not guaranteed. Direct mode provides higher message throughput compared
+          to guaranteed mode, but with a trade-off in reliability.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_solace-transformation"></a>Message Transformation</h4></div></div></div><p>
+        The core function of the adapter is to transform Solace messages to/from Catalys
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessage.html" target="_top">IFIXMessages</a>.
+        Two message transformers are bundled with the adapter:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/solace/SolaceRawTransformer.html" target="_top">SolaceRawTransformer</a>:
+          Transforms an <code class="code">IFIXMessage</code> to/from a Solace <code class="code">BytesMessage</code>. The payload is a
+          <code class="code">byte[]</code> representation of a raw FIX message. This transformer provides the best performance and
+          is enabled by default.
+        </li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/solace/SolaceStringTransformer.html" target="_top">SolaceStringTransformer</a>:
+          Transforms an <code class="code">IFIXMessage</code> to/from a Solace <code class="code">TextMessage</code>. The payload is a
+          <code class="code">String</code> FIX message. This transformer incurs a garbage collection penalty as it creates new
+          <code class="code">String</code> objects.
+        </li></ul></div><p>
+        Users can also provide a custom message transformer if an alternative Solace message format
+        or payload is required. The transformer must implement
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/solace/ISolaceMessageTransformer.html" target="_top">ISolaceMessageTransformer</a>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_solace-components"></a>7.5.4.&nbsp;Solace Adapter Components</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_solace-components-SolaceMessageListener"></a>7.5.4.1.&nbsp;SolaceMessageListener</h4></div></div></div><p>Listens for messages from a FIX session and publishes them to a Solace destination.</p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_solace-components-SolaceMessageListener-destination"></a>Destinations</h5></div></div></div><p>
+          The Solace destination can be either a topic or a queue. When using topics, each message can be published
+          to the same topic, or the topic can be dynamically resolved on a per-message basis.
+          Dynamic topic resolution is delegated to a user-provided implementation of
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/solace/ISolaceTopicResolver.html" target="_top">ISolaceTopicResolver</a>.
+          An <a href="ch07s05.html#adapter_solace-dynamic-topic-example" title="Dynamic Topic Resolution">example</a> is illustrated below.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_solace-components-SolaceMessageListener-error-handling"></a>Error Handling</h5></div></div></div><p>
+          It is possible that an inbound FIX message cannot be published to Solace. For delivery failures related
+          to the Solace session (e.g. the appliance is unreachable or the session has unexpectedly closed),
+          the Node will reject the inbound FIX message and deliver a reject message to the counterparty.
+        </p><p>
+          As an alternative to firing rejects, a
+          <a class="code" href="ch05s05.html" title="5.5.&nbsp;Message Buffering">ListenerMessageBuffer</a> can be configured to
+          buffer inbound FIX messages while the Solace session is unavailable. When the Solace session resumes, the
+          <code class="code">SolaceMessageListener</code> will attempt to redeliver the buffered messages to the appliance.
+        </p><p>
+          For publishing failures which are not related to the Solace session (i.e. the appliance rejects the message
+          for some reason), the <code class="code">SolaceMessageListener</code> will reject the inbound FIX message. Depending on
+          the FIX version in use, the Node will send either a BusinessMessageReject (4.2 and later) or a Reject
+          (4.1 and older) to the counterparty.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_solace-components-SolaceMessageSource"></a>7.5.4.2.&nbsp;SolaceMessageSource</h4></div></div></div><p>Consumes messages from a Solace source and fires them to a FIX session.</p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_solace-components-SolaceMessageSource-sources"></a>Sources</h5></div></div></div><p>
+          When consuming in guaranteed mode, the consumer uses a Solace <code class="code">FlowReceiver</code> to read messages
+          asynchronously from a queue. Therefore, topics cannot be used as sources in this mode.
+        </p><p>
+          In direct mode, a Solace <code class="code">XMLMessageConsumer</code> is used to read messages asynchronously from a topic.
+          Queues are not supported as sources in direct mode.
+        </p><p>
+          Each FIX session can be configured with its own Solace source, e.g. one queue per FIX session. Alternatively,
+          multiple FIX sessions can be configured to use the same Solace source. In this case, the consumed messages
+          must contain the necessary TargetCompID/TargetSubID/TargetLocationID tags in order for the adapter to fire
+          the message to the proper FIX session.
+        </p><p>
+          The adapter will create only one exclusive consumer per Solace source; this consumer will be re-used by each
+          <code class="code">SolaceMessageSource</code> configured to read from that source. A unique Solace source is identified
+          by the combination of host/vpn/destination.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_solace-components-SolaceMessageSource-consumption"></a>Message Consumption</h5></div></div></div><p>
+          By default, message consumption will commence once the FIX session has logged on, and consumption will
+          stop when the FIX session logs off. This behavior can be changed via the <code class="code">waitForLogon</code> attribute.
+        </p><p>
+          When multiple FIX sessions are sourced from the same queue or topic, message consumption will commence
+          when at least one of the FIX sessions is logged on. If a message is consumed for a FIX session
+          that is not logged on, FIX delivery will fail and the Solace message will be subject to
+          <a href="ch07s05.html#adapter_solace-components-SolaceMessageSource-error-handling" title="Error Handling">error handling</a>.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_solace-components-SolaceMessageSource-error-handling"></a>Error Handling</h5></div></div></div><p>Consumed messages that cannot be transformed or fired to a FIX session are either:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Published to an errorTopic or errorQueue.</p><p>
+              This is the simplest and fastest error handling approach and can be used in either guaranteed
+              or direct mode. When enabled, failed messages are copied, re-published to a designated Solace destination
+              and then acknowledged. The error message can be enriched with metadata indicating the cause of the
+              failure by providing a custom class which implements the
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/solace/ISolaceMessageTransformer.html" target="_top">ISolaceMessageTransformer</a>
+              interface.
+            </p><p></p></li><li class="listitem"><p>Published to the Dead Message Queue (DMQ).</p><p>
+              The appliance moves the failed message to the DMQ when Maximum Message Redelivery (MMR) is exceeded.
+            </p><p>
+              This option is only supported in guaranteed mode and has the following requirements:
+            </p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">The DMQ must be created in the VPN to which the adapter is connecting</li><li class="listitem">The source queue's MMR setting must be non-zero</li><li class="listitem">
+                Messages published to the source queue must have the DMQ eligibility flag set to true
+              </li></ul></div><p>
+              When the DMQ option is used, each message is consumed in a transaction; the transaction is committed if
+              the message is successfully delivered to FIX, otherwise the transaction is rolled back.
+            </p><p>
+              After a rollback, the appliance decides what to do with the message based on the MMR value.
+              The appliance will redeliver the message to the Solace Adapter (which will make another FIX
+              delivery attempt) until the MMR value is reached.
+            </p><p>
+              Therefore it is important that the MMR value is not 0 when using the DMQ option, otherwise the
+              appliance will infinitely attempt to redeliver the message.
+            </p><p>
+              Once the MMR limit is reached and the Solace Adapter still has not successfully handled the message,
+              the appliance will move the message to the DMQ. Due to acknowledgement windowing, all other
+              messages in the current window will also be moved to the DMQ. If this is not the desired behavior, the
+              following must be configured:
+            </p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><code class="code">SUB_ACK_WINDOW_SIZE</code> must be set to <code class="code">1</code></li><li class="listitem">
+                The "Max Delivered Unacked Msgs Per Flow" queue property must be set to 1. This obviously eliminates
+                the performance benefit of acknowledgement windowing and will result in lower message throughput.
+              </li></ul></div></li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_solace-components-SolaceMessageSource-redelivery"></a>Message Redelivery</h5></div></div></div><p>
+          The JCSMP API uses acknowledgement windowing when consuming in guaranteed mode. The API can receive and
+          process up to 255 messages before delivering any acknowledgments back to the appliance. If consumption is
+          interrupted before entirely processing the current window, the unacknowledged messages remaining in the window
+          will be redelivered from the appliance when consumption resumes. These messages are marked with a
+          "redelivered" flag.
+        </p><p>
+          In outage situations where the Node unexpectedly fails (in either standalone or high-availability mode),
+          depending on the point at which the failure occurs, it's possible that acknowledgements sent from the API do
+          not reach the appliance. When consumption resumes (i.e. the Node is restarted or fails over to a secondary HA
+          node), the appliance will deliver messages starting from where the last acknowledgement was received.
+          Therefore the next window may contain messages which were already consumed, yet unacknowledged from the
+          perspective of the appliance. This can result in duplicate messages being delivered to FIX.
+        </p><p>
+          To account for this situation, for all messages whose redelivered flag is true, the PossResend(97) tag will
+          be added to the corresponding outbound FIX message with a value of true.
+        </p><p>
+          The windowing feature can also affect message delivery in non-outage situations, for example when message
+          consumption is interrupted due to FIX session logoff. Any messages in the current window which were not
+          delivered to FIX will remain unacknowledged, yet will be flagged as "redelivered" when consumption resumes.
+          The corresponding FIX messages will also contain the PossResend tag.
+        </p><p>
+          To mitigate the occurrence of redelivered messages, the <code class="code">SUB_ACK_WINDOW_SIZE</code> JCSMP property can
+          be set to <code class="code">1</code> so that only one acknowledgement is ever in flight. This however eliminates the
+          performance benefit of acknowledgement windowing and will result in lower message throughput.
+        </p></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_solace-catalys-config"></a>7.5.5.&nbsp;Configuration</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_solace-SolaceMessageListener"></a>SolaceMessageListener</h4></div></div></div><p>The following is a typical configuration for the <code class="code">SolaceMessageListener</code>:</p><pre class="programlisting">&lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.4"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="2002"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;!-- Required for SolaceMessageListener to fire rejects --&gt;
+      &lt;MessageProcessorReference id="ref" refid="solaceListener"/&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors&gt;
+      &lt;SolaceMessageListener id="solaceListener"
+                             host="10.1.1.1:12345"
+                             username="user"
+                             vpnName="vpn"
+                             destinationTopic="topicName"
+        /&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_SolaceMessageListener" title="SolaceMessageListener">SolaceMessageListener configuration reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_solace-SolaceMessageSource"></a>SolaceMessageSource</h4></div></div></div><p>The following is a typical configuration for the <code class="code">SolaceMessageSource</code>:</p><pre class="programlisting">&lt;Session counterpartycompid="EXCHANGE" compid="BROKER" fixversion="4.4"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="2002"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;SolaceMessageSource id="solaceSource"
+                           host="10.1.1.1:12345"
+                           username="user"
+                           vpnName="vpn"
+                           sourceQueue="queue"
+                           errorTopic="errTopic"
+        /&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_SolaceMessageSource" title="SolaceMessageSource">SolaceMessageSource configuration reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7679"></a>Templates</h4></div></div></div><p>
+        Fully working templates that demonstrate the Solace Adapter can be found in
+        <span class="emphasis"><em>templates/SolaceAdapter</em></span> of the Node installation.  There are two templates:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Simple</strong></span>: The Node acts as a broker between one client and one exchange
+          session. On the client session, inbound messages are published to a Solace topic.  On the exchange session,
+          outbound messages are consumed from a Solace queue and fired to FIX.
+        </li><li class="listitem"><span class="bold"><strong>MultiSession</strong></span>: This template is similar to the Simple template, except
+          there are multiple client and exchange sessions publishing to and consuming from multiple Solace destinations.
+          The template demonstrates how to use a <code class="code">MessageProcessingTemplate</code> to simplify the configuration
+          of multiple Solace components.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_solace-dynamic-topic-example"></a>Dynamic Topic Resolution</h4></div></div></div><p>
+        In this example, a <code class="code">SolaceMessageListener</code> is configured to publish messages from FIX to a
+        dynamically resolved topic based on the Symbol(55) tag, for example "symbol/IBM".
+      </p><p>
+        The following custom
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/solace/ISolaceTopicResolver.html" target="_top">ISolaceTopicResolver</a>
+        simply retrieves the symbol value from each message and returns the dynamic topic name as a <code class="code">String</code>.
+      </p><pre class="programlisting">package com.example;
+import com.camerontec.catalys.core.message.IFIXMessage;
+import com.camerontec.catalys.server.adapter.solace.ISolaceTopicResolver;
+import com.camerontec.catalys.util.data.MissingDataException;
+
+public class ExampleTopicResolver implements ISolaceTopicResolver
+{
+  @Override
+  public String resolveTopic(final IFIXMessage fixMessage,
+                             final String destinationTopicAttribute)
+  {
+    String symbol = null;
+    try
+    {
+      symbol = fixMessage.getValueAsString(55);
+    }
+    catch (MissingDataException ex) {}
+
+    // note that destinationTopicAttribute is "symbol/%s"
+    return String.format(destinationTopicAttribute, symbol);
+  }
+}</pre><p>
+        This configuration snippet illustrates how to refer to the custom class. The class must be available on the
+        classpath of the Node.
+      </p><pre class="programlisting">&lt;SolaceMessageListener
+  id="solaceListener"
+  host="10.1.1.1"
+  username="user"
+  vpnName="vpn"
+  destinationTopic="symbol/%s"
+  topicResolverClass="com.example.ExampleTopicResolver" /&gt;</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_solace-performance"></a>7.5.6.&nbsp;Performance Tuning</h3></div></div></div><p>
+      To tune publishing and consuming performance, a properties file containing JCSMP settings can be provided to
+      a <code class="code">SolaceMessageListener</code> and <code class="code">SolaceMessageSource</code>. For example:
+    </p><pre class="programlisting">jcsmp.SUB_ACK_WINDOW_SIZE=255
+jcsmp.CLIENT_CHANNEL_PROPERTIES.tcpNoDelay=false</pre><p>The path to the properties files is specified as follows:</p><pre class="programlisting">&lt;SolaceMessageListener id="solaceListener"
+  host="10.1.1.1"
+  username="user"
+  password="pass"
+  vpnName="vpn"
+  destinationTopic="someTopic"
+  jcsmpPropertiesFile="/path/to/jcsmp.properties" /&gt;</pre><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_solace-throughput-settings"></a>7.5.6.1.&nbsp;Optimizing For Higher Throughput</h4></div></div></div><p>
+        The following settings will likely yield higher message throughput, although you may see different results in
+        your environment.
+      </p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_solace-throughput-settings-listener"></a>SolaceMessageListener</h5></div></div></div><p>Guaranteed Mode:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+            Transformer:
+            <p><code class="code">com.camerontec.catalys.server.adapter.solace.SolaceRawTransformer</code></p></li><li class="listitem">
+            JCSMP properties:
+            <p>
+              <code class="code">jcsmp.PUB_ACK_WINDOW_SIZE=255</code><br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times">
+              <code class="code">jcsmp.CLIENT_CHANNEL_PROPERTIES.tcpNoDelay=false</code>
+            </p></li></ul></div><p>Direct Mode:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+            Transformer:
+            <p><code class="code">com.camerontec.catalys.server.adapter.solace.SolaceRawTransformer</code></p></li><li class="listitem">
+            JCSMP properties:
+            <p><code class="code">jcsmp.CLIENT_CHANNEL_PROPERTIES.tcpNoDelay=false</code></p></li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_solace-throughput-settings-source"></a>SolaceMessageSource</h5></div></div></div><p>Guaranteed Mode:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+            Transformer:
+            <p><code class="code">com.camerontec.catalys.server.adapter.solace.SolaceRawTransformer</code></p></li><li class="listitem">
+            Error handling:
+            <p><code class="code">errorTopic</code> or <code class="code">errorQueue</code></p></li><li class="listitem">
+            JCSMP properties:
+            <p><code class="code">jcsmp.SUB_ACK_WINDOW_SIZE=255</code></p></li></ul></div><p>Direct Mode:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+            Transformer:
+            <p><code class="code">com.camerontec.catalys.server.adapter.solace.SolaceRawTransformer</code></p></li></ul></div></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_solace-ha-mode"></a>7.5.7.&nbsp;Using the Adapter with Catalys Node High Availability</h3></div></div></div><p>
+      The Solace Adapter is fully supported in high availability configurations. Because Catalys HA operates in an
+      active/passive configuration, only one member of the cluster (the primary) will maintain an active connection to
+      the Solace appliance at any given time.
+    </p><p>
+      The acknowledgement windowing feature of the JCSMP API has implications when running in HA mode. See the
+      <a href="ch07s05.html#adapter_solace-components-SolaceMessageSource-redelivery" title="Message Redelivery">Message Redelivery</a> section for
+      more details.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_solace-jcsmp-logging"></a>7.5.8.&nbsp;JCSMP API Logging</h3></div></div></div><p>
+      The Solace JCSMP API uses the Jakarta Commons Logging (JCL) framework. By default, this logs to the console only
+      and does not integrate with SLF4J, the logging framework used by the Node.
+    </p><p>
+      In order to produce unified logging so that JCSMP and the Node write to the same log, JCL logging statements must
+      be "bridged" to SLF4J. To enable the bridge, <span class="emphasis"><em>jcl-over-slf4j.jar</em></span> must be available on the
+      classpath of the Node. This jar should be listed before <span class="emphasis"><em>catalys-node.jar</em></span> and any other
+      logging-related jar files. No additional configuration steps are necessary.
+    </p><p>
+      With the bridge in place, JCSMP API logging can be <a href="ch03s02.html" title="3.2.&nbsp;Logging">customized</a> using
+      <span class="emphasis"><em>logback.xml</em></span>.
+    </p><p>
+      Visit the <a href="https://www.slf4j.org/legacy.html" target="_top">SLF4J</a> site for more information and to download
+      the bridge jar file.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s04.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.4.&nbsp;JMS Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.6.&nbsp;IBM MQSeries Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:39+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,748 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.13.&nbsp;EMX Delimited File Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s12.html" title="7.12.&nbsp;EMX Adapter"><link rel="next" href="ch07s14.html" title="7.14.&nbsp;C/C++ API"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s12.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s14.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_emx_delimited"></a>7.13.&nbsp;EMX Delimited File Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_emx_delimited-intro"></a>7.13.1.&nbsp;Introduction</h3></div></div></div><p>Clients can connect to the Catalys Node
+      <span class="nobr">EMX
+        Integrator
+      </span>
+      using any of the connection technologies
+      supported by CameronFIX. However, as a special convenience to our
+      EMX clients, the
+      <span class="nobr">EMX Integrator</span>
+      is supplied with an
+      interface that mirrors the EMX web site's File Upload and
+      Download capability. This interface is known as the <span class="phrase">EMX
+        Delimited File Adapter</span>.
+    </p><p>You can choose whether to use the EMX Delimited File Adapter
+      simply by configuring the Catalys Node Server either to use the
+      EMX Delimited File Adapter or to use a different connection
+      technology adapter. Some clients may wish to use the EMX
+      Delimited File Adapter to start with and later migrate to a
+      different connection technology.
+    </p><p>This document describes how to configure the Catalys Node to
+      use the EMX Delimited File Adapter and how the EMX Delimited File
+      Adapter should be used.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8918"></a>7.13.2.&nbsp;Configuration and Initial Set Up</h3></div></div></div><p>A Catalys Node Server configuration file that uses the EMX
+      Delimited File Adapter is supplied as one of the
+      <a href="ch07s12.html#adapter_emx-ExampleDFA" title="7.12.4.2.&nbsp;A Catalys Node Server Demonstration Example">EMX Integrator example programs</a>.
+      Clients can copy and modify the
+      configuration file to suit their own use. Any client who would
+      like help with configuring their system is welcome to contact
+      CameronTec FIX Support, who will be pleased to assist.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8922"></a>7.13.3.&nbsp;EMX Delimited File Adapter User Guide</h3></div></div></div><p>Using the
+      <span class="nobr">EMX Integrator</span>
+      with the Delimited File
+      Adapter is very straightforward. The remainder of this document
+      is a User Guide for the daily use of the Delimited File Adapter.
+      You should begin by running the demonstration program referred to
+      in the previous paragraph. After that, you should read this
+      documentation, then copy and convert the configuration of the
+      demonstration program to make it use your own EMX Participant
+      IDs. You will then have a complete system running and ready to
+      use.
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8926"></a>7.13.3.1.&nbsp;File Formats</h4></div></div></div><p>The EMX Delimited File Adapter reads and writes Tab Separated
+        Values (TSV) data files. The file formats are defined in template
+        files that are part of the Catalys Node installation. The
+        template files are located in the
+        <span class="emphasis"><em>template</em></span>
+        subdirectory of
+        the
+        <span class="emphasis"><em>templates/EMX</em></span>
+        directory. The supplied file format
+        templates match the file formats used by Euroclear's EMX web
+        trading site, except for the Cash Settlement files (which are not
+        available on Euroclear's EMX web site so have been defined by
+        CameronTec). You will not need to amend these template files if
+        you want to use Euroclear's standard file formats, but they can
+        be customised if you wish.
+      </p><p>Note: The
+        <code class="filename">templates</code>
+        directory of
+        your Catalys Node installation contains demonstration examples
+        and source code templates for you to copy. The file format
+        templates are in the
+        <code class="filename">templates/EMX/template</code>
+        subdirectory of the
+        Catalys Node installation.
+      </p><p>The location of the file format templates is defined in the
+        Catalys Node Server configuration file. You should copy the file
+        format template files to a permanent location on your system. You
+        should also copy and rename the Catalys Node Server configuration
+        file, and update the configuration file with the location you
+        have chosen for the file format templates. At the same time, you
+        should choose proper permanent locations for all other Catalys
+        Node files, such as the persistence and log files (see the
+        Catalys Node Server documentaion).
+      </p><p>If you do wish to modify the file format templates to suit
+        your own needs, then it is easy to do so. Each row of a template
+        file defines a column in the data file format. Rows representing
+        columns that are never used can be removed, for example, so that
+        those columns can be omitted from the data files you send and
+        receive. And rows representing columns that always contain a
+        constant value can have that value permanently set so that they
+        also can be omitted from the data files. Anyone who wishes to
+        modify the templates is welcome to contact CameronTec FIX Support
+        for help and advice.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8936"></a>7.13.3.2.&nbsp;The XML Configuration File</h4></div></div></div><p>The Catalys Node Server is configured via an XML file that is
+        specified (on the command line, using the
+        <code class="code">
+          <span class="nobr">-xmlconfig</span>
+        </code>
+        directive) when the Catalys
+        Node Server is started.
+      </p><p>Most of the configuration is the same, whether or not the EMX
+        Delimited File Adapter is being used. But the contents of the
+        <code class="code">SessionManager</code>
+        section needs to follow this format
+        if you are using the EMX Delimited File Adapter:
+      </p><pre class="programlisting">&lt;SessionManager
+ clientConnectionManager="com.camerontec.catalys.server.adapter.emx.manager.EMXConnectionManager"&gt;
+  &lt;!-- (see Note 1) --&gt;
+  &lt;SourceMessageProcessors&gt;
+    &lt;EMXMessageSigner id="EMXms"&gt;
+      &lt;!--(see Note 2) --&gt;
+      &lt;SourceMessageThrottle
+        id="smt"
+        buffer="directory/MessageThrottleBuffer"
+        messagesPerInterval="3"
+        interval="1"&gt;
+        &lt;!--(see Note 3) --&gt;
+        &lt;EMXDelimitedFileAdapter
+          id="EMXsdfa"
+          templateDirectory="directory/template"
+          outgoingDirectory="directory/outgoing"
+          /&gt;
+        &lt;!--(see Note 4) --&gt;
+      &lt;/SourceMessageThrottle&gt;
+    &lt;/EMXMessageSigner&gt;
+  &lt;/SourceMessageProcessors&gt;
+  &lt;ListenerMessageProcessors&gt;
+    &lt;EMXMessageVerifier id="EMXmv" verify="NONE"&gt;
+      &lt;!--(see Note 5) --&gt;
+      &lt;EMXDelimitedFileAdapter
+        id="EMXldfa"
+        incomingDirectory="directory/incoming"
+        incomingSwitchTimer="0"
+        /&gt;
+      &lt;!--(see Note 6) --&gt;
+    &lt;/EMXMessageVerifier&gt;
+  &lt;/ListenerMessageProcessors&gt;
+&lt;/SessionManager&gt;</pre><p>
+        <span class="phrase">Notes:</span>
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">This SessionManager configuration specifies that the
+          connection manager to be used is the
+          <code class="code">EMXConnectionManager</code>. This is required for
+          connecting to EMX.
+        </li><li class="listitem">You must specify the
+          <code class="code">EMXMessageSigner</code>
+          as the
+          outermost element of your SourceMessageProcessors. This message
+          processor signs every message that you send to EMX using the
+          key and certificate that has been defined in the surrounding
+          <code class="code">Session</code>
+          element higher up in the configuration file.
+          If you omit the
+          <code class="code">EMXMessageSigner</code>
+          then your
+          messages will not be signed and EMX will protest about this by
+          dropping your connection!
+        </li><li class="listitem">This
+          <code class="code">SourceMessageThrottle</code>
+          specification
+          restricts the maximum rate of messages that the Catalys Node
+          will send to EMX to three per second. EMX Co (as part of your
+          contract with them) requires you to agree not to send more than
+          three messages per second, so that no client takes an unfair
+          share of the EMX Hub's resources at any time. Messages will be
+          stored in a temporary buffer file if necessary, to keep within
+          that limit. You need to specify a directory and file name for
+          that file. We suggest you use
+          <code class="code">MessageThrottleBuffer</code>
+          as the name, but you should
+          choose a sensible directory location. A temporary storage area
+          is fine.
+        </li><li class="listitem">You must specify the
+          <code class="code">EMXDelimitedFileAdapter</code>
+          as the innermost element of your SourceMessageProcessors. This
+          defines the source of the messages that are to be sent. You
+          need to specify the directory where the file format templates
+          can be found and you need to specify the directory where you
+          will put files of data ready to be sent.
+        </li><li class="listitem">You should specify the
+          <code class="code">EMXMessageVerifier</code>
+          as
+          the outermost element of your ListenerMessageProcessors. If you
+          set the
+          <code class="code">verify</code>
+          parameter to <code class="code">NONE</code>, as
+          here, it will not in fact do anything. But you may later decide
+          to verify incoming messages, and that can easily be achieved by
+          changing this paramter to <code class="code">ALL</code>, for example.
+        </li><li class="listitem">Although you have already specified the
+          <code class="code">EMXDelimitedFileAdapter</code>
+          as the innermost element
+          of your SourceMessageProcessors, you must also specify the
+          <code class="code">EMXDelimitedFileAdapter</code>
+          as the innermost element
+          of your ListenerMessageProcessors. This defines the target to
+          which incoming messages will be sent. You do not need to
+          specify the directory where the file format templates can be
+          found, since you have already done so above (the specifications
+          are shared). You need to specify the directory where the
+          EMXDelimitedFileAdapter should put files of data messages
+          received. You should also specify a value for the
+          <code class="code">incomingSwitchTimer</code>
+          parameter. Zero (as here)
+          means that incoming file sets will not be switched unless
+          requested (see below under Incoming Message Files, Receiving a
+          File). Otherwise you can specify a number of minutes after
+          which the EMXDelimitedFileAdapter should close the incoming
+          file sets and start writing new incoming data files.
+        </li></ol></div><p>
+        See the <a href="config_reference.html#config_ref_EMXDelimitedFileAdapter" title="EMXDelimitedFileAdapter"><code class="code">EMXDelimitedFileAdapter</code> configuration reference</a>
+        for a complete list of configuration attributes.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8970"></a>7.13.4.&nbsp;Daily Running</h3></div></div></div><p>The Catalys Node <span class="nobr">EMX Integrator</span>, once started,
+      will run continuously. It will log on to the EMX Message System
+      FIX Hub, using the Participant ID and certificate specified in
+      the configuration file. The
+      <span class="nobr">EMX Integrator</span>
+      will
+      remain logged on to the Hub until the Hub sends a FIX Logout
+      message at the end of the trading day, or will log out itself if
+      that hasn't happened by 18:00. At that point the
+      <span class="nobr">EMX
+        Integrator
+      </span>
+      will sleep until 08:00 the following day
+      (except Saturdays and Sundays). It then wakes up and logs in for
+      a further day's trading. You thus never have to stop and restart
+      the
+      <span class="nobr">EMX Integrator</span>
+      (although you can choose to log
+      out manually at any time if you wish).
+    </p><p>If there is a break in the availability of the EMX Message
+      System service, which happens rarely, the
+      <span class="nobr">EMX
+        Integrator
+      </span>
+      will periodically attempt to make a
+      reconnection. When the service is available again, it will log in
+      and continue without any message loss. The ability to do this is
+      part of the FIX protocol. It means that small service losses will
+      very likely never be noticed by the client and no action is
+      needed to perform a recovery. The ongoing support requirement is
+      therefore minimal.
+    </p><p>When the
+      <span class="nobr">EMX Integrator</span>
+      is configured to use the
+      EMX Delimited File Adapter, the configuration file must specify
+      two directories, which may be local to the server or networked so
+      that users can put files in and take files out from networked
+      PCs. One directory is the
+      <span class="phrase">
+        <code class="code">outgoing</code>
+      </span>
+      directory,
+      from where the
+      <span class="nobr">EMX Integrator</span>
+      will take files of
+      messages to be sent to the EMX Message System, the other is the
+      <span class="phrase">
+        <code class="code">incoming</code>
+      </span>
+      directory, which is where the
+      <span class="nobr">EMX Integrator</span>
+      will put files of messages received
+      from the EMX Message System.
+    </p><p>In the simplest possible usage pattern, you need only to put a
+      file of messages to be sent in the
+      <code class="code">outgoing</code>
+      directory and the
+      <span class="nobr">EMX Integrator</span>
+      will immediately
+      read the file, convert each message to FIX and send it to the EMX
+      Message System. A file can be sent by a simple "drag and drop",
+      for example.
+    </p><p>Messages received from the EMX Message System are converted
+      from FIX to the delimited file format and placed in files in the
+      <code class="code">incoming</code>
+      directory. The client can take files from
+      here and pass them to whatever process is used to deal with
+      incoming messages. A client who is already using EMXCo's file
+      upload and download will already have processes in place to both
+      produce and accept message files in this format.
+    </p><p>The remainder of this document describes the outgoing and
+      incoming process in full detail and explains how to achieve a
+      higher or complete level of automation using the EMX Delimited
+      File Adapter.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8993"></a>7.13.5.&nbsp;Outgoing Message Files</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8995"></a>7.13.5.1.&nbsp;Naming Convention</h4></div></div></div><p>The Delimited File Adapter needs to distinguish which type of
+        messages is contained within any file placed in the
+        <code class="code">outgoing</code>
+        directory. It does this by requiring that
+        the first four characters of the file name are the message type.
+        For example, a file containing orders must have a name that
+        starts with "
+        <span class="phrase">
+          <code class="code">OINP</code>
+        </span>
+        " (the EMX Message System
+        code for Order Input).
+      </p><p>The file name must always end with "
+        <span class="phrase">
+          <code class="code">.tsv</code>
+        </span>
+        ",
+        which indicates that the file is a
+        <span class="phrase">Tab Separated Values</span>
+        type.
+      </p><p>The remainder of the file name can be anything the user
+        desires. It is recommended to use some reference name or number,
+        perhaps even a sequential number, so that the names are unique.
+        The
+        <span class="nobr">EMX Integrator</span>
+        does not require that the names
+        are unique but if they are not the acknowledgement file
+        (described below) of a previously used name may be overwritten
+        when the name is used a second time.
+      </p><p>The file name must therefore conform to this pattern:</p><p>
+        <code class="code"><span class="emphasis"><em>MsgType</em></span>.<span class="emphasis"><em>Identifier</em></span>.tsv</code>
+      </p><p>Strictly speaking, the dot between MsgType and Identifier is
+        not necessary. A space or any other character will serve. A dot
+        makes a good visible separator, though, and will be used in this
+        documentation.
+      </p><p>For example, the following file names are acceptable:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="code">OINP.1.tsv</code>,
+        </li><li class="listitem"><code class="code">OINP.000253.tsv</code>,
+        </li><li class="listitem"><code class="code">TREQ Apr05.tsv</code>,
+        </li><li class="listitem"><code class="code">VREQ_A1.tsv</code>.
+        </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9023"></a>7.13.5.2.&nbsp;Sending a File</h4></div></div></div><p>As soon as the
+        <span class="nobr">EMX Integrator</span>
+        finds a file in its
+        configured
+        <code class="code">outgoing</code>
+        directory, it opens the file,
+        reads each message, converts each message to FIX and sends
+        it.
+      </p><p>A file may contain any number of messages. There may be one
+        message in the file, a few messages, or a thousand or more. The
+        messages must all be of the same type, according to the file name
+        as described above.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9029"></a>7.13.5.3.&nbsp;Validation and Error Handling</h4></div></div></div><p>If there is an error in the file format itself, the
+        <span class="nobr">EMX
+          Integrator
+        </span>
+        rejects the whole file and appends a
+        "<code class="code">.error</code>" extension to the file's name as an
+        indication. This is unlikely to happen except in the early stages
+        of using the <span class="nobr">EMX Integrator</span>, since the file will
+        most likely be produced by software to a consistently good
+        format.
+      </p><p>Assuming that the file format is valid, the
+        <span class="nobr">EMX
+          Integrator
+        </span>
+        simply sends each message to the EMX Message
+        System Hub. It makes no attempt to validate the contents of the
+        message locally. The EMX Hub will validate every message it
+        receives, and there is no need to pre-empt that process.
+      </p><p>The EMX Hub sends back an acknowledgement
+        ("<code class="code">MACK</code>") message for each message received that
+        passed the Hub's validation checks. It sends back an error
+        acknowledgement ("<code class="code">MERR</code>") for each message that
+        failed the Hub's validation checks.
+      </p><p>The
+        <span class="nobr">EMX Integrator</span>
+        counts the number of
+        acknowledgements received and will not begin sending any other
+        file until all of the expected acknowledgements have been
+        received.
+      </p><p>The acknowledgements are written to two files:
+        <code class="code">MACK.ACKS.<span class="emphasis"><em>Identifier</em></span>.tsv
+        </code>
+        and
+        <code class="code">MERR.ACKS.<span class="emphasis"><em>Identifier</em></span>.tsv
+        </code>
+        , using the same
+        Identifier as was used for the outgoing file. Note, therefore,
+        that you may want your identifier to be unique across all message
+        types. The acknowledgement files are written to the
+        <code class="code">outgoing</code>
+        directory.
+      </p><p>If the file contained only valid messages, no
+        "<code class="code">MERR</code>" file will be produced. The absence of a
+        "<code class="code">MERR</code>" file is an easy check that all messages in
+        the outgoing file have been accepted by the EMX Message
+        System.
+      </p><p>If the file contained only invalid messages, no
+        "<code class="code">MACK</code>" file will be produced. In any case, the
+        number of <code class="code">MACK</code>s and <code class="code">MERR</code>s received will
+        together equal the number of messages sent.
+      </p><p>Please note this important difference between the EMX Message
+        System's web-based File Upload and the
+        <span class="nobr">EMX
+          Integrator:
+        </span>
+        Whereas the web-based File Upload will reject
+        the whole file if it contains any error whatsoever, the Catalys
+        Node
+        <span class="nobr">EMX Integrator</span>
+        will always send every message
+        to the EMX Message System (unless the file format is invalid). So
+        a file of 120 messages of which 3 were rejected will nevertheless
+        result in the 117 valid messages having been successfully sent.
+        The three messages in error can be easily identified by
+        processing the "<code class="code">MERR</code>" file. These can be corrected
+        and resubmitted via a new outgoing message file. You will not
+        find good messages held up by being in the same file as bad
+        ones.
+      </p><p>While the
+        <span class="nobr">EMX Integrator</span>
+        is writing the
+        acknowledgement files, their file name will have an additional
+        "<code class="code">.active</code>" extension. Any file with a
+        "<code class="code">.active</code>" extension is still being processed by the
+        <span class="nobr">EMX Integrator.</span>
+        When the EMX integrator has finished
+        writing the file it removes the "<code class="code">.active</code>" extension
+        to indicate that the file can now be processed. At the same time,
+        the
+        <span class="nobr">EMX Integrator</span>
+        renames the original outgoing
+        file with a "<code class="code">.done</code>" extension. This indicates that
+        it has been completely processed and that you can delete or
+        archive it.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9067"></a>7.13.5.4.&nbsp;Simple Usage</h4></div></div></div><p>Clients who already use the EMX Message System's web-based
+        File Upload and Download service and who do not want to develop
+        any additional software can use the
+        <span class="nobr">EMX Integrator</span>
+        to send files as follows:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Configure the
+          <span class="nobr">EMX Integrator</span>
+          so that the
+          <code class="code">outgoing</code>
+          directory is a network directory
+          available to the users who currently use the File Upload
+          service.
+        </li><li class="listitem">When a file is ready for upload to the EMX Message System,
+          the user now simply has to drag and drop the file into the
+          <code class="code">outgoing</code>
+          directory. There is no need to log in or
+          navigate through menus &#8212; the
+          <span class="nobr">EMX Integrator</span>
+          is already logged in.
+        </li><li class="listitem">Wait a short time for the
+          <code class="code">MACK</code>
+          and/or
+          <code class="code">MERR</code>
+          file to appear in the
+          <code class="code">outgoing</code>
+          directory. Wait until their name ends "<code class="code">.tsv</code>",
+          indicating that they have been completely written, or
+          (equivalently) wait until the original message file has been
+          renamed with a "<code class="code">.done</code>" extension.
+        </li><li class="listitem">If there is no corresponding "<code class="code">MERR</code>" file, that
+          confirms that all of the messages in the outgoing file have
+          been received and accepted by the EMX Message System. That is
+          the equivalent of having the web site accept the whole
+          file.
+        </li><li class="listitem">If there is a "<code class="code">MERR</code>" file, some of the
+          messages have been rejected. The rejected messages and the
+          reason for the rejection can be identified by looking at the
+          "<code class="code">MERR</code>" file. The messages in the
+          "<code class="code">MERR</code>" file are the same as the messages that the
+          web site's File Upload would have produced. However, the valid
+          messages will have been sent. So don't correct and resend the
+          whole file or else you will send duplicate messages.
+        </li></ul></div><p>Any current user of the EMX Message System File Upload will
+        gain immediate productivity benefits from switching to the
+        Catalys Node
+        <span class="nobr">EMX Integrator.</span>
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9092"></a>7.13.5.5.&nbsp;Advanced Usage</h4></div></div></div><p>For those clients who are already producing message files in
+        the EMX Message System's File Upload format, or are planning to
+        do so, it is a simple matter to extend client's application
+        software so that it places the outgoing message files directly
+        into the
+        <span class="nobr">EMX Integrator's</span>
+        <code class="code">outgoing</code>
+        directory and can read and process the returned
+        <code class="code">MACK</code>
+        and
+        <code class="code">MERR</code>
+        acknowledgements.
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Configure the
+          <span class="nobr">EMX Integrator</span>
+          and the
+          application software that produces the outgoing message files
+          so that the software writes its outgoing files to the
+          <code class="code">outgoing</code>
+          directory. It may be appropriate to use a
+          secure local directory on the server, or it may be convenient
+          to use a networked directory.
+        </li><li class="listitem">When the application software creates a file of messages to
+          send, the
+          <span class="nobr">EMX Integrator</span>
+          immediately sends
+          it.
+        </li><li class="listitem">The application software should be programmed to wait until
+          the original message file has been renamed with a
+          "<code class="code">.done</code>" extension. This indicates that the EMX
+          Message System has received and acknowledged all of the
+          messages in the file. It should also check for a
+          "<code class="code">.error</code>" extension and report any such
+          occurrence.
+        </li><li class="listitem">The application software should handle any errors that are
+          reported in the corresponding "<code class="code">MERR</code>" file. If
+          there is no "<code class="code">MERR</code>" file, all of the messages have
+          been accepted by the EMX Message System.
+        </li><li class="listitem">After handling any <code class="code">MERR</code>s, corrected messages
+          should be sent in a later file.
+        </li><li class="listitem">After processing the acknowledgements, the
+          "<code class="code">MACK</code>", "<code class="code">MERR</code>" and
+          "<code class="code">.done</code>" file should be deleted or archived.
+        </li></ul></div><p>An approach such as this allows outgoing messages to be
+        handled with no human intervention.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9118"></a>7.13.6.&nbsp;Incoming Message Files</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9120"></a>7.13.6.1.&nbsp;Naming Convention</h4></div></div></div><p>The
+        <span class="nobr">EMX Integrator</span>
+        names all incoming messages
+        files in the following way:
+      </p><p>
+        <code class="code"><span class="emphasis"><em>MsgType</em></span>.<span class="emphasis"><em>Date</em></span>.<span class="emphasis"><em>Time</em></span>.tsv
+        </code>
+      </p><p>The
+        <code class="code">
+          <span class="emphasis"><em>MsgType</em></span>
+        </code>
+        indicates the message type
+        contained in the file (and therefore the file format). The
+        <code class="code">
+          <span class="emphasis"><em>Date</em></span>
+        </code>
+        and
+        <code class="code">
+          <span class="emphasis"><em>Time</em></span>
+        </code>
+        are
+        timestamps created when the first incoming message is received
+        (after any previous message file was closed). The format of the
+        <code class="code">
+          <span class="emphasis"><em>Date</em></span>
+        </code>
+        identifier is <code class="code">YYMMDD</code>. As
+        well as giving an indication of when the file was started, it
+        ensures that all file names are unique and that they sort into
+        alphabetical order. The following file names are examples of file
+        names that the
+        <span class="nobr">EMX Integrator</span>
+        might create:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="code">TBKD.140410.115033.tsv</code>,
+        </li><li class="listitem"><code class="code">ECNI.140410.131721.tsv</code>,
+        </li><li class="listitem"><code class="code">VRES.140410.150053.tsv</code>,
+        </li><li class="listitem"><code class="code">MERR.140410.115033.tsv</code>.
+        </li></ul></div><p>Note that all files that are created during the same time
+        period will have the same time stamp, even though (say) the first
+        <code class="code">MERR</code>
+        did not arrive until some time after the first
+        TBKD arrived. Thus the time stamp is not guaranteed to represent
+        the time that the first message in the file was received. It is
+        the time that the first message in any of the files sharing the
+        same timestamp was received.
+      </p><p>Files that are presently being written by the
+        <span class="nobr">EMX
+          Integrator
+        </span>
+        have a "<code class="code">.active</code>" extension. That
+        extension is removed by the
+        <span class="nobr">EMX Integrator</span>
+        when it
+        has finished the file.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9155"></a>7.13.6.2.&nbsp;Receiving a File</h4></div></div></div><p>When the
+        <span class="nobr">EMX Integrator</span>
+        receives a message, if it
+        already has a file open for messages of that type it simply
+        appends the message to that file. If it doesn't already have a
+        file for messages of that type it creates a new one.
+      </p><p>Messages continue to be written to a single set of files,
+        according to message type, until either of the following
+        occurs:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">A configurable timer expires. The timer is set in the
+          configuration file. If set to
+          <span class="nobr">30 minutes</span>
+          then
+          exactly
+          <span class="nobr">30 minutes</span>
+          after the first message was
+          received the current set of active files will be closed and
+          made available to the client for processing.
+        </li><li class="listitem">The client places a file called "<code class="code">flag.switch</code>"
+          in the
+          <code class="code">incoming</code>
+          directory. When the
+          <span class="nobr">EMX
+            Integrator
+          </span>
+          sees this file it immediately closes all of
+          the current active files and makes them available to the client
+          for processing.
+        </li></ul></div><p>Any messages arriving after one of those events will be
+        written to a new file.
+      </p><p>As with the acknowledgements of outgoing messages, while the
+        <span class="nobr">EMX Integrator</span>
+        is writing the incoming message files
+        their name will have an additional "<code class="code">.active</code>"
+        extension. Any file with a "<code class="code">.active</code>" extension is
+        still being processed by the
+        <span class="nobr">EMX Integrator.</span>
+        When
+        the EMX integrator has finished writing the file it removes the
+        "<code class="code">.active</code>" extension to indicate that the file can
+        now be processed.
+      </p><p>Note that the
+        <code class="code">MERR</code>
+        files that are written to the
+        <code class="code">incoming</code>
+        directory are <code class="code">MERR</code>s from a
+        Product Provider, not from the EMX Message System. The file
+        format is the same, however.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9179"></a>7.13.6.3.&nbsp;Simple Usage</h4></div></div></div><p>Clients who already use the EMX Message System's web-based
+        File Upload and Download service and who do not want to develop
+        any additional software can use the
+        <span class="nobr">EMX Integrator</span>
+        to receive files as follows:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Configure the
+          <span class="nobr">EMX Integrator</span>
+          so that the
+          <code class="code">incoming</code>
+          directory is a network directory
+          available to the users who currently use the File Download
+          service.
+        </li><li class="listitem">Configure the
+          <span class="nobr">EMX Integrator</span>
+          so that received
+          message files will be switched automatically every 30 minutes,
+          60 minutes, or at any choice of convenient time interval.
+        </li><li class="listitem">Check for incoming message files throughout the day. When a
+          file is found in the
+          <code class="code">incoming</code>
+          directory and its
+          extension is "<code class="code">.tsv</code>", the file can be moved from
+          the
+          <code class="code">incoming</code>
+          directory and processed exactly as if
+          it had been downloaded from the EMX Message System web site. Do
+          not move any file that still has a "<code class="code">.active</code>"
+          extension &#8212; wait until the
+          <span class="nobr">EMX Integrator</span>
+          has finished writing it and made it a "<code class="code">.tsv</code>"
+          file.
+        </li></ul></div><p>Any current user of the EMX Message System's web-based File
+        Download will gain immediate productivity benefits from switching
+        to the Catalys Node
+        <span class="nobr">EMX Integrator.</span>
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9198"></a>7.13.6.4.&nbsp;Advanced Usage</h4></div></div></div><p>For those clients who are already processing message files in
+        the EMX Message System's File Download format, or are planning to
+        do so, it is a simple matter to extend the application software
+        so that it looks for its incoming message files in the
+        <span class="nobr">EMX
+          Integrator's
+        </span>
+        <code class="code">incoming</code>
+        directory.
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Configure the
+          <span class="nobr">EMX Integrator</span>
+          and the
+          application software that processes the incoming message files
+          so that the application software reads its incoming files from
+          the
+          <code class="code">incoming</code>
+          directory. It may be appropriate to
+          use a secure local directory on the server, or it may be
+          convenient to use a networked directory.
+        </li><li class="listitem">Configure the
+          <span class="nobr">EMX Integrator</span>
+          so that it does
+          not switch incoming file sets according to a timer (set the
+          timer value to zero or leave the setting entirely absent).
+        </li><li class="listitem">Make the internal software create a
+          "<code class="code">flag.switch</code>" file in the
+          <code class="code">incoming</code>
+          directory at regular intervals. It is possible to be a little
+          sophisticated here, such as looking first to see if there are
+          any "<code class="code">.active</code>" files, determining from their time
+          stamp how long since the first message arrived, etc. Such
+          sophistication is possible and can be useful, but is not
+          necessary. The
+          <span class="nobr">EMX Integrator</span>
+          changes the flag
+          file's name to "<code class="code">flag.ready</code>" when all active files
+          have been closed and are ready for processing by the client's
+          software.
+        </li><li class="listitem">When there are new "<code class="code">.tsv</code>" files to process,
+          process them using the application software. Do not process any
+          "<code class="code">.active</code>" files.
+        </li><li class="listitem">After processing each incoming "<code class="code">.tsv</code>" file, it
+          should be deleted or archived.
+        </li></ul></div><p>An approach such as this allows outgoing messages to be
+        handled with no human intervention.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9221"></a>7.13.7.&nbsp;Operational Issues</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9223"></a>7.13.7.1.&nbsp;Hours of Operation</h4></div></div></div><p>The
+        <span class="nobr">EMX Integrator</span>
+        will connect to EMX between
+        08:00 and 18:00, Mondays to Fridays. At other times it will do
+        nothing until the next weekday at 08:00. These times are
+        appropriate for most clients but can be changed if necessary. The
+        default times can be changed by specifying Java command-line
+        parameters, eg java -DEMXStartTime=08:30 -DEMXStopTime=17:00
+        etc.
+      </p><p>Note that the
+        EMX Integrator
+        will connect to EMX
+        on bank holidays. This causes no problems and avoids burdening
+        clients with the maintenance of a list of non-operational days.
+        Any client who wishes to schedule connections to EMX with more
+        complex requirements can purchase and use the Cameron Scheduler
+        with the EMX Integrator.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9228"></a>7.13.7.2.&nbsp;Checking the Connection to EMX</h4></div></div></div><p>Clients will want to know if their connection to EMX is not
+        functioning during the expected hours of operation. If the EMX
+        system has failed then urgent orders may need to be sent through
+        other channels. If the
+        <span class="nobr">EMX Integrator</span>
+        is not
+        functioning as expected, an early warning of the fact can ensure
+        prompt recovery.
+      </p><p>There are two main checks that a client application should
+        make to verify that the
+        <span class="nobr">EMX Integrator</span>
+        is
+        functioning as expected and that it is logged on to EMX:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">The
+          <span class="nobr">EMX Integrator</span>
+          creates a file called
+          "<code class="code">flag.connected</code>" in the
+          <code class="code">outgoing</code>
+          directory when it logs on to EMX and deletes the file when it
+          logs out or the connection fails. If the
+          "<code class="code">flag.connected</code>" file is present, you can be
+          confident that any message file placed in the
+          <code class="code">outgoing</code>
+          directory will be sent immediately.
+          Conversely, if the "<code class="code">flag.connected</code>" file is not
+          present at a time when it should be, the system's operators
+          should be warned to investigate the problem.
+        </li><li class="listitem">After a message file has been placed in the
+          <code class="code">outgoing</code>
+          directory, the application that put it
+          there should check that the corresponding
+          <code class="code">MACK</code>
+          (or
+          <code class="code">MERR</code>) file arrives in the directory within a short
+          time (two minutes should be ample). The EMX service level
+          agreement guarantees that messages are acknowledged within
+          <span class="nobr">30 seconds</span>, so if acknowledgements are not
+          received reasonably promptly then there may be a fault with EMX
+          and enquiries should be made in that direction.
+        </li></ul></div><p>It is also possible to parse the log file output for
+        indications of abnormal behaviour. However, the two checks
+        recommended above should be sufficient to ensure that you are
+        made aware of any operational problems promptly.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s12.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s14.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.12.&nbsp;EMX Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.14.&nbsp;C/C++ API</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:40+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

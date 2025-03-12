@@ -1,0 +1,153 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.10.&nbsp;Flat File Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s09.html" title="7.9.&nbsp;JDBC Adapter"><link rel="next" href="ch07s11.html" title="7.11.&nbsp;RMI Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s09.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s11.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_flat_file"></a>7.10.&nbsp;Flat File Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_flat_file-intro"></a>7.10.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Flat File Adapter is designed to pass messages between the Node and a set of files. Messages received from
+      FIX sessions are written to a file-based FIFO queue for reading by another system or application. In the other
+      direction, the Flat File Adapter reads messages from a separate file-based FIFO queue and sends them out a FIX
+      session.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_flat_file-flatfileadapter"></a>7.10.2.&nbsp;Operation</h3></div></div></div><p>
+      The Flat File Adapter uses three FIFO file persistent queues; one for messages received from FIX, one for messages
+      to be sent to FIX, and one (optionally) for messages which cannot be sent to FIX. The adapter is thus
+      both a queue writer (messages from FIX are written to a <code class="code">fromFixQueue</code>, messages which cannot be sent
+      to FIX are optionally written to a <code class="code">toFixErrorQueue</code>) and a queue reader (messages in the
+      <code class="code">toFixQueue</code> are read and sent to FIX).
+    </p><p>It is the responsibility of the other party to:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Act as a queue reader of the <code class="code">fromFixQueue</code>, adhering to the rules acting as a FIFO file queue
+        reader.
+      </li><li class="listitem">
+        Act as a queue writer to the <code class="code">toFixQueue</code>, adhering to the rules for acting as a FIFO file queue
+        writer.
+      </li></ol></div><p>
+      Before sending a message out a session, the adapter marks the file as read in the <code class="code">toFixQueue</code>. If the
+      flat file adapter suffers an outage while attempting to send the message to FIX and before the message is removed
+      from the queue, the message state is retained in the queue. On recovery, the flat file adapter determines that
+      the last message has already been read and explicitly sets the <code class="code">PossResend</code> flag to indicate a
+      possible resend to the other party.
+    </p><p>
+      If the <code class="code">toFixErrorQueue</code> is enabled, messages which cannot be sent to a session are written to it.
+      In this case it is the responsibility of the other party to read the <code class="code">toFixErrorQueue</code> to detect such
+      errors.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_flat_file-config"></a>7.10.3.&nbsp;Configuration</h3></div></div></div><p>
+      The adapter is configured by adding a <code class="code">FlatFileAdapter</code> element inside both the
+      <code class="code">SourceMessageProcessors</code> and <code class="code">ListenerMessageProcessors</code> elements of a session.
+      The <code class="code">FlatFileAdapter</code> element must be present in both the source and message listener chain, and
+      both configuration instances point to the same runtime element. This is configured by having a
+      <code class="code">MessageProcessorReference</code> in one of the message processing chains referring to the other.
+    </p><p>
+      For a complete list of attributes, see the
+      <a href="config_reference.html#config_ref_FlatFileAdapter" title="FlatFileAdapter">FlatFileAdapter Configuration Reference</a>.
+    </p><p>
+      The following example shows a <code class="code">FlatFileAdapter</code> element configured on one session with the minimum
+      attributes configured:
+    </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="EXCHANGEA" compid="BROKER"
+           fixversion="4.2" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="sc1" listenport="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;FlatFileAdapter id="ffa"
+                         fromFixQueue="./fromFix"
+                         toFixQueue="./toFix"
+                         toFixErrorQueue="./toFixError"
+                         peerPollingInterval="10"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;MessageProcessorReference id="listen_ffa" refid="ffa"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_flat_file-fifofilequeue"></a>7.10.4.&nbsp;File System Persistent Message Queue</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8137"></a>Specification</h4></div></div></div><p>
+        The file system persistent message queue supports FIFO semantics via the naming of message files. That is, each
+        new message is placed in a separate file and given a name which represents its relative position in the queue.
+        Thus the name of each message file contains a queue sequence number. Note that the queue sequence number may not
+        always correspond with the FIX sequence number of the contained message.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_flat_file-fifofilequeuewriter"></a>Rules For Acting As a FIFO File Queue Writer</h4></div></div></div><p>
+        Queue writers must guarantee that the next message written has a queue sequence number greater than any
+        existing message files. Queue readers must guarantee to read the message file with the lowest queue sequence
+        number.
+      </p><p>
+        In order to safely survive process and/or host outages queue writers must also guarantee that all messages on
+        the queue are not corrupted during the write phase. A two-phase write is used to achieve this:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><span class="bold"><strong>Write Phase</strong></span> - when a new message is to be written, the queue writer chooses
+          a message file name according to the above rule and writes the message to a temporary file.
+        </li><li class="listitem"><span class="bold"><strong>Commit Phase</strong></span> - when the entire message is written to the temporary file, the
+          writer closes the temporary file and renames it indicating that it is now on the queue.
+        </li></ol></div><p>
+        If there is an outage during the write phase, then the message is never placed on the queue. The rename
+        performed in the commit phase is atomic with respect to the file system and therefore is a message file makes
+        it to the message queue it is guaranteed not to be corrupt.
+      </p><p>
+        Note that on some platforms, a queue reader may be able to see that a message file is on the queue but not
+        (yet) be able to read it. This can occur if the readers attempts to open the file during the commit phase. In
+        this case the reader should try again after a suitable delay.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="adapter_flat_file-fifofilequeuereader"></a>Rules For Acting As a FIFO File Queue Reader</h4></div></div></div><p>Queue readers must guarantee to:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">Ignore temporary message files (since they are not yet on the queue)</li><li class="listitem">Read the message file with the lowest queue sequence number</li></ol></div><p>
+        Note that step 2 above implies that the reader <span class="bold"><strong>must not</strong></span> maintain any state
+        with respect to the state of the queue since:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          Queue writers are responsible for the naming of queue files and therefore the allocation of queue file
+          sequence numbers.
+        </li><li class="listitem">
+          A queue write may suffer an outage and subsequently recover while the queue is empty and the reader is
+          waiting for the next message. In this case the queue writer loses all information about the state of the
+          queue and on the next write will choose the lowest available sequence number. That is, the queue sequence
+          number is effectively reset.
+        </li></ul></div><p>
+        Queue readers must handle this sequence of events by always choosing the next message with the lowest available
+        sequence number regardless of the sequence number of the most recently read message.
+      </p><p>
+        When a queue reader has processed a message file it must remove the message file from the queue. This is
+        achieved by renaming the file to indicate that the file is no longer on the queue. Note that message files
+        <span class="bold"><strong>must not</strong></span> be removed from the queue until processing is complete.
+      </p><p>
+        Queue readers may optionally mark message files as read after reading, but before removal. This can aid a
+        reader's recovery processing after an outage in case there is a restriction on duplicate message processing.
+        The flat file adapter uses this mechanism to set the <code class="code">PossResend</code> flag if it detects the
+        possibility of sending a message more then once.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_flat_file-fifofilequeueconv"></a>7.10.5.&nbsp;File Naming Conventions</h3></div></div></div><p>
+      Each individual FIFO file queue exists in its own dedicated directory. Communication between parties via a single
+      queue may occur in one direction only. That is, no party should be both a reader and a writer of the same queue.
+    </p><p>
+      Each message in the queue is contained in a separate file in the queue directory and is distinguished by its name.
+      The name of each contains two pieces of information about the file:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Its state</li><li class="listitem">Its relative position in the queue.</li></ul></div><p>The state of the message is encoded via a single character prefix according to the following table:</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>File Name Prefix</th><th>File State</th></tr></thead><tbody><tr><td>T</td><td>
+              Temporary file in the process of being written and is not yet in the queue. The queue writer creates
+              and writes to this file.
+            </td></tr><tr><td>Q</td><td>
+              The file is in the queue and is available for reading. The queue writer creates this file by renaming a
+              temporary file.
+            </td></tr><tr><td>R</td><td>
+              The file is in the queue but has been read by the queue reader. This is an optional state and is
+              controlled by the queue reader, however, the queue writer must regard this as valid queue file. There
+              should be at most one file with this prefix in the queue at any time.
+            </td></tr></tbody></table></div><p>
+      A file's relative position in the queue is specified by its sequence number suffix. The lower the sequence number,
+      the closer to the head of the queue. The higher the sequence number, the closer to the tail of the queue. The
+      queue writer determines the sequence number of the next file it writes.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_flat_file-fifofilequeuestate"></a>7.10.6.&nbsp;Queue Snapshots</h3></div></div></div><p>The following tables show some typical queue snapshots at various stages of processing:</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Queue contents</th><th>Explanation</th></tr></thead><tbody><tr><td>T1</td><td>The queue writer is in the process of writing the first message file to the queue.</td></tr></tbody></table></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Queue contents</th><th>Explanation</th></tr></thead><tbody><tr><td>Q1</td><td>
+              The queue writer has written the first message file and placed it on the queue. It is now available for
+              reading by the queue reader.
+            </td></tr><tr><td>T2</td><td>
+              The queue writer is in the process of writing the second message file to the queue.
+            </td></tr></tbody></table></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Queue contents</th><th>Explanation</th></tr></thead><tbody><tr><td>R1</td><td>
+              The queue reader has read the first message file and is processing it. The message is still on the queue.
+            </td></tr><tr><td>Q2</td><td>
+              The queue writer has written the second message file and placed it on the queue.
+            </td></tr><tr><td>Q3</td><td>
+              The queue writer has written the third message file and placed it on the queue.
+            </td></tr><tr><td>T4</td><td>
+              The queue writer is in the process of writing the fourth message file to the queue.
+            </td></tr></tbody></table></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Queue contents</th><th>Explanation</th></tr></thead><tbody><tr><td>R4</td><td>
+              The queue reader has read, processed and deleted the first three entries from the queue and has read and
+              is processing the fourth entry.
+            </td></tr></tbody></table></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Queue contents</th><th>Explanation</th></tr></thead><tbody><tr><td>Q1</td><td>
+              The queue writer has recovered from an outage while the queue happens to be empty and has written another
+              message to the queue. Note that the sequence number has been reset. The queue reader must cope with this
+              situation by always reading the message file with the lowest sequence number, regardless of the sequence
+              number of the previously read file.
+            </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e8257"></a>7.10.7.&nbsp;Templates</h3></div></div></div><p>See <span class="emphasis"><em>templates/FlatFileAdapter</em></span> for a working example of this adapter.</p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s09.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s11.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.9.&nbsp;JDBC Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.11.&nbsp;RMI Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:39+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

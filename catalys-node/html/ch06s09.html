@@ -1,0 +1,698 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.9.&nbsp;Market Compliance</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s08.html" title="6.8.&nbsp;Breakout Box"><link rel="next" href="ch06s10.html" title="6.10.&nbsp;Message Compression"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s08.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s10.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_compliance"></a>6.9.&nbsp;Market Compliance</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-intro"></a>6.9.1.&nbsp;Introduction</h3></div></div></div><p>
+      The purpose of the Compliance module in the Node is to enable a broker to enforce a range of trading constraints
+      upon the set of orders received through a FIX connection. These constraints known as "filters" may be a mixture
+      of  rules stipulated by market/governmental regulators, internal corporate policies or statutory obligations, or
+      bilaterally-agreed trading rules between the buy/sell sides.
+    </p><p>
+      The Compliance module is designed as a message processor conforming to the Catalys architecture, which can be
+      inserted into the FIX processing pipeline to verify compliance with the constraints and provide an opportunity
+      for additional user processing to take place in such circumstances. By default, a failure of any filter will
+      cause the message to be rejected back to the originator with an appropriate FIX message and an exception to be
+      logged. This behavior can be overridden by using the BreakOut box which acts as a quarantine area for rejected
+      orders (see <a href="ch06s08.html" title="6.8.&nbsp;Breakout Box">BreakOutBox</a>). Flexible and powerful XML-based rule
+      specification through filter sets, supporting inheritance of filter sets.
+    </p><p>The configuration of filters is carried out using XML files.</p><p>High-level characteristics of the functionality are:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Filter sets can be specified differently for each buy side client.</li><li class="listitem">Filters can be parameterised with different thresholds and limits.</li><li class="listitem">Support for filter checking by user-specified sub-client definitions.</li><li class="listitem">Support for configurable price steps for different securities.</li><li class="listitem">Ability for users to interface code that is automatically notified when filters breach.</li><li class="listitem">Ability for users to build and deploy their own stateful or stateless filters.</li><li class="listitem">Hot swappable filter sets.</li><li class="listitem">Stateful filters operate seamless across system restarts.</li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-filters"></a>6.9.2.&nbsp;Compliance Filters</h3></div></div></div><p>
+      Different compliance constraints are potentially applicable to different types of trading and also to different
+      trading scenarios. They are especially important for automated client order processing (sometimes called direct
+      market access) and automated proprietary order processing. In these cases, the Compliance module would be solely
+      responsible for enforcing a broker's statutory and regulatory obligations. The breach of these is far more
+      serious than the monetary exposure resulting from the orders traded, as it may lead to suspension/withdrawal
+      of their broking license and/or serious financial penalties. It should be noted that brokers are typically fully
+      liable for the actions of their clients on the market.
+    </p><p>
+      Each market will typically dictate its own compliance rules. Additionally, there may be a variety of rules, some
+      of which are only applicable to certain types of market activity. A consequence of this is that the Compliance
+      module must be highly configurable, with users being able to select and configure the necessary rules applicable
+      to their situation.
+    </p><p>
+      Note that it is not the role of the Compliance module to prevent all trading errors. Rather its focus is on
+      implementing those rules that typically are not able to be picked up by a market trading interface. In some
+      cases, some of the rules may be partly implemented by the market trading interface but this may not offer
+      sufficient flexibility in terms of parameterisation to satisfy regulatory requirements on its own.
+    </p><p>The following filters are implemented currently by the Compliance module:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Check order is no more than x% away (as an absolute value) from market price (best price on opposite side).
+        Captures orders entered in error or those with no likelihood of execution.
+      </li><li class="listitem">
+        Check order is no more than x% above or below (depending on side) the market price (best price on opposite
+        side). Captures orders entered in error.
+      </li><li class="listitem">
+        In markets with an opening and closing auction, then in the pre-trade/closing phases check order is no more
+        than x% away (as an absolute value) from the hypothetical indicative auction price. Captures orders entered in
+        error or those with no likelihood of execution.
+      </li><li class="listitem">
+        Check order is no more than x% away (as an absolute value) from best bid/ask price (best price on the same
+        side). Captures orders entered in error or those with no likelihood of execution.
+      </li><li class="listitem">
+        Check order is no more than x% above or below (depending on side) the best bid/ask price (best price on the
+        same side). Captures orders entered in error.
+      </li><li class="listitem">
+        Check order is no more than x% away (as an absolute value) from the last trade price. Captures orders entered
+        in error or those with no likelihood of execution.
+      </li><li class="listitem">
+        Check order is no more than x% away above or below (depending on side) the last trade price. Captures orders
+        entered in error.
+      </li><li class="listitem">
+        Check order is no more than x price steps away (as an absolute value) from market price (best price on
+        opposite side). Captures orders entered in error or those with no likelihood of execution.
+      </li><li class="listitem">
+        Check order is no more than x price steps above or below (depending on side) the market price (best price on
+        opposite side). Captures orders entered in error.
+      </li><li class="listitem">
+        In conditions of market overlap (pre-open and closing), check order is no more than x price steps away (as an
+        absolute value) from the hypothetical indicative auction price. Captures orders entered in error or those with
+        no likelihood of execution.
+      </li><li class="listitem">
+        Check order is no more than x price steps away (as an absolute value) from best bid/ask price (best price on
+        the same side). Captures orders entered in error or those with no likelihood of execution.
+      </li><li class="listitem">
+        Check order is no more than x price steps above or below (depending on side) the best bid/ask price (best price
+        on the same side). Captures orders entered in error.
+      </li><li class="listitem">
+        Check order is no more than x price steps away (as an absolute value) from the last trade price. Captures
+        orders entered in error.
+      </li><li class="listitem">
+        Check order is no more than x price steps above or below (depending on side) from the last trade price.
+        Captures orders entered in error.
+      </li><li class="listitem">
+        Check order value is no more than the single maximum order value limit for the given client, and no less that
+        the minimum order value limit for the given client. Captures orders entered in error or those with no
+        likelihood of execution.
+      </li><li class="listitem">
+        Check security is still available for trading. This will check that the security status is in one of a number
+        of after market close on some exchanges leaves an obligation on statuses. Important because for example
+        entering a new order the broker to trade via telephone if requested by a counterparty - something the broker
+        may not want to do for DMA orders.
+      </li><li class="listitem">
+        Check there are no more than x orders in the market at any one time for a given security for a given client on
+        a particular side of the market. This prevents clients from attempting to give illusion of false market
+        liquidity.
+      </li><li class="listitem">
+        Check that for a given client and security there are no orders on the opposing side of the market. This
+        prevents the client from trading securities with no beneficial change of ownership.
+      </li><li class="listitem">Check that security being traded is not one of a list of embargoed securities.</li><li class="listitem">Check that security type is one of a list of allowed types.</li><li class="listitem">Check cumulative order value for a given client is no more than certain limit.</li><li class="listitem">Check cumulative net order value (buys - sells) is no more than certain limit.</li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-model"></a>6.9.3.&nbsp;Operational Model</h3></div></div></div><p>
+      The Compliance functionality is implemented as a message processor. An instance of the ComplianceProcessor must
+      be configured as both a SourceMessageProcessor and a ListenerMessageProcessor which must be placed before the
+      ASX Trade Transactional gateway. Similarly, as a SourceMessageProcessor, it must sit downstream from the ASX
+      Transactional gateway.
+    </p><p>
+      The Compliance processor supports two types of filters - stateful and stateless. A stateless filter is one that
+      only uses the information in the given FIX message to accept or reject the message. A stateful filter will
+      typically use additional state that it accumulates to make the decision. An example of a stateless filter is an
+      order value filter. An example of a stateful filter is a concurrent orders filter.
+    </p><p>
+      The Compliance processor will typically only inspect a New Order Single, Order Cancel Replace or Order Cancel
+      Request message on the way into the market. On the way back from the market, stateful filters will inspect any
+      ExecutionReport to update their state.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-configuration"></a>6.9.4.&nbsp;Configuration</h3></div></div></div><p>
+      The following example shows a <code class="code">ComplianceProcessor</code> element configured on a session that
+      interacts with a <a href="ch06s08.html" title="6.8.&nbsp;Breakout Box">Breakout Box Service</a>. If a compliance check
+      fails, then the order message will be sent to the Break Out Box for review.
+    </p><pre class="programlisting">&lt;Application id="ExceptionManagerTemplate"&gt;
+  &lt;Services&gt;
+    &lt;BreakOutBox
+      id="exceptionManagerBreakOutBox"
+      persistenceFile="./persistence/sell/breakOut"
+      policyEngineClass=
+        "com.camerontec.catalys.server.breakout.policyengine.ExampleBreakOutPolicyEngine"&gt;
+      &lt;BreakOutLogger class="com.camerontec.catalys.server.breakout.ExampleBreakOutLogger"/&gt;
+    &lt;/BreakOutBox&gt;
+    &lt;JMXManagementService id="JMXManagementService"/&gt;
+    &lt;WebServerService id="CatalysWebServerService"/&gt;
+  &lt;/Services&gt;
+  &lt;Sessions&gt;
+    &lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.2" heartbeat="30"&gt;
+      &lt;Connections&gt;
+        &lt;SocketConnection id="idN65566" listenport="3000"/&gt;
+      &lt;/Connections&gt;
+      &lt;SessionManager&gt;
+        &lt;SourceMessageProcessors&gt;
+          &lt;ComplianceProcessor id="complianceProcessor"
+                               rulesFile="../../compliance.txt"
+                               filterSet="fs1"
+                               priceStepTableDefinitions="pst.txt"
+                               exposureFile="./persistence/exposuredata"
+                               marketDataServiceId="marketDataService"
+                               breakOutBoxId="exceptionManagerBreakOutBox"
+                               marketMirrorId="sellMirror"&gt;
+            &lt;SampleExecutor id="executor" /&gt;
+          &lt;/ComplianceProcessor&gt;
+        &lt;/SourceMessageProcessors&gt;
+        &lt;ListenerMessageProcessors&gt;
+          &lt;MessageProcessorReference id="complianceProcessorListener" refid="complianceProcessor"&gt;
+            &lt;MessageProcessorReference id="executorListener" refid="executor" /&gt;
+          &lt;/MessageProcessorReference&gt;
+        &lt;/ListenerMessageProcessors&gt;
+      &lt;/SessionManager&gt;
+    &lt;/Session&gt;
+  &lt;/Sessions&gt;
+&lt;/Application&gt;
+</pre><p>
+      For a complete list of configuration attributes, see the
+      <a href="config_reference.html#config_ref_ComplianceProcessor" title="ComplianceProcessor">Compliance Processor Configuration Reference</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-rules"></a>6.9.5.&nbsp;Rules File</h3></div></div></div><p>
+      Every rules file must conform to the <span class="emphasis"><em>compliance.dtd</em></span> file which is available in the
+      <span class="emphasis"><em>&lt;CATALYS_NODE&gt;/templates/ExceptionManager</em></span> template. The rules file contains one or
+      more compliance filter sets. Each compliance filter set specifies one or more compliance filters. Additionally,
+      compliance filter sets support inheritance. This allows the specification of a compliance filter set which
+      specialises another. Any compliance filter specified in the specialising filter set supersedes the same filter
+      in the base filter set. Each compliance filter set must have a unique id attribute. When specialising a filter
+      set, the refid attribute is used to specify the base filter set.
+    </p><p>
+      The inheritance feature allows client filters to be managed as standard client profiles, with scope for
+      exceptions.
+    </p><p>
+      The inheritance feature may be disabled on a filter set family basis by setting the
+      <code class="code">allowDuplicateFilters</code> attribute to <code class="code">true</code> on the <code class="code">ComplianceFilterSet</code>
+      element (default is <code class="code">false</code>). In this mode compliance filters in the specialising filter set do not
+      supersede the same filter in the base filter set, but are added in their own right. The end result being that
+      both filters are applied in series. This is useful when you want different instances of the same filter to have
+      different <code class="code">autoReject</code> semantics, particularly
+      when this package is used in conjunction with the <a href="ch06s08.html" title="6.8.&nbsp;Breakout Box">Breakout Box</a>.
+      For example, it may be desirable to configure two instances of a range type filter with the first having a higher
+      maximum value than the second, and with the first having <code class="code">autoReject</code> set to <code class="code">true</code> and the
+      second having <code class="code">autoReject</code> set to <code class="code">false</code>. This effectively creates a 2-tier range filter
+      for which breaches of the upper tier are automatically rejected but breaches of the intermediate tier are broken
+      out for manual authorisation by an operator.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-cofAttributes"></a>ConcurrentOrderFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>tolerance</td><td>
+                <p>
+                  The maximum number of orders that can exist for a given client/entity for any security and side.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>clientEntityMapper</td><td>
+                <p>
+                  A class that determines for a given FIX message the entity against which this filter will be applied.
+                  This allows the user to perform monitoring at a sub-client level, where the given class performs the
+                  user-specific mapping from a message to a sub-client. The class must implement the
+                  <code class="code">com.camerontec.catalys.server.compliance.IClientEntityMapper</code>
+                  interface. It can derive an entity name from any combination of fields available in the message.
+                </p>
+                <p>Optional. Default is to monitor based upon client.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-icfAttributes"></a>InadvertentCrossingFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>clientEntityMapper</td><td>
+                <p>
+                  A class that determines for a given FIX message the entity against which this filter will be applied.
+                  This allows the user to perform monitoring at a sub-client level, where the given class performs the
+                  user-specific mapping from a message to a sub-client. The class must implement the
+                  <code class="code">com.camerontec.catalys.server.compliance.IClientEntityMapper</code>
+                  interface. It can derive an entity name from any combination of fields available in the message.
+                </p>
+                <p>Optional. Default is to monitor based upon client.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-gefAttributes"></a>GrossExposureFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>tolerance</td><td>
+                <p>
+                  The maximum number of orders that can exist for a given client/entity for any security and side.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>clientEntityMapper</td><td>
+                <p>
+                  A class that determines for a given FIX message the entity against which this filter will be applied.
+                  This allows the user to perform monitoring at a sub-client level, where the given class performs the
+                  user-specific mapping from a message to a sub-client. The class must implement the
+                  <code class="code">com.camerontec.catalys.server.compliance.IClientEntityMapper</code>
+                  interface. It can derive an entity name from any combination of fields available in the message.
+                </p>
+                <p>Optional. Default is to monitor based upon client.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-nefAttributes"></a>NetExposureFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>tolerance</td><td>
+                <p>
+                  The maximum number of orders that can exist for a given client/entity for any security and side.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>clientEntityMapper</td><td>
+                <p>
+                  A class that determines for a given FIX message the entity against which this filter will be applied.
+                  This allows the user to perform monitoring at a sub-client level, where the given class performs the
+                  user-specific mapping from a message to a sub-client. The class must implement the
+                  <code class="code">com.camerontec.catalys.server.compliance.IClientEntityMapper</code>
+                  interface. It can derive an entity name from any combination of fields available in the message.
+                </p>
+                <p>Optional. Default is to monitor based upon client.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-gtefAttributes"></a>GrossTradeExposureFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>tolerance</td><td>
+                <p>
+                  If the trade value is less then specified tolerance orders can be submitted by a single
+                  client/entity. Tolerance is expressed as a gross value. Amends to reduce order value are permitted.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>clientEntityMapper</td><td>
+                <p>
+                  A class that determines for a given FIX message the entity against which this filter will be applied.
+                  This allows the user to perform monitoring at a sub-client level, where the given class performs the
+                  user-specific mapping from a message to a sub-client. The class must implement the
+                  <code class="code">com.camerontec.catalys.server.compliance.IClientEntityMapper</code>
+                  interface. It can derive an entity name from any combination of fields available in the message.
+                </p>
+                <p>Optional. Default is to monitor based upon client.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-ntefAttributes"></a>NetTradeExposureFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>tolerance</td><td>
+                <p>
+                  If the trade value is less then specified tolerance orders can be submitted by a single
+                  client/entity. Tolerance is expressed as a net value.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>clientEntityMapper</td><td>
+                <p>
+                  A class that determines for a given FIX message the entity against which this filter will be applied.
+                  This allows the user to perform monitoring at a sub-client level, where the given class performs the
+                  user-specific mapping from a message to a sub-client. The class must implement the
+                  <code class="code">com.camerontec.catalys.server.compliance.IClientEntityMapper</code>
+                  interface. It can derive an entity name from any combination of fields available in the message.
+                </p>
+                <p>Optional. Default is to monitor based upon client.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-mmfAttributes"></a>MarketModeFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>allowed</td><td>
+                <p>A comma-separated list of market modes that are allowed.</p>
+                <p>Must be specified.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-ovfAttributes"></a>OrderValueFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>maxNormal</td><td>
+                <p>The maximum value of an order that can be sent in the Normal phase.</p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxPreOpen</td><td>
+                <p>The maximum value of an order that can be sent in the PreOpen phase.</p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>minNormal</td><td>
+                <p>The minimum value of an order that can be sent in the Normal phase.</p>
+                <p>Optional. Defaults to 0.</p>
+              </td></tr><tr><td>minPreOpen</td><td>
+                <p>The minimum value of an order that can be sent in the PreOpen phase.</p>
+                <p>Optional. Defaults to 0.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pcaAttributes"></a>PercentageFromAuctionPriceFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>tolerance</td><td>
+                <p>
+                  The maximum number of orders that can exist for a given client/entity for any security and side.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pcbAttributes"></a>PercentageFromBestPriceFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>maxNormal</td><td>
+                <p>
+                  The maximum permissible percentage away from the best bid/ask price in Normal phase of the order
+                  limit price. If there is no best bid/ask price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxPreOpen</td><td>
+                <p>
+                  The maximum permissible percentage away from the best bid/ask price in PreOpen phase of the order
+                  limit price. If there is no best bid/ask price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>absolute</td><td>
+                <p>Whether the filter should measure the absolute or relative difference in prices.</p>
+                <p>Default is <code class="code">false</code>.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pclAttributes"></a>PercentageFromLastPriceFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>maxNormal</td><td>
+                <p>
+                  The maximum permissible percentage away from the last trade price in Normal phase of the order
+                  limit price expressed as an absolute value. If there is no last trade price and
+                  breachIfNoReferencePrice is false, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxPreOpen</td><td>
+                <p>
+                  The maximum permissible percentage away from the last trade price in pre-open phase of the order
+                  limit price expressed as an absolute value. If there is no last trade price and
+                  breachIfNoReferencePrice is false, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>useAuctionIfNoLast</td><td>
+                <p>
+                  If set to true and there is no last price indicative auction price is used as reference price.
+                </p>
+                <p>Optional. Default is <code class="code">false</code>.</p>
+              </td></tr><tr><td>breachIfNoReferencePrice</td><td>
+                <p>
+                  If set to true and there is no last price the filter breaches.
+                </p>
+                <p>Optional. Default is <code class="code">false</code>.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pcmAttributes"></a>PercentageFromMarketPriceFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>maxNormal</td><td>
+                <p>
+                  The maximum permissible percentage away from the market price in normal phase of the order limit
+                  price expressed as an absolute value. The market price is defined to be the best price on the
+                  opposing side of the market. If there is no market price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxPreOpen</td><td>
+                <p>
+                  The maximum permissible percentage away from the market price in preopen phase of the order limit
+                  price expressed as an absolute value. The market price is defined to be the best price on the
+                  opposing side of the market. If there is no market price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-psaAttributes"></a>PriceStepsFromAuctionPriceFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>tolerance</td><td>
+                <p>
+                  The maximum permissible price steps away from the auction price of the order limit price expressed
+                  as an absolute value. If there is no auction price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-psbAttributes"></a>PriceStepsFromBestPriceFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>maxNormal</td><td>
+                <p>
+                  The maximum permissible price steps away from the best bid/ask price in normal phase of the order
+                  limit price expressed as an absolute value. If there is no best bid/ask price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxPreOpen</td><td>
+                <p>
+                  The maximum permissible price steps away from the best bid/ask price in preopen phase of the order
+                  limit price expressed as an absolute value. If there is no best bid/ask price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pslAttributes"></a>PriceStepsFromLastPriceFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>maxNormal</td><td>
+                <p>
+                  The maximum permissible price steps away from the last trade price in normal phase of the order
+                  limit price expressed as an absolute value. If there is no last trade price and
+                  breachIfNoReferencePrice is false, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxPreOpen</td><td>
+                <p>
+                  The maximum permissible price steps away from the last trade price in preopen phase of the order
+                  limit price expressed as an absolute value. If there is no last trade price and
+                  breachIfNoReferencePrice is false, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>absolute</td><td>
+                <p>Whether the filter should measure the absolute or relative difference in prices. </p>
+                <p>Default is <code class="code">false</code>.</p>
+              </td></tr><tr><td>useAuctionIfNoLast</td><td>
+                <p>
+                  If set to true and there is no last price indicative auction price is used as reference price.
+                </p>
+                <p>Optional. Default is <code class="code">false</code>.</p>
+              </td></tr><tr><td>breachIfNoReferencePrice</td><td>
+                <p>If set to true and there is no last price the filter breaches.</p>
+                <p>Optional. Default is <code class="code">false</code>.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-psmAttributes"></a>PriceStepsFromMarketPriceFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>maxNormal</td><td>
+                <p>
+                  The maximum permissible price steps away from the market price in normal phase of the order limit
+                  price expressed as an absolute value. The market price is defined to be the best price on the
+                  opposing side of the market. If there is no market price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxPreOpen</td><td>
+                <p>
+                  The maximum permissible price steps away from the market price in preopen phase of the order limit
+                  price expressed as an absolute value. The market price is defined to be the best price on the
+                  opposing side of the market. If there is no market price, the filter succeeds.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>absolute</td><td>
+                <p>Whether the filter should measure the absolute or relative difference in prices. </p>
+                <p>Default is <code class="code">false</code>.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-sfAttributes"></a>SecurityFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>disallowed</td><td>
+                <p>
+                  A comma-separated list of securities in which orders are disallowed. These should be specified in
+                  market specific codes, e.g. for the Catalys ASX Trade market, ASX Trade codes should be used.
+                </p>
+                <p>Optional. By default all security types are allowed.</p>
+              </td></tr><tr><td>absolute</td><td>
+                <p>Whether the filter should measure the absolute or relative difference in prices. </p>
+                <p>Default is <code class="code">false</code>.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-stfAttributes"></a>SecurityTypeFilter Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>enabled</td><td>
+                <p>Sets whether the filter is enabled.</p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>autoReject</td><td>
+                <p>
+                  Whether a failure of this filter will cause automatic rejection. If false, then the breach will be
+                  delegated to the Breakout Box for trader attention.
+                </p>
+                <p>Optional. Default is <code class="code">true</code>.</p>
+              </td></tr><tr><td>disallowed</td><td>
+                <p>
+                  A comma-separated list of security types that are disallowed. Note security types are market specific.
+                </p>
+                <p>Optional. By default all security types are allowed.</p>
+              </td></tr><tr><td>absolute</td><td>
+                <p>Whether the filter should measure the absolute or relative difference in prices.</p>
+                <p>Default is <code class="code">false</code>.</p>
+              </td></tr></tbody></table></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-pricebands"></a>6.9.6.&nbsp;Price Bands for Percentage Filters</h3></div></div></div><p>
+      For all percentage price filters different tolerances can be configured for different price ranges. The ability to
+      differentiate between normal market operation and pre-open phase will remain. It is also possible to specify global
+      price tolerance tables which can be referenced from a filter as well as define filter specific tables.
+      It applies to the following filters:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">PercentageFromAuctionPriceFilter</li><li class="listitem">PercentageFromBestPriceFilter</li><li class="listitem">PercentageFromLastPriceFilter</li><li class="listitem">PercentageFromMarketPriceFilter</li></ul></div><p>
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pricebands-PriceToleranceTable"></a>PriceToleranceTable</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>
+                <p>Unique identifier</p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td><span class="emphasis"><em>&lt;PriceToleranceTableEntry&gt;</em></span></td><td>
+                <p>
+                  <span class="emphasis"><em>&lt;PriceToleranceTable&gt;</em></span> can contain an unlimited amount of
+                  <span class="emphasis"><em>&lt;PriceToleranceTableEntry&gt;</em></span> elements as children in which 
+                  the tolerance for each price range is defined.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pricebands-PriceToleranceTableEntry"></a>PriceToleranceTableEntry</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>toPrice</td><td>
+                <p>
+                  The upper limit of the price for which the tolerance applies. The start of the price range is the
+                  <span class="emphasis"><em>toPrice</em></span> of the previous entry (or 0 if the first one). A blank value indicates infinity.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxPreOpen</td><td>
+                <p>
+                  Value for the tolerance at this price range while the market is in pre-open Phase.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>maxNormal</td><td>
+                <p>
+                  Value for the tolerance at this price range during normal trading operation.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pricebands-PriceToleranceTableReference"></a>PriceToleranceTableReference</h4></div></div></div><p>This element can only be used as a child for a percentage filter.</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>refid</td><td>
+                <p>
+                  Referencing an id of a <span class="emphasis"><em>&lt;PriceToleranceTable&gt;</em></span> which is defined globally, 
+                  i.e. outside a filter element and under <span class="emphasis"><em>&lt;ComplianceFilterSets&gt;</em></span>
+                </p>
+                <p>Must be specified.</p>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pricebands-ConfigurationExample"></a>Configuration Example</h4></div></div></div><pre class="programlisting">
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE ComplianceFilterSets SYSTEM "compliance.dtd"&gt;
+ &lt;ComplianceFilterSets&gt; + "   "
+   &lt;PriceToleranceTable id="pttr"&gt;
+     &lt;PriceToleranceTableEntry toPrice="0.008" maxNormal="100" maxPreOpen="500"/&gt;
+     &lt;PriceToleranceTableEntry toPrice="0.04" maxNormal="20" maxPreOpen="200"/&gt;
+     &lt;PriceToleranceTableEntry toPrice="" maxNormal="10" maxPreOpen="50"/&gt;
+   &lt;/PriceToleranceTable&gt;
+   &lt;ComplianceFilterSet id="fs1"&gt;
+     &lt;PercentageFromAuctionPriceFilter&gt;
+       &lt;PriceToleranceTable id="ptt-pfapf"&gt;
+         &lt;PriceToleranceTableEntry toPrice="0.006" maxNormal="200" maxPreOpen="200"/&gt;
+         &lt;PriceToleranceTableEntry toPrice="0.02" maxNormal="50" maxPreOpen="50"/&gt;
+         &lt;PriceToleranceTableEntry toPrice="" maxNormal="25" maxPreOpen="25"/&gt;
+       &lt;/PriceToleranceTable&gt;
+     &lt;/PercentageFromAuctionPriceFilter&gt;
+     &lt;PercentageFromBestPriceFilter&gt;
+       &lt;PriceToleranceTable id="ptt"&gt;
+         &lt;PriceToleranceTableEntry toPrice="0.006" maxNormal="200" maxPreOpen="1000"/&gt;
+         &lt;PriceToleranceTableEntry toPrice="0.02" maxNormal="50" maxPreOpen="200"/&gt;
+         &lt;PriceToleranceTableEntry toPrice="" maxNormal="25" maxPreOpen="100"/&gt;
+       &lt;/PriceToleranceTable&gt;
+     &lt;/PercentageFromBestPriceFilter&gt;
+     &lt;PercentageFromLastPriceFilter&gt;
+       &lt;PriceToleranceTableReference refid="ptt" /&gt;
+     &lt;/PercentageFromLastPriceFilter&gt;
+     &lt;PercentageFromMarketPriceFilter&gt;
+       &lt;PriceToleranceTableReference refid="pttr" /&gt;
+     &lt;/PercentageFromMarketPriceFilter&gt;
+   &lt;/ComplianceFilterSet&gt; 
+ &lt;/ComplianceFilterSets&gt;
+      </pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-pst"></a>6.9.7.&nbsp;Price Step Table File</h3></div></div></div><p>
+      The Price Step Table file defines price steps for securities. Every Price Step Table file must conform to a price
+      step element located in the <span class="emphasis"><em>Compliance.dtd</em></span> file. The mapping is performed on the basis of a
+      price step table identifier. Each security is assumed to be inherently associated with a price step table
+      identifier.
+    </p><p>
+      The price step table file contains a number of price step definitions. These effectively define a step function.
+      Each price step table is identified with a unique id. Each price step table has one or more price step table
+      entries. These define the discontinuities in the step function.
+    </p><p>
+      The following section describes the various attributes that
+      can be specified on a PriceStepTableEntry.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_compliance-pstAttributes"></a>PriceStepTableEntry Attributes</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attributes</th><th>Notes</th></tr></thead><tbody><tr><td>maxPrice</td><td>
+                <p>The value below which the price step is the given priceStep value.</p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>priceStep</td><td>
+                <p>
+                  Size of the price step.
+                </p>
+                <p>Must be specified.</p>
+              </td></tr><tr><td>absolute</td><td>
+                <p>Whether the filter should measure the absolute or relative difference in prices.</p>
+                <p>Default is <code class="code">false</code>.</p>
+              </td></tr></tbody></table></div><p>
+        Note that the price step table entries are automatically ordered when being processed. Also note that any value
+        above the highest maxPrice will have a priceStep of the highest maxPrice price step table entry.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-ext"></a>6.9.8.&nbsp;Extending Filters</h3></div></div></div><p>
+      Users may choose to write additional filters based upon existing or other information available. There are two
+      types of filters as discussed earlier, stateful and stateless. Both must provide an implementation of the
+      <code class="code">com.camerontec.catalys.server.compliance.Compliance&shy;Filter</code> class. This class should perform necessary
+      checks in the validate method and throw an exception if a breach is detected.
+    </p><p>
+      Additionally, stateful filters may want to extend the
+      <code class="code">com.camerontec.catalys.server.com&shy;pliance.Abstract&shy;FilterStateController</code> class. This class is invoked
+      on messages from the exchange and can be used to correctly maintain any state.
+    </p><p>
+      Users will need to add their filters to the <span class="emphasis"><em>compliance.dtd</em></span> file to define filter attributes
+      and update the rules file(s) with relevant config.
+    </p><p>
+      When the Compliance module starts, it will automatically read the filter configuration from the rules file, and
+      instantiate all filters and filter state controllers.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_compliance-absoluteRelative"></a>6.9.9.&nbsp;The <code class="code">absolute</code> Attribute</h3></div></div></div><p>
+      Some filters which measure the difference between an orders price and some reference price have a boolean
+      attribute called <code class="code">absolute</code>. If this attribute to <code class="code">true</code> then the difference is measured as
+      an absolute value. E.g., the filter is breached if:
+    </p><p><code class="code">abs(order_price - reference_price) &gt; tolerance</code></p><p>
+      where <code class="code">order-price</code> is the price taken from the order (or order amend) message,
+      <code class="code">reference-price</code> is the reference price (e.g, best price, last price or market price),
+      <code class="code">tolerance</code> is the maximum difference and <code class="code">abs</code> is the absolute value function.
+      (Note: some filters express these values as price steps or percentages).
+    </p><p>
+      If the <code class="code">absolute</code> attribute is <code class="code">false</code> then the difference is relative and depends on the
+      side of the order. E.g., for buy orders the filter is triggered if:
+    </p><p><code class="code">(order_price - reference_price) &gt; tolerance</code></p><p>For sell orders the filter is triggered if:</p><p><code class="code">(reference_price - order_price) &gt; tolerance</code></p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s08.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s10.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.8.&nbsp;Breakout Box&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.10.&nbsp;Message Compression</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

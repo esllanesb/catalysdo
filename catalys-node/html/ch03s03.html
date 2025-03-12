@@ -1,0 +1,129 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 3.3.&nbsp;JMX Configuration API</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch03.html" title="Chapter&nbsp;3.&nbsp;Configuration"><link rel="prev" href="ch03s02.html" title="3.2.&nbsp;Logging"><link rel="next" href="ch03s04.html" title="3.4.&nbsp;Encryption of Attributes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch03s02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;3.&nbsp;Configuration</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch03s04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="config_via_jmx"></a>3.3.&nbsp;JMX Configuration API</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-intro"></a>3.3.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Catalys Node provides a JMX API for editing the configuration of a running Node.
+      This API allows clients to write applications that can remotely view and modify any aspect
+      of the Node's configuration.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-management"></a>3.3.2.&nbsp;Management Infrastructure</h3></div></div></div><p>
+      The Catalys Node JMX configuration API leverages the Catalys management infrastructure. This
+      means the Local Management Agent (LMA) and the Management Agent (MA) can be used to collate the
+      JMX interfaces of a number of Nodes running across a number of different machines.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1417"></a>JMXManagementService</h4></div></div></div><p>
+        In order to be manageable via JMX the JMXManagamentService must be declared in the application's
+        startup XML configuration. See <a href="ch03.html#config_basic-services-jmx" title="JMXManagementService">JMXManagementService</a>
+        for more information.
+      </p><pre class="programlisting">&lt;Services&gt;
+  &lt;JMXManagementService id="JMXManagementService"/&gt;
+&lt;/Services&gt;</pre><p>
+        For more information about the Catalys management infrastructure please see
+        <a href="ch04s02.html#operations_monitoring-jmx" title="4.2.5.&nbsp;Monitoring via JMX">Monitoring via JMX</a>.
+      </p><p>
+        Please note that using the management infrastructure changes the names of MBeans. Both the LMA
+        and the MA augment the names of forwarded MBeans with additional information so that multiple
+        instances of Nodes running on either the same host or on different hosts can be distinguished.
+        This means that client code written against the Node process, or against the LMA, or against
+        the MA will not be exactly compatible. For this reason we advise customers to write their applications
+        for the MA, the most flexible and scalable solution.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-configversusruntime"></a>3.3.3.&nbsp;Configuration versus Runtime</h3></div></div></div><p>
+      Catalys Nodes make a distinction between changes to the configuration of the Node and changes to
+      the runtime. All changes made using the configuration API are changes to the configuration only. These
+      changes impact only the in-memory representation of the configuration maintained by Catalys. They will
+      have no impact on the runtime state of a Node until a special <code class="code">reload</code> operation is invoked.
+    </p><p>
+      Once <code class="code">reload</code> has been invoked, any changes made to the configuration will be validated, and if the
+      changes are safe they will be applied to the runtime.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-reload"></a>3.3.4.&nbsp;Reload</h3></div></div></div><p>
+      On reload, the Node evaluates the safety of all changes made to the configuration. A
+      change is only considered safe it has no impact on a running session. More precisely, it is forbidden
+      to make a change to a session, any of the session's contents, or anything that the session or its
+      contents depend on, unless the session is disconnected, blocked, and its session manager is deactivated.
+    </p><p>
+      If the Node determines that any of the changes made to the configuration are unsafe, the
+      whole reload operation will be aborted. Changes are either all applied or not applied at all. Once a
+      reload has been aborted the configuration will still contain the changes made previously, allowing
+      users to either adjust their desired changes, disconnect and block sessions if desired, or perhaps to
+      revert the whole set of changes.
+    </p><p>
+      The API provides operations to allow sessions to be easily placed in a safe state, and to be easily returned to a
+      runnable state. These operations are called <code class="code">enableSessionReload</code> and
+      <code class="code">disableSessionReload</code>. Invoking <code class="code">enableSessionReload</code> will block and disconnect a session
+      and deactivate its session's session manager. Invoking <code class="code">disableSessionReload</code> will activate a session's
+      session manager and unblock the session.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-refresh"></a>3.3.5.&nbsp;Refresh</h3></div></div></div><p>
+      Some changes to attributes of the configuration are not able to be reloaded into runtime. Attributes
+      for which this is the case are referred to as "non-refreshable". For example: the
+      <code class="code">customComponentScanningPath</code> attribute of the <code class="code">Application</code> element.
+    </p><p>
+      Each configuration attribute has a <code class="code">refreshable</code> property which indicates whether it can be changed
+      at runtime or not.
+    </p><p>
+      Each configuration element has a <code class="code">hasNonRefreshedChanges</code> attribute and
+      <code class="code">nonRefreshedChanges</code> operation, which indicate changes made to non-refreshable attributes. These are
+      reported accurately unless there is a manual configuration reload (XML reload via the CLI), in which case the
+      refreshed changes are cleared and can no longer be reported through the JMX API.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-undo"></a>3.3.6.&nbsp;Undo</h3></div></div></div><p>
+      The configuration API provides an explicit operation for undoing changes. This will revert
+      any changes to the configuration that have not already been applied to the runtime.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-persistence"></a>3.3.7.&nbsp;Persistence</h3></div></div></div><p>
+      Changes made using the configuration API are persisted to XML after each successful reload. Before
+      updating the XML configuration file, the Node persists a timestamped backup of the existing
+      configuration file (from before the changes are applied). This allows users to easily fall back to old
+      configurations and also provides a record of the changes made over time.
+    </p><p>
+      In addition, there is an explicit <code class="code">persist</code> operation that allows users to trigger persistence. This
+      can be used for making changes to the configuration that should only be applied on the next restart.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-mbeans"></a>3.3.8.&nbsp;MBeans</h3></div></div></div><p>
+      The configuration API is presented to clients in the form of MBeans. Anything that is configured will
+      expose an MBean. An MBean will be registered for the Application, for each Session, for each configured
+      message processor, etc.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_via_jmx-namingscheme"></a>Naming Scheme</h4></div></div></div><p>
+        The configuration API names its MBeans according to
+        <a href="http://www.oracle.com/technetwork/java/javase/tech/best-practices-jsp-136021.html" target="_top">Sun's JMX Best Practices Guidelines</a>.
+        It is highly recommended that clients interested in the naming scheme read these best practices, in particular
+        <a href="http://www.oracle.com/technetwork/java/javase/tech/best-practices-jsp-136021.html#mozTocId654884" target="_top">Object Name Conventions</a>
+        and
+        <a href="http://www.oracle.com/technetwork/java/javase/tech/best-practices-jsp-136021.html#mozTocId366979" target="_top">Object containment</a>.
+      </p><p>
+        The configuration API MBeans can be distinguished from other Node MBeans by looking for the
+        <code class="code">Configuration</code> qualifier in the object name type. For example, the type of the Session MBean is
+        <code class="code">Configuration.Application.Session</code>. All configuration MBeans contain this qualifier.
+      </p><p>
+        Note that object names will change depending on whether you are accessing the MBeans by connecting
+        directly to the Node, or whether you are connecting to the LMA or MA. The LMA and MA add additional
+        qualifiers to allow multiple Node instances to be collated. For example, the MA adds "Host" to the
+        type. For this reason we advise customers to write their applications for the MA, the most flexible and
+        scalable solution.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_via_jmx-attributes"></a>Attributes</h4></div></div></div><p>
+        Every MBean exposes a set of attributes identical to the attributes of its corresponding XML element. For
+        example, the <code class="code">SampleMessageSource</code> MBean exposes an <code class="code">interval</code> attribute of type
+        integer, representing the time between sending messages.
+      </p><p>
+        In addition to their configuration attributes, some MBeans have additional attributes used to list their
+        relationships with other Mbeans. For example, the <code class="code">SessionManager</code> MBean has a
+        <code class="code">sourceMessageProcessors</code> attribute that contains an array of JMX Object Names referring to the
+        session manager's source message processors.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_via_jmx-operations"></a>Operations</h4></div></div></div><p>
+        In addition to its attributes, every MBean exposes a set of operations. The operations are used for
+        adding and deleting configuration elements, for reloading changes, for undoing changes, and for various
+        other purposes.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_via_jmx-typesofmbeans"></a>Types of MBeans</h4></div></div></div><p>There are many different MBean types, including:</p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>MBean Type</th><th>Relationship Attributes</th><th>Notable Operations</th></tr></thead><tbody><tr><td>Configuration.&shy;Application</td><td>&nbsp;</td><td>reload, undo, saveConfiguration, addSession, addService</td></tr><tr><td>Configuration.&shy;Application.&shy;Session</td><td>childToFIXMessageFactory, childFromFIXMessageFactory, childToFIXCompression,
+                childFromFIXCompression</td><td>reload, undo, markForDelete, addSessionPersister, copySession</td></tr><tr><td>Configuration.&shy;Application.&shy;Session.&shy;SessionManager</td><td>sourceMessageProcessors, listenerMessageProcessors</td><td>markForDelete, addMessageProcessor, addSelector</td></tr><tr><td>Configuration.&shy;Application.&shy;MessageProcessor</td><td>messageProcessors</td><td>markForDelete, addMessageProcessor, addSelector</td></tr></tbody></table></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-exploring"></a>3.3.9.&nbsp;Interactively Exploring the API</h3></div></div></div><p>
+      The configuration API can be interactively explored using a JMX client such as JConsole. It is
+      highly recommended that clients interested in using the API use JConsole or another generic client
+      application to become familiar with it.
+    </p><p>
+      A word of warning about JConsole. It does not allow users to set attributes to <code class="code">null</code> or
+      <code class="code">unset</code>, and it does not allow users to pass null as an argument to operations. In addition, it does
+      not allow the modification of complex types, although they can be viewed.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_via_jmx-example"></a>3.3.10.&nbsp;Example</h3></div></div></div><p>
+      There is an example client application provided in the
+      <span class="emphasis"><em>templates/JMXConfigurationClient</em></span> directory. This sample application simply adds
+      a new session (with a persister, connection and message processor) to an application.
+    </p><p>
+      The source code for the application is located here:
+      <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/test/SampleJMXConfigurationClientWhichAddsNewSession.java</em></span>
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch03s02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch03.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch03s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">3.2.&nbsp;Logging&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;3.4.&nbsp;Encryption of Attributes</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,82 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 9.6.&nbsp;Custom Code</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch09.html" title="Chapter&nbsp;9.&nbsp;Performance Tuning"><link rel="prev" href="ch09s05.html" title="9.5.&nbsp;JVM Tuning"><link rel="next" href="config_reference.html" title="Appendix&nbsp;A.&nbsp;Configuration Reference"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch09s05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;9.&nbsp;Performance Tuning</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="config_reference.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="perf_custom_code"></a>9.6.&nbsp;Custom Code</h2></div></div></div><p>
+    The following optimizations may be useful when developing and tuning your custom Catalys components.
+  </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="perf_configuration-reuse"></a>9.6.1.&nbsp;Message Object Reuse</h3></div></div></div><p>
+      Message reuse can improve performance when observing frequent garbage collections due to the creation of
+      <code class="code">IFIXMessage</code> objects.  Ideally, the number of message objects created should be fixed regardless
+      of the message volume.  However, this is not always possible depending on how your component is using
+      each message reference.
+    </p><p>
+      When reuse is not enabled, a new FIX message object is created for every inbound and outbound message. Unless a
+      message object has been stored somewhere within the Node, it should be possible to reuse that same object
+      for all subsequent messages. The question is how do we know if a message object has been stored?
+    </p><p>
+      Each Node message processor has a <code class="code">boolean</code> attribute, <code class="code">storesMessages</code>, that is
+      <code class="code">true</code> by default. In addition, each <code class="code">IFIXMessage</code> has a <code class="code">possiblyStored</code>
+      attribute, which by default is <code class="code">false</code>. Any message processor with <code class="code">storesMessages</code> set to
+      <code class="code">true</code> will automatically set the <code class="code">possiblyStored</code> attribute to <code class="code">true</code> on all
+      messages it processes.
+    </p><p>
+      After the Node has submitted a FIX message to all the relevant message processors, it checks the
+      <code class="code">possiblyStored</code> attribute. If <code class="code">true</code>, it cannot reuse the message object, so a new one
+      will be created. However, if <code class="code">false</code> then that same message object can be used when processing the
+      next FIX message.
+    </p><p>
+      The author of a message processor needs to decide whether or not the message processor stores message objects.
+      If it does not, <code class="code">storesMessages</code> should be set to <code class="code">false</code> by calling the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IFIXMessageProcessor.html#setStoresMessages(boolean)" target="_top">setStoresMessages(boolean)</a>
+      method from the message processor's constructor. This will enable reuse of FIX message objects when it's safe to
+      do so, thereby reducing the amount of garbage creation.
+    </p><div class="note"><h3 class="title">Note</h3><p>
+        Message reuse works only in <a href="ch09s04.html#perf_configuration-unqueued_mode" title="9.4.1.1.&nbsp;Unqueued Mode">unqueued mode</a>. In queued
+        mode messages are stored and processed asynchronously by different threads, so message objects cannot be reused.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10994"></a>9.6.2.&nbsp;Efficient Field Retrieval</h3></div></div></div><p>
+      The
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessage.html" target="_top">IFIXMessage</a>
+      interface has type-specific accessors that take advantage of the message's native underlying data when possible,
+      often avoiding unnecessary object creation. For example:
+    </p><pre class="programlisting">// wrong
+String s = msg.getValueAsString(Constants.TAGiQuantity);
+int quantity = Integer.parseInt(s);</pre><p>Use the type-specific method instead, which avoids the <code class="code">String</code> creation:</p><pre class="programlisting">// correct
+int quantity = msg.getValueAsInt(Constants.TAGiQuantity);</pre><p>
+      Also be mindful of unnecessary conversion between ASCII <code class="code">byte</code> arrays and <code class="code">String</code> objects.
+      The raw ASCII data in inbound messages can be accessed directly without creating a <code class="code">String</code> by
+      using the
+      <a class="javadoc" href="../javadoc/com/camerontec/util/data/BytesSegment.html" target="_top">BytesSegment</a> class.
+      This class provides a view to a portion of a <code class="code">byte[]</code> and has sensible <code class="code">hashCode</code> and
+      <code class="code">equals</code> methods which allow for comparison of raw ASCII data.  Therefore it is more efficient to
+      perform repetitive operations on ASCII values using the raw bytes instead of <code class="code">String</code>.  For example:
+    </p><pre class="programlisting">BytesSegment SYMBOL_CONSTANT = new BytesSegment("IBM".getBytes());
+BytesSegment valueFromMessage = msg.getValueAsAsciiBytes(Constants.TAGiSymbol);
+boolean eq = valueFromMessage.equals(SYMBOL_CONSTANT);</pre><p>
+      In situations where you don't need to know the data type, for example to simply copy the value from one place to
+      another, access the data as an
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/data/IValue.html" target="_top">IValue</a>:
+    </p><pre class="programlisting">IValue value = source.getFieldValue(Constants.TAGiQuantity);
+target.setValue(Constants.TAGiQuantity, value);</pre><p>
+      The MsgType and MsgSeqNum fields have their own accessor methods, <code class="code">getMsgType()</code> and
+      <code class="code">getMessageSeq()</code>.  These methods provide the most efficient way of retrieving their respective values.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e11018"></a>9.6.3.&nbsp;Floating-point Types</h3></div></div></div><p>
+      Another very important type of data in FIX is the price. It might seem that the most natural way to represent a
+      price in Java would be as <code class="code">float</code> or <code class="code">double</code>. However, these types introduce precision and
+      rounding problems and inefficiencies when formatting as text.
+    </p><p>
+      The Node provides the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/data/Decimal.html" target="_top">Decimal</a> class
+      as an alternate representation of fractional numbers such as prices.
+      <code class="code">Decimal</code> objects represent a fractional number as two whole numbers, a mantissa and an exponent. For
+      example, the price $1.52 would be represented as a mantissa of 152 and an exponent of -2.  Quantities can also
+      be represented in this way.
+    </p><p>
+      <code class="code">Decimal</code> has the following advantages:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">No precision/rounding issues</li><li class="listitem">Very efficient to serialize and format</li><li class="listitem">Directly compatible with the industry standard FAST</li></ul></div><p>
+      Methods are provided for performing basic arithmetic. These methods avoid the precision/rounding issues of
+      <code class="code">float</code> and <code class="code">double</code> and are also very fast.  For example:
+    </p><pre class="programlisting">Decimal price = msg.getValueAsDecimal(Constants.TAGiPrice);
+Decimal qty = msg.getValueAsDecimal(Constants.TAGiQuantity);
+Decimal consideration = price.multiply(qty);</pre></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch09s05.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch09.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="config_reference.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">9.5.&nbsp;JVM Tuning&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Appendix&nbsp;A.&nbsp;Configuration Reference</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:43+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

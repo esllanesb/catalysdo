@@ -1,0 +1,352 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys MIS User Guide &#151; 1.4.&nbsp;What's New in Catalys 2.2</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys MIS User Guide"><link rel="up" href="ch01.html" title="Chapter&nbsp;1.&nbsp;Introduction"><link rel="prev" href="ch01s03.html" title="1.3.&nbsp;Catalys Releases"><link rel="next" href="ch01s05.html" title="1.5.&nbsp;Getting Support"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch01s03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;1.&nbsp;Introduction</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch01s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="common_whats_new"></a>1.4.&nbsp;What's New in Catalys 2.2</h2></div></div></div><p>
+    The following new features are available in Catalys 2.2 products at launch. In addition, Catalys 2.2 includes a
+    large number of new features that were also back-ported to Catalys 2.1 as part of maintenance releases.
+  </p><p>
+    For any changes made after the initial release of Catalys 2.2, refer to the release notes for each maintenance
+    release. Release notes are available from the
+    <a href="https://docs.itiviti.com/display/HOME/Catalys+FIX" target="_top">Docs Portal</a>.
+  </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e117"></a>1.4.1.&nbsp;Installers</h3></div></div></div><p>
+      Catalys products are now distributed with an installer, automating the process of install, upgrade and uninstall.
+      The installers are platform-specific and support Linux, Windows (32- and 64-bit) and most Unix-based operating
+      systems.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e120"></a>1.4.2.&nbsp;New Features in Catalys Node 2.2</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e122"></a>General</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4929: SendingTime can now be expressed with millisecond, microsecond, or nanosecond precision.
+        </li><li class="listitem">
+          NODE-4884: New <code class="code">-version</code> command-line switch for Catalys Node.
+        </li><li class="listitem">
+          NODE-4910: <code class="code">Session.maximumGapQueueSize</code> is no longer unbounded by default.
+        </li><li class="listitem">
+          NODE-3771: New consolidated drop-copy message processor for low impact drop-copy of another Catalys Node's
+          message flow.
+        </li><li class="listitem">
+          NODE-4727: <code class="code">MarketMirrorPopulator</code> now supports message object reuse.
+        </li><li class="listitem">
+          NODE-4745: Added JMX monitoring for multi-connection sessions.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e134"></a>High Performance Logging</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4365: Improved performance with many threads logging under intensive load.
+        </li><li class="listitem">
+          NODE-2428: Display jar file details in stack traces.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e139"></a>High Availability</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4596: Support for HA replication of a custom service's configuration.
+        </li><li class="listitem">
+          NODE-4674: HA data replication performance improvements. Introduced new multicast data
+          replication option, as well as a new passive site replication feature allowing periodic 
+          pull-based data replication instead of continual push-based data replication. Also added
+          a safety mechanism that will prevent a node from do a resynchronization if it is too
+          far behind.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e144"></a>Collections Framework</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4765: Collections can now be created at run-time instead of only at startup.
+        </li><li class="listitem">
+          NODE-4925: High-capacity lists now support set in the middle of the list instead of only at the end.
+        </li><li class="listitem">
+          NODE-4586: High-capacity lists can now share the same indexer thread.
+        </li><li class="listitem">
+          NODE-4817: Maps and high-capacity lists can now use an off-heap cache for fast, garbage-free caching of very
+          large amounts of data.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e151"></a>Buffering</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4350: Message buffers now support message object reuse.
+        </li><li class="listitem">
+          NODE-4826: Message buffer size is no longer excessively logged.
+        </li><li class="listitem">
+          NODE-4809: Serialization format changed to be faster and more compact.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e157"></a>Solace Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-5030: Provide configurable last resort action for consumed Solace messages which cannot be processed.
+        </li><li class="listitem">
+          NODE-4860: Add option to safeguard against message loss due to windowing.
+        </li><li class="listitem">
+          NODE-4856: Add option to clear CompIDs in consumed Solace messages before firing to FIX.
+        </li><li class="listitem">
+          NODE-4821: Create <code class="code">SolaceEndpoint</code> component for routing Solace messages.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e165"></a>Advanced Socket Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4862: New high-capacity message store option.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e169"></a>Socket Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4841: Minimizing logging of undeliverable events when no socket client is connected.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e173"></a>Scheduling</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4848: New option to execute missed reset tasks on startup.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e177"></a>Multi-threading</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4617: More descriptive thread naming.
+        </li><li class="listitem">
+          NODE-4803: Enhanced thread pinning capabilities.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e182"></a>Routing</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-2286: <code class="code">Link.ignoreSessionSide</code> attribute removed.
+        </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e187"></a>1.4.3.&nbsp;Public API changes Catalys Node 2.2</h3></div></div></div><p>
+        Catalys Node 2.2 is compatible with Catalys Node 2.1 except that the following XML configuration
+        attributes are no longer necessary and have been removed:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="code">ListenerMessageBuffer.setStoresMessages</code></li><li class="listitem"><code class="code">SourceMessageBuffer.setStoresMessages</code></li><li class="listitem"><code class="code">Link.ignoreSessionSide</code></li></ul></div><p>
+      </p><p>
+        In addition there is currently a known issue causing an incompatibility between the persistence
+        files of message buffers in 2.1 and 2.2. See issue NODE-5046.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e198"></a>1.4.4.&nbsp;Known Issues in Catalys Node 2.2</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-5046: Message buffer persistence from 2.1 is not compatible with 2.2.
+        </li><li class="listitem">
+          NODE-5045: RulesEngine round() function is inconsistent with legacy valueOf() function.
+        </li><li class="listitem">
+          NODE-5038: HA synchronization window warning should only be logged once.
+        </li><li class="listitem">
+          NODE-5037: Unexpected exception while trying to reload config containing rules.
+        </li><li class="listitem">
+          NODE-5033: Spurious OpenHFT thread affinity GC warnings.
+        </li><li class="listitem">
+          NODE-5031: Exception when activating a component that is already active.
+        </li><li class="listitem">
+          NODE-5016: Installer does not accept relative or home directory-related paths.
+        </li><li class="listitem">
+          NODE-4999: Node installer reports incorrect required disk space.
+        </li><li class="listitem">
+          NODE-4978: Uninstall does not remove empty CameronTec directory.
+        </li><li class="listitem">
+          NODE-4977: Uninstall incorrectly reports that it will delete the parent directory of an installation.
+        </li><li class="listitem">
+          NODE-4871: MarketDataProcessor leaves a thread running after deactivation.
+        </li><li class="listitem">
+          NODE-4870: NotifyingMessageBuffer retry thread ignores interrupts.
+        </li><li class="listitem">
+          NODE-4790: .NET client intermittently reports error when disconnecting.
+        </li><li class="listitem">
+          NODE-4713: Catalys server should not log errors and warnings when shutdown.
+        </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e215"></a>1.4.5.&nbsp;New Features in Catalys Node 2.1 Maintenance Releases</h3></div></div></div><p>
+      The following features were added to Catalys Node 2.2 and also back-ported to Catalys Node 2.1 as part of
+      maintenance releases, and have been available for some time.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e218"></a>General</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4577: Safety feature: Duplicate instances of the same Catalys Node will no longer run at the same time.
+        </li><li class="listitem">
+          NODE-4379: Improved logging at startup.
+        </li><li class="listitem">
+          NODE-2834: Maven POM file now included in the distribution.
+        </li><li class="listitem">
+          NODE-4694: Support for explicitly specifying SSL protocols
+        </li><li class="listitem">
+          NODE-4351: Reload configuration from XML now disables affected sessions automatically.
+        </li><li class="listitem">
+          NODE-4682: New <code class="code">license_reload</code> command.
+        </li><li class="listitem">
+          NODE-4360: New session configuration attribute <code class="code">maximumAppQueueSize</code>.
+        </li><li class="listitem">
+          NODE-3176: New Multiplexed and non-blocking I/O capability for FIX sessions.
+        </li><li class="listitem">
+          NODE-3174: Move SendingTime generation off critical outbound latency path.
+        </li><li class="listitem">
+          NODE-3172: Add core affinity capability to MessageAssembler thread.
+        </li><li class="listitem">
+          NODE-230: Add ability to control the ordering of tags within an <code class="code">IFIXMessage</code>.
+        </li><li class="listitem">
+          NODE-4558: Removed periodic object creation in <code class="code">SessionManager</code>.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e237"></a>High Availability</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4788: Ability to mark certain cluster nodes as not to be used as data sources during synchronization.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e241"></a>Collections Framework</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4752: Progress is now logged periodically when scanning very large journals.
+        </li><li class="listitem">
+          NODE-4636: Collection directory uniqueness is now validated at startup.
+        </li><li class="listitem">
+          NODE-4747: Journaling persistent stores unnecessarily copy bytes when reading from journal
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e247"></a>Scheduling</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4878: EventLists are now validated so that two tasks will not execute at the same time.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e251"></a>Buffering</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4763: Introduced output limit to <code class="code">mb_messages</code> command.
+        </li><li class="listitem">
+          NODE-2212: New <code class="code">mb_remove</code> command for removing messages from buffers.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e258"></a>Embedded Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4380: Added ability to manage sessions from the embedded Catalys Node's owning application.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e262"></a>IBM MQ Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4432: SSL support.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e266"></a>Advanced Socket Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4525: New <code class="code">asa_list</code> command that lists all connected ASA clients and the sessions they are
+          subscribed to.
+        </li><li class="listitem">
+          NODE-4484: New CONNECT message that supports filtering by SessionID.
+        </li><li class="listitem">
+          NODE-4472: Added keepAlive configuration option.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e273"></a>Solace Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4446: New Technology Adapter: Solace Adapter.
+        </li><li class="listitem">
+          NODE-4824: Support Solace JCSMP API v7.
+        </li><li class="listitem">
+          NODE-4823: Add support for reply-to topics.
+        </li><li class="listitem">
+          NODE-4822: Add support for dynamic error topics.
+        </li><li class="listitem">
+          NODE-4779: New Solace message transformer that ensures valid tag order, BodyLength and CheckSum.
+        </li><li class="listitem">
+          NODE-4571: Remove restriction on Solace message type.
+        </li><li class="listitem">
+          NODE-4567: DMQ support.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e283"></a>.NET Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4767: Added ability to get session status from .NET application.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e287"></a>Throttling</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4864: New inbound message throttling feature based on limiting the speed at which messages are read
+          from the socket rather using message buffering.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e291"></a>Routing</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-2272: Any-to-any routing support. No need to define static session groups.
+        </li><li class="listitem">
+          NODE-4813: <code class="code">AutoRoutingResponse</code> can now be placed anywhere in the message processing chain.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e297"></a>Rules Engine</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4608: Added the concept of default rules.
+        </li><li class="listitem">
+          NODE-4619: New action: <code class="code">ActionStripChars</code>.
+        </li><li class="listitem">
+          NODE-4734: New action: <code class="code">ActionFileLookup</code>.
+        </li><li class="listitem">
+          NODE-4589: New action: <code class="code">ActionLog</code>.
+        </li><li class="listitem">
+          NODE-4520: New condition: <code class="code">ConditionFieldsUnique</code>.
+        </li><li class="listitem">
+          NODE-4547: New condition: <code class="code">ConditionOvernightOrder</code> to hold and release outbound messages to FIX
+          session based on a schedule.
+        </li><li class="listitem">
+          NODE-4611: ActionReject can now send application level rejects.
+        </li><li class="listitem">
+          NODE-4622: New function available in expressions: <code class="code">round()</code>.
+        </li><li class="listitem">
+          NODE-4497: Add the ability to pass the message processor object to custom actions.
+        </li><li class="listitem">
+          NODE-4496: Add ability to load rules from the config file and apply them to messages outside the Catalys FIX engine.
+        </li><li class="listitem">
+          NODE-4923: Add verbose output for rules engine tracking.
+        </li><li class="listitem">
+          NODE-2612: Rules Engine now supports message object reuse.
+        </li><li class="listitem">
+          NODE-4661: New option for handling Amend or Cancel messages where the original order cannot be found.
+        </li><li class="listitem">
+          NODE-4877: Reduce garbage creation in rules engine.
+        </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e320"></a>1.4.6.&nbsp;New Features in Catalys MIS 2.2</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e322"></a>General</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          MIS-1563: LDAP connection timeout is now configurable.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e326"></a>Logs</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-2858: Introduced a new high-throughput logs streaming stack. Logs can now be transferred 
+          from Catalys Nodes to the MIS at approximately the bandwidth of the network connection.
+        </li><li class="listitem">
+          MIS-1677: New parallel log insertion algorithm increases the speed at which logs can be 
+          inserted into the log events repository.
+        </li><li class="listitem">
+          MIS-1584, MIS-1477: Log cleanup speed and memory usage drastically improved.
+        </li><li class="listitem">
+          MIS-1478: Browser memory usage stabilized when tailing logs for long periods of time.
+        </li><li class="listitem">
+          MIS-1593: Logs tab now provides visual feedback of ongoing searches.
+        </li><li class="listitem">
+          MIS-1598: Logs tab date selection widget is easier to use.
+        </li><li class="listitem">
+          MIS-1663: Logs cleanup configuration simplified.
+        </li><li class="listitem">
+          MIS-1646: New 'find' feature added to logs tab.
+        </li><li class="listitem">
+          MIS-1393: Custom conversation correlators can now define arbitrary custom message types.
+        </li><li class="listitem">
+          MIS-1392: Added ability to name custom tags.
+        </li><li class="listitem">
+          MIS-1699: Log streaming admin page redesigned.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e340"></a>Events</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          MIS-1661: New Action: Windows NT Event.
+        </li><li class="listitem">
+          MIS-916: Add Category filter to Log interests.
+        </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e345"></a>1.4.7.&nbsp;Known Issues in Catalys MIS 2.2</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          MIS-1844: Logs streaming does not work on Solaris unless <code class="code">LD_LIBRARY_PATH</code> contains
+          <code class="code">/usr/sfw/lib:/usr/sfw/lib/amd64</code>.
+        </li><li class="listitem">
+          MIS-1837: JMX cascading suffers poor performance over a slow network.
+        </li><li class="listitem">
+          MIS-1828: Logs cleanup is significantly slower when logs are being inserted at a high rate.
+        </li><li class="listitem">
+          MIS-1815: Replicated log files can become corrupt if source log files are modified in unexpected ways while being replicating.
+        </li><li class="listitem">
+          MIS-1812: Text Search - Escape button does not clear out search field.
+        </li><li class="listitem">
+          MIS-1811: Text Search - Search results should wrap around to start.
+        </li><li class="listitem">
+          MIS-1810: Events - Session Report interest taking union of selection when multiple interests configured.
+        </li><li class="listitem">
+          MIS-1805: Logs tab - Buttons are off screen while re-sizing left section panel.
+        </li><li class="listitem">
+          MIS-1796: MIS sometimes incorrectly reports that no logs were deleted during cleanup.
+        </li><li class="listitem">
+          MIS-1795: Admin - log streaming tab has double scroll bars and blank bottom section after exit from full screen mode.
+        </li><li class="listitem">
+          MIS-1790: Abrupt MIS termination can lead to duplicate log entries in the logs repository.
+        </li><li class="listitem">
+          MIS-1775: Events - Email password in mis.conf not encrypted.
+        </li><li class="listitem">
+          MIS-1773: Events - Escalation sequences - Stop-here-on-ack doesn't work correctly.
+        </li><li class="listitem">
+          MIS-1771: Admin - Permissions - Add escalation sequence permission only works if change escalation sequence 
+          permission is assigned.
+        </li><li class="listitem">
+          MIS-1770: Admin - Permissions - Add interest permission only works if change interest permission is assigned.
+        </li><li class="listitem">
+          MIS-1769: Admin - Permissions - Admin Tab is hidden unless incorrect set of permissions is assigned.
+        </li><li class="listitem">
+          MIS-1764: Servers and Sessions - Script info not shown for CameronFIX 8.0 servers.
+        </li><li class="listitem">
+          MIS-1763: Servers and Sessions - Process info not shown for CameronFIX 8.0 servers.
+        </li><li class="listitem">
+          MIS-1757: Config - Tooltips should be displayed for configuration tree icons.
+        </li><li class="listitem">
+          MIS-1756: Config - View changes so far menu item should be disabled when there are no changes.
+        </li><li class="listitem">
+          MIS-1755: Config - Add top-level selector should be disabled for 2.0 nodes.
+        </li><li class="listitem">
+          MIS-1754: Config - Unable to delete compression without multiple reloads.
+        </li><li class="listitem">
+          MIS-1753: Servers and Sessions - Change session sequence number doesn't work for 1.1 Catalys Nodes.
+        </li><li class="listitem">
+          MIS-1752: Events - Escalation Sequences - Event view of an escalation sequence's progress is faulty.
+        </li><li class="listitem">
+          MIS-1749: Events - Interests - Session report interest events are unreadable in dashboard.
+        </li><li class="listitem">
+          MIS-1747: Events - Interests - Log regex interest category field implies that it is a regular expression 
+          but is not.
+        </li><li class="listitem">
+          MIS-1745: Events - Add Interest - Underlined fields do not link to anything.
+        </li><li class="listitem">
+          MIS-1744: Events - Interest template description is not displayed.
+        </li><li class="listitem">
+          MIS-1743: Admin - Disabling a user while they are logged in causes their browser to repeatedly logout and login.
+        </li><li class="listitem">
+          MIS-1731: Uninstalling MIS on Windows does not warn if it cannot remove all directories.
+        </li><li class="listitem">
+          MIS-1709: Dashboard logged user out automatically after executing a log search after tailing logs overnight.
+        </li><li class="listitem">
+          MIS-1705: Multiple errors logged if replicated logs directory is deleted when logs replication and insertion 
+          into logs repository is in progress.
+        </li><li class="listitem">
+          MIS-1693: Logs tab apply button sometimes needs to be pressed twice.
+        </li><li class="listitem">
+          MIS-1640: When log filter end time is earlier than start time, an error comes up on dashboard.
+        </li><li class="listitem">
+          MIS-1610: Too many error message on dashboard if live streaming is on when shutting down MIS server.
+        </li><li class="listitem">
+          MIS-1581: If opening an interest after resizing the dashboard GUI smaller, the custom text fields are not popped out.
+        </li><li class="listitem">
+          MIS-1320: Events - Creation of an interest with incorrect regular expression is allowed by dashboard.
+        </li><li class="listitem">
+          MIS-461: Rules - Error when renaming rulesPack which is referenced before rules engine is reloaded.
+        </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e388"></a>1.4.8.&nbsp;New Features in Catalys MIS 2.1 Maintenance Releases</h3></div></div></div><p>
+      The following features were added to Catalys MIS 2.2 and also back-ported to Catalys MIS 2.1 as part of
+      maintenance releases, and have been available for some time.
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        MIS-1542: Log insertion can now be filtered by message type to exclude high-volume messages that do 
+        not need to be stored.
+      </li><li class="listitem">
+        MIS-1385: Added a calendar for public holidays to the interest schedules.
+      </li><li class="listitem">
+        MIS-1384: Session status column now takes session's schedule into account.
+      </li><li class="listitem">
+        MIS-1350: Open conversation view now retains user's current category selection.
+      </li><li class="listitem">
+        MIS-1301: Improved dashboard responsiveness when monitoring nodes with high latency.
+      </li><li class="listitem">
+        MIS-811: The MIS can now expose the output of scripts via JMX.
+      </li><li class="listitem">
+        MIS-1349: Conversation correlators added for SecurityDefinition conversations.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e399"></a>1.4.9.&nbsp;New Features in Catalys LMA 2.2</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        NODE-2858: Introduced a new high-throughput logs streaming stack. Logs can now be transferred 
+        from Catalys Nodes to the MIS at approximately the bandwidth of the network connection.
+      </li><li class="listitem">
+        LMA-50: Unwrapped LMA distribution.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e404"></a>1.4.10.&nbsp;Known Issues in Catalys LMA 2.2</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          LMA-65: Log4j guest logger support not handling <code class="code">CR/LF</code> properly.
+        </li></ul></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01s03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch01.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch01s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">1.3.&nbsp;Catalys Releases&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;1.5.&nbsp;Getting Support</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:53:32+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

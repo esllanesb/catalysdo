@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 5.5.&nbsp;Message Buffering</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="prev" href="ch05s04.html" title="5.4.&nbsp;FIX Drop Copy"><link rel="next" href="ch05s06.html" title="5.6.&nbsp;Message Throttling"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05s04.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;5.&nbsp;Standard Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05s06.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="stdfeature_buffering"></a>5.5.&nbsp;Message Buffering</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_buffering-introduction"></a>5.5.1.&nbsp;Introduction</h3></div></div></div><p>
+      Buffering provides a mechanism to store messages which are temporarily undeliverable. When buffering
+      is not configured on a session, the Node will reject messages which cannot be delivered. Some common
+      reasons why a message cannot be delivered are:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        A message arrives from an internal application over a technology adapter but the outbound
+        session is not logged on.
+      </li><li class="listitem">A message arrives from a session but the internal application is unreachable.</li><li class="listitem">
+        A message arrives from a session in a FIX routing configuration but the outbound session is down.
+      </li><li class="listitem">
+        A message arrives from a session, a <a href="ch05s04.html" title="5.4.&nbsp;FIX Drop Copy">drop copy</a> is made and the
+        drop copy's target session is down.
+      </li></ul></div><p>
+      The default behaviour of rejecting undeliverable messages may not be desirable. Instead, you may
+      prefer to save undeliverable messages on disk until the target session becomes available.
+    </p><p>
+      Buffered messages are stored on disk in a
+      <a href="apd.html" title="Appendix&nbsp;D.&nbsp;Persistent Collections Properties">persistent collection</a>. This means that buffered
+      messages are retained after restarts or unexpected termination of the Node, and they are replicated across
+      members of a high-availability cluster.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_buffering-configuration"></a>5.5.2.&nbsp;Configuration</h3></div></div></div><p>
+      Message buffers are built-in message processors that can be configured and nested like any other message
+      processor.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3017"></a>Source Message Buffer</h4></div></div></div><p>
+        The <code class="code">SourceMessageBuffer</code> is used to buffer undeliverable outbound messages, usually because the
+        session is down.
+      </p><p>
+        Generally, the <code class="code">SourceMessageBuffer</code> is the outermost message processor in the
+        <code class="code">SourceMessageProcessors</code> chain:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;SourceMessageProcessors&gt;
+    &lt;!-- SourceMessageBuffer configured as the outermost message processor --&gt;
+    &lt;SourceMessageBuffer id="smb1" directory="./data/buffer"&gt;
+      &lt;CatalysRulesEngine id="cre1" rulesPackId="outbound-enrichment-rules"&gt;
+        &lt;JmsConsumer id="jms1" type="queue" destination="BUY_OUT" factory="primaryQCF"/&gt;
+      &lt;/CatalysRulesEngine&gt;
+    &lt;/SourceMessageBuffer&gt;
+  &lt;/SourceMessageProcessors&gt;
+  &lt;ListenerMessageProcessors/&gt;
+&lt;/SessionManager&gt;
+</pre><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_SourceMessageBuffer" title="SourceMessageBuffer">SourceMessageBuffer Configuration Reference</a>.
+      </p><p>
+        For a working demonstration of message buffering, see the Buffering template located in
+        <span class="emphasis"><em>templates/Buffering/Simple</em></span>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3029"></a>Listener Message Buffer</h4></div></div></div><p>
+        The <code class="code">ListenerMessageBuffer</code> is used to buffer undeliverable inbound messages, usually due to outages
+        in any downstream internal applications, e.g. a message queue.
+      </p><p>
+        Generally, the <code class="code">ListenerMessageBuffer</code> is configured directly above a technology adapter in the
+        <code class="code">ListenerMessageProcessors</code> chain:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;ListenerMessageProcessors&gt;
+      &lt;CatalysRulesEngine id="cre1" rulesPackId="inbound-rules"&gt;
+        &lt;!-- ListenerMessageBuffer configured directly above technology adapter --&gt;
+        &lt;ListenerMessageBuffer id="lmb1" directory="./data/buffer"&gt;
+          &lt;JmsConsumer id="jms1" type="queue" destination="BUY_IN" factory="primaryQCF"/&gt;
+        &lt;/ListenerMessageBuffer&gt;
+      &lt;/CatalysRulesEngine&gt;
+  &lt;/ListenerMessageProcessors&gt;
+  &lt;SourceMessageProcessors/&gt;
+&lt;/SessionManager&gt;</pre><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_ListenerMessageBuffer" title="ListenerMessageBuffer">ListenerMessageBuffer Configuration Reference</a>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e3039"></a>5.5.3.&nbsp;Persistent Collection Configuration</h3></div></div></div><p>
+        The underlying persistent collection of each buffer can be tuned as necessary. Refer to
+        <a href="apd.html" title="Appendix&nbsp;D.&nbsp;Persistent Collections Properties">Persistent Collection Properties</a>
+        for a list of attributes, which are configured as follows:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;ListenerMessageProcessors&gt;
+    &lt;!-- ListenerMessageBuffer configured directly above technology adapter --&gt;
+    &lt;ListenerMessageBuffer id="lmb1" directory="./data/buffer/"&gt;
+      &lt;!-- Properties for lmb1 --&gt;
+      &lt;Properties id="lmb1_props"&gt;
+         &lt;Property name="rollJournalFileEvery" value="4294967296" /&gt;
+       &lt;/Properties&gt;
+      &lt;JmsConsumer id="jms1" type="queue" destination="BUY_OUTBOUND" factory="primaryQCF"/&gt;
+    &lt;/ListenerMessageBuffer&gt;
+  &lt;/ListenerMessageProcessors&gt;
+  &lt;SourceMessageProcessors/&gt;
+&lt;/SessionManager&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_buffering-commandline"></a>5.5.4.&nbsp;Managing Buffers from the Command Line</h3></div></div></div><p>
+      Message buffers have a set of standard commands that can be executed from the Node's
+      <a href="ch04s02.html#operations_monitoring-command-line" title="4.2.2.&nbsp;Command-Line Interface">command-line interface</a> (CLI).
+    </p><p>
+      Each command accepts the name of a buffer as an optional argument. It this argument is omitted, the command
+      operates on all configured buffers. The names of all buffers can be displayed using the <code class="code">c_list</code>
+      command.
+    </p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Command</th><th>Arguments</th><th>Description</th></tr></thead><tbody><tr><td>mb_clear (mb_c)</td><td>&lt;buffer_name | all&gt;</td><td>Clear out all messages in the specified buffer(s).</td></tr><tr><td>mb_error (mb_e)</td><td>&lt;buffer_name | all&gt;</td><td>Display the errors (if any) which caused buffering to commence.</td></tr><tr><td>mb_messages (mb_m)</td><td>&lt;buffer_name [range] | all&gt;</td><td>
+              Display the messages in the specified buffer(s).
+              <p>
+                By default, the oldest 100 messages are displayed. Use the optional <code class="code">range</code> argument to
+                show either the oldest <code class="code">n</code> messages, or a range of messages, <code class="code">n-m</code>.
+              </p>
+            </td></tr><tr><td>mb_remove (mb_r)</td><td>&lt;buffer_name [range] | all&gt;</td><td>
+              Removes elements from the front of the buffer or in a range from first to last (n-m).
+            </td></tr><tr><td>mb_size (mb_s)</td><td>&lt;buffer_name | all&gt;</td><td>Display the size of the specified buffer(s).</td></tr></tbody></table></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s04.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch05.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05s06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.4.&nbsp;FIX Drop Copy&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;5.6.&nbsp;Message Throttling</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:34+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

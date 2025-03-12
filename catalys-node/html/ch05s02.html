@@ -1,0 +1,379 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 5.2.&nbsp;Scheduling</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="prev" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="next" href="ch05s03.html" title="5.3.&nbsp;FIX Routing"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;5.&nbsp;Standard Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="stdfeature_scheduling"></a>5.2.&nbsp;Scheduling</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_scheduling-intro"></a>5.2.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Node Scheduler is used to automatically start and stop FIX sessions, reset FIX sequence numbers, and perform
+      any other task. It supports repeating events, multiple time zones and excluded days.  Scheduled tasks
+      can be applied at the session level and globally at the application level.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_scheduling-config-elements"></a>5.2.2.&nbsp;Configuration Overview</h3></div></div></div><p>The following is the general structure of the Scheduler's configuration:</p><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="buy"&gt;
+    &lt;SchedulingDefinitions id="sched"&gt;
+      &lt;Tasks&gt;
+        &lt;Task id="start" class="com.camerontec.catalys.server.task.StartTask"/&gt;
+        ...
+      &lt;/Tasks&gt;
+      &lt;Schedules&gt;
+        &lt;Schedule id="start_schedule"&gt;
+          &lt;Include dayOfWeek="2-6" hour="11" minute="15"/&gt;
+        &lt;/Schedule&gt;
+        ...
+      &lt;/Schedules&gt;
+      &lt;EventLists&gt;
+        &lt;EventList id="session_eventList"&gt;
+          &lt;Event id="start_event" task="start" schedule="start_schedule"/&gt;
+          ...
+        &lt;/EventList&gt;
+      &lt;/EventLists&gt;
+    &lt;/SchedulingDefinitions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre><p>Each of the configuration elements is explained in detail below.</p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2540"></a>SchedulingDefinitions</h4></div></div></div><p>
+        All scheduling entries are grouped together under this element. There can only be one of these.
+        For a complete list of its attributes, see the
+        <a href="config_reference.html#config_ref_SchedulingDefinitions" title="SchedulingDefinitions">SchedulingDefinitions Configuration Reference</a>.
+      </p><p>
+        This element can contain zero or one of each of the following elements, in any order:
+        <code class="code">Tasks</code>, <code class="code">Schedules</code> and <code class="code">EventLists</code>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-tasks"></a>Tasks</h4></div></div></div><p>
+        This element is a container for one or more <code class="code">Task</code> elements.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-task"></a>Task</h4></div></div></div><p>
+        A <code class="code">Task</code> executes its functionality at the date and time specified by its associated schedule. For a
+        complete list of its attributes, see the <a href="config_reference.html#config_ref_Task" title="Task">Task Configuration Reference</a>.
+      </p><p>A number of standard tasks classes are provided. The most commonly used are:</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Task</th><th>Description</th></tr></thead><tbody><tr><td>StartTask</td><td>Attempt to connect a session and logon with the FIX counterparty.</td></tr><tr><td>UnblockAndStartTask</td><td>Unblock a session and attempt to connect a session and logon with a FIX
+                counterparty.</td></tr><tr><td>StopTask</td><td>Logout with the FIX counterparty and disconnect session.</td></tr><tr><td>BlockAndStopTask</td><td>Block session and then logout with FIX counterparty and disconnect session.</td></tr><tr><td>ResetTask</td><td>Reset the sequence numbers of a FIX session to 1.</td></tr><tr><td>ShutdownTask</td><td>Shut down the Node process.</td></tr><tr><td>EndOfDayTask</td><td>
+                Perform the end-of-day procedure on a session and all of the components in its message processing
+                chain. For standard Node components, this usually involves compacting and purging any files that are
+                written to disk to prevent them growing without bound. This task can be configured with a nested
+                <code class="code">Properties</code> element specifying an optional parameter, which is passed to
+                <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/processor/IEndOfDayPerformer.html#performEndOfDayProcedure(com.camerontec.catalys.core.session.IConnectionPoint, java.lang.String)" target="_top">performEndOfDayProcedure</a>.
+
+                <p>
+                  For example, those components using Market Mirror storage pass this value in reference
+                  to the local <code class="code">endOfDayClearingCondition</code> attribute. This parameter is only necessary if
+                  the default or locally configured value of the attribute is inadequate.
+                </p>
+                <pre class="programlisting">&lt;Task id="eod"
+  class="com.camerontec.catalys.server.task.EndOfDayTask"&gt;
+  &lt;Properties id="props"&gt;
+    &lt;Property name="parameter" value="OrderID=535364758"/&gt;
+  &lt;/Properties&gt;
+&lt;/Task&gt;</pre>
+                <p>Custom components can interpret this parameter as required.</p></td></tr><tr><td>CompactTask</td><td>
+                Compact a persistence file on disk.
+                <p>
+                  This task is configured by providing the name(s) of the collection(s) to compact, as a property. For
+                  example:
+                </p>
+                <pre class="programlisting">&lt;Task id="compact"
+  class="com.camerontec.catalys.server.task.CompactTask"&gt;
+  &lt;Properties id="props"&gt;
+    &lt;Property name="names" value="data/dir1:data/dir2"/&gt;
+  &lt;/Properties&gt;
+&lt;/Task&gt;</pre>
+                <div class="note"><h3 class="title">Note</h3><p>
+                    While compacting a collection is thread-safe, it can be a time consuming and resource intensive
+                    process and should be performed only while a session is inactive.
+                  </p></div>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-schedules"></a>Schedules</h4></div></div></div><p>
+        This element is a container for one or more <code class="code">Schedule</code> elements.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-schedule"></a>Schedule</h4></div></div></div><p>
+        This element and its child elements define the times at which events occur. For a complete list of its
+        attributes, see the <a href="config_reference.html#config_ref_Schedule" title="Schedule">Schedule Configuration Reference</a>.
+      </p><p>
+        It can contain zero or more <code class="code">Include</code> and <code class="code">Exclude</code> elements, in any order.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-date"></a>Include/Exclude</h4></div></div></div><p>
+        These elements represent a time/date or range of times/dates to be either included in or excluded from a
+        schedule.
+      </p><p>
+        Ranges and wildcards are accepted similar to the Unix cron command. In other words, use a comma between
+        multiple values and a hyphen to indicate a range. If a value is not specified, it is assumed that it can take
+        "any" value in the same way that <code class="code">*</code> is used in cron.
+      </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attribute</th><th>Acceptable Values</th></tr></thead><tbody><tr><td>hour</td><td>0-23</td></tr><tr><td>minute</td><td>0-59</td></tr><tr><td>dayOfWeek</td><td>1-7 (Sunday to Saturday)</td></tr><tr><td>dayOfMonth</td><td>1-31</td></tr><tr><td>month</td><td>1-12</td></tr><tr><td>year</td><td>Four digits</td></tr></tbody></table></div><p>
+        Note that the time zone is not specified here. The time zone is taken from the enclosing <code class="code">Schedule</code>
+        element.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-event-lists"></a>EventLists</h4></div></div></div><p>
+        This element is a container for one or more <code class="code">EventList</code> elements.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-event-list"></a>EventList</h4></div></div></div><p>
+        This element can contain one or more <code class="code">Event</code> elements. For a complete list of its attributes, see
+        the <a href="config_reference.html#config_ref_EventList" title="EventList">EventList Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-event"></a>Event Element</h4></div></div></div><p>
+        An <code class="code">Event</code> associates a <code class="code">Task</code> with a <code class="code">Schedule</code>. Events are what the
+        scheduler actually schedules. Sometimes events are referred to as "scheduled tasks". For a complete list of
+        <code class="code">Event</code> attributes, see the <a href="config_reference.html#config_ref_Event" title="Event">Event Configuration Reference</a>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_scheduling-config-examples"></a>5.2.3.&nbsp;Configuration Examples</h3></div></div></div><p>
+      The following sections show two Node configuration scheduling elements. These are given in XML format but
+      can be similarly configured via the Dashboard or JMX operations.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-simple-example"></a>Simple Example</h4></div></div></div><p>This example demonstrates a start, stop and reset schedule for a session.</p><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="buy"&gt;
+    &lt;SchedulingDefinitions id="sched"&gt;
+      &lt;Tasks&gt;
+        &lt;Task id="start" class="com.camerontec.catalys.server.task.StartTask"/&gt;
+        &lt;Task id="stop" class="com.camerontec.catalys.server.task.StopTask"/&gt;
+        &lt;Task id="reset" class="com.camerontec.catalys.server.task.ResetTask"/&gt;
+      &lt;/Tasks&gt;
+      &lt;Schedules&gt;
+        &lt;Schedule id="start_schedule"&gt;
+          &lt;Include dayOfWeek="2-6" hour="11" minute="15"/&gt;
+        &lt;/Schedule&gt;
+        &lt;Schedule id="stop_schedule"&gt;
+          &lt;Include dayOfWeek="2-6" hour="15" minute="55"/&gt;
+        &lt;/Schedule&gt;
+        &lt;Schedule id="reset_schedule"&gt;
+          &lt;Include dayOfWeek="2-6" hour="15" minute="57"/&gt;
+        &lt;/Schedule&gt;
+      &lt;/Schedules&gt;
+      &lt;EventLists&gt;
+        &lt;EventList id="session_eventList"&gt;
+          &lt;Event id="start_event" task="start" schedule="start_schedule"/&gt;
+          &lt;Event id="stop_event" task="stop" schedule="stop_schedule"/&gt;
+          &lt;Event id="reset_event" task="reset" schedule="reset_schedule"/&gt;
+        &lt;/EventList&gt;
+      &lt;/EventLists&gt;
+    &lt;/SchedulingDefinitions&gt;
+    &lt;Sessions&gt;
+      &lt;Session fixversion="4.2" heartbeat="60" counterpartycompid="CLIENT1" compid="BROKER"
+               scheduledEvents="session_eventList"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection hostname="localhost" port="2000" id="sc"/&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors/&gt;
+          &lt;ListenerMessageProcessors/&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre><div class="note"><h3 class="title">Note</h3><p>
+          <code class="code">Application</code> and <code class="code">Session</code> elements refer to an <code class="code">EventList</code> via the
+          <code class="code">scheduledEvents</code> attribute.
+        </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-complex-example"></a>More Complex Example</h4></div></div></div><p>
+        In this example, common holidays are defined which are used by the start, stop and reset schedules (via the
+        <code class="code">parentSchedule</code> attribute). An application shutdown schedule is also demonstrated.
+      </p><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="buy_with_holidays" scheduledEvents="application_eventList"&gt;
+    &lt;SchedulingDefinitions id="schedule"&gt;
+      &lt;Tasks&gt;
+        &lt;Task id="start" class="com.camerontec.catalys.server.task.StartTask"/&gt;
+        &lt;Task id="stop" class="com.camerontec.catalys.server.task.StopTask"/&gt;
+        &lt;Task id="reset" class="com.camerontec.catalys.server.task.ResetTask"/&gt;
+        &lt;Task id="shutdown" class="com.camerontec.catalys.server.task.ShutdownTask"/&gt;
+      &lt;/Tasks&gt;
+      &lt;Schedules&gt;
+        &lt;Schedule id="holidays"&gt;
+          &lt;Exclude dayOfMonth="4" month="7"/&gt;
+          &lt;Exclude dayOfMonth="25-26" month="12"/&gt;
+          &lt;Exclude dayOfMonth="1" month="1"/&gt;
+          &lt;Exclude dayOfMonth="24" month="10" year="2002"/&gt;
+        &lt;/Schedule&gt;
+        &lt;Schedule id="start_schedule" parentSchedule="holidays"&gt;
+          &lt;Include dayOfWeek="2-7" hour="10"/&gt;
+        &lt;/Schedule&gt;
+        &lt;Schedule id="stop_schedule" parentSchedule="holidays"&gt;
+          &lt;Include dayOfWeek="2-6" hour="17" minute="00"/&gt;
+          &lt;Include dayOfWeek="7" hour="14"/&gt;
+        &lt;/Schedule&gt;
+        &lt;Schedule id="reset_schedule" parentSchedule="holidays"&gt;
+          &lt;Include dayOfWeek="2-6" hour="18" minute="0"/&gt;
+          &lt;Include dayOfWeek="7" hour="15" minute="0"/&gt;
+        &lt;/Schedule&gt;
+        &lt;Schedule id="shutdown_schedule"&gt;
+          &lt;Include hour="20" minute="0"/&gt;
+        &lt;/Schedule&gt;
+      &lt;/Schedules&gt;
+      &lt;EventLists&gt;
+        &lt;EventList id="session_eventList"&gt;
+          &lt;Event id="start_event" task="start" schedule="start_schedule"/&gt;
+          &lt;Event id="stop_event" task="stop" schedule="stop_schedule"/&gt;
+          &lt;Event id="reset_event" task="reset" schedule="reset_schedule"/&gt;
+        &lt;/EventList&gt;
+        &lt;EventList id="application_eventList"&gt;
+          &lt;Event id="shutdown_event" task="shutdown" schedule="shutdown_schedule"/&gt;
+        &lt;/EventList&gt;
+      &lt;/EventLists&gt;
+    &lt;/SchedulingDefinitions&gt;
+    &lt;Sessions&gt;
+      &lt;Session fixversion="4.2" heartbeat="60" counterpartycompid="CLIENT1" compid="BROKER"
+               scheduledEvents="session_eventList"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection hostname="localhost" port="2000" id="sc"/&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors/&gt;
+          &lt;ListenerMessageProcessors/&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre></div><div class="caution"><h3 class="title">Caution</h3><p>
+        Multiple tasks should not be scheduled to run at the same day and time on a session. This can cause improper
+        FIX session behavior and data corruption issues.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e2683"></a>5.2.4.&nbsp;Scheduling and Daylight Savings Time</h3></div></div></div><p>
+      Time changes due to daylight savings time (DST) can affect the order of task execution.  For example,
+      in North America, there are two transitions that require special attention:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Spring forward: Tasks scheduled during the lost hour (02:00:00 and 02:59:59) will be executed between
+        03:00:00 and 03:59:59.
+      </li><li class="listitem">
+        Fall back: Tasks scheduled between 01:00:00 and 01:59:59 are executed only once, during the second
+        occurrence of the repeated hour.
+      </li></ul></div><div class="important"><h3 class="title">Important</h3><p>
+        We recommend to avoid scheduling tasks during these times so that tasks execute consistently year round.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_scheduling-sched-unsched"></a>5.2.5.&nbsp;In Schedule vs. Outside Schedule</h3></div></div></div><p>
+      Normally a permanent connection with a FIX counterparty is not maintained. Instead, the session
+      connects at a certain time and disconnects some time later. In other words, there is a period
+      of time when the session is "in schedule" and for the rest of the time, the session is
+      "outside schedule".
+    </p><p>
+      It is important to be able to determine whether a session is in or outside schedule because
+      that will affect how errors are reported and how the Node reacts if a connection is lost.
+      For example, if a connection is lost when it is scheduled to be connected, then that is an error
+      that will be reported. Also, the Node will automatically try to re-establish the connection. On
+      the other hand, losing a connection outside of the scheduled connection time is not an error and
+      the Node will not try to reconnect.
+    </p><p>
+      The Node determines whether a session is in schedule or outside schedule by looking at the scheduling
+      of all standard <code class="code">StartTask</code> and <code class="code">StopTask</code> elements. If the <code class="code">StopTask</code> is
+      chronologically next in the schedule, then it is assumed that the session should already be connected and is
+      "in schedule". If the <code class="code">StartTask</code> is next, then the session is "outside schedule".
+    </p><p>
+      Sometimes you may want to stop a certain session connection and prevent the Node from automatically
+      retrying to connect. You could do this by selecting the <code class="code">StopTask</code> from the Dashboard or JMX API for
+      that session and executing the <code class="code">doTaskNow</code> operation with the <code class="code">disableNextEvent</code> parameter
+      set to <code class="code">true</code>. This will execute the <code class="code">StopTask</code> immediately, thereby terminating the
+      connection for that session. It will also disable the next scheduled <code class="code">StopTask</code>. This means that the
+      following <code class="code">StartTask</code> will be seen as the next to be executed, so the connection will be considered
+      "outside schedule" and no reconnection attempt will be made. When you subsequently want to restart, simply
+      execute the <code class="code">StartTask</code>. You may also want to re-enable the next scheduled <code class="code">StopTask</code> so
+      that the connection will perform its normal scheduled stop automatically.
+    </p><p>
+      Similarly, if you want to manually start a connection outside its normal schedule, select the
+      <code class="code">StartTask</code> for that session and execute <code class="code">doTaskNow</code> with <code class="code">disableNextEvent</code>
+      set to <code class="code">true</code>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_scheduling-custom-task"></a>5.2.6.&nbsp;Custom Tasks</h3></div></div></div><p>
+      In addition to the previously described built-in tasks, custom tasks may also be created and scheduled. A custom
+      task should inherit from either
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/task/TaskBase.html" target="_top">TaskBase</a>
+      or
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/task/PartyTaskBase.html" target="_top">PartyTaskBase</a>
+      if it is a session-based task. Full source code for the tasks is included with the Node distribution
+      in <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/task</em></span>.
+    </p><p>See the custom <a href="ch08s03.html" title="8.3.&nbsp;Tasks">Task</a> example in the Programming Guide.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_scheduling-jmx-management"></a>5.2.7.&nbsp;JMX Management</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-jmxConfiguration"></a>Configuration</h4></div></div></div><p>
+        The Scheduler can be configured via JMX while the server is running. There are add operations for
+        <code class="code">Scheduling</code>, <code class="code">Task</code>, <code class="code">Schedule</code>, <code class="code">EventList</code> and
+        <code class="code">Event</code>. Once these elements have been added via JMX their attributes can be modified as necessary.
+        These elements can also be marked for delete.
+      </p><p>
+        Once all scheduling elements have been added and configured appropriately, the <code class="code">reload</code> operation
+        can be executed on the application or session, and the configuration will be loaded into runtime.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-jmxMonitoring"></a>Monitoring</h4></div></div></div><p>The Scheduler can be monitored and controlled by any JMX
+        compliant management tool (JConsole, a JMX-compliant GUI tool
+        that connects to a running JVM, for example).
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-taskSummary"></a>Scheduling MBeans</h4></div></div></div>
+
+      The MBeans that we are interested in are the <span class="emphasis"><em>scheduled tasks</em></span>. These tasks are grouped by the
+      session with which the tasks are associated. All scheduled tasks for a given session are grouped together under a
+      heading of the form <code class="code">&lt;app-id&gt;.&lt;counter-party&gt;.&lt;local-party&gt;.ScheduledTasks</code>. The
+      application ID is the <code class="code">id</code> attribute of the <code class="code">Application</code> element in the configuration. The
+      counter party name is constructed from the session's <code class="code">counterpartycompid</code>,
+      <code class="code">counterpartysubid</code> and <code class="code">counterpartylocationid</code> attributes. The local party name is
+      constructed from the session's <code class="code">compid</code>, <code class="code">subid</code> and <code class="code">locationid</code> attributes.
+      The following example shows that the session <code class="code">buy.CLIENT.SERVER</code> (i.e. the session whose
+      <code class="code">counterpartycompid="CLIENT"</code> and <code class="code">compid="SERVER"</code> running in the application whose
+      <code class="code">id="buy"</code>) has three scheduled tasks: a start task, a stop task and a reset task.
+
+      <pre class="programlisting">buy.CLIENT.SERVER.ScheduledTasks
+
+task=com.camerontec.catalys.server.task.ResetTask,
+id=buy.CLIENT.SERVER.reset,
+Sessions=com.camerontec.catalys.server.configuration.ConnectionPointConfigInMemory@65d0d124,
+schedule=reset
+
+task=com.camerontec.catalys.server.task.StartTask,
+id=buy.CLIENT.SERVER.start,
+Sessions=com.camerontec.catalys.server.configuration.ConnectionPointConfigInMemory@65d0d124,
+schedule=start
+
+task=com.camerontec.catalys.server.task.StopTask,
+id=buy.CLIENT.SERVER.stop,
+Sessions=com.camerontec.catalys.server.configuration.ConnectionPointConfigInMemory@65d0d124,
+schedule=stop</pre><p>
+        Some tasks are not associated with any session, for example a task to shut down the Node. These tasks are also
+        grouped together. The heading for this group is simply <span class="emphasis"><em>ScheduledTasks</em></span>. For example:
+      </p><pre class="programlisting">ScheduledTasks
+
+task=com.camerontec.catalys.server.task.ShutdownTask,
+id=shutdown,
+Sessions=com.camerontec.catalys.server.configuration.ConnectionPointConfigInMemory@65d0d124,
+Application=buy on DELL/192.168.0.2,
+schedule=shutdown</pre><p>
+        The tasks described above are "scheduled tasks". Each scheduled task consists of a task linked to a schedule.
+        For example, each FIX session will have a scheduled task associated with the start task and a schedule such as
+        "each weekday morning at 9am". As well as displaying all scheduled tasks, the summary display also displays
+        each plain task. All tasks that appear in the lists of scheduled tasks will also appear in the list of tasks.
+        Note, however, that not all tasks have to be scheduled. It might be useful to have a task that does not
+        automatically execute at a certain time but which is only ever executed manually. The
+        <a href="ch05s02.html#stdfeature_scheduling-taskDetail" title="The Task MBean">Task MBean section</a> describes how you can execute a
+        task manually.
+      </p><p>
+        Like scheduled tasks, tasks are grouped together. For example:
+      </p><pre class="programlisting">buy.CLIENT.SERVER.Tasks
+
+task=com.camerontec.catalys.server.task.ResetTask,
+id=buy.FCLIENT.SERVER.reset,
+Sessions=com.camerontec.catalys.server.configuration.ConnectionPointConfigInMemory@65d0d124
+
+task=com.camerontec.catalys.server.task.StartTask,
+id=buy.CLIENT.SERVER.start,
+Sessions=com.camerontec.catalys.server.configuration.ConnectionPointConfigInMemory@65d0d124
+
+task=com.camerontec.catalys.server.task.StopTask,
+id=buy.CLIENT.SERVER.stop,
+Sessions=com.camerontec.catalys.server.configuration.ConnectionPointConfigInMemory@65d0d124</pre><p>and</p><pre class="programlisting">Tasks
+
+task=com.camerontec.catalys.server.task.ShutdownTask,
+id=shutdown,
+Sessions=com.camerontec.catalys.server.configuration.ConnectionPointConfigInMemory@65d0d124,
+Application=buy on DELL/192.168.0.2</pre><p>
+        You can click on any task line to see details of that particular task or scheduled task.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-taskDetail"></a>The Task MBean</h4></div></div></div><p>The Task MBean has two operations and no attributes:</p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Operation</th><th>Description</th><th>Parameters</th></tr></thead><tbody><tr><td>run</td><td>Execute this task immediately.</td><td>None</td></tr><tr><td>scheduleAt</td><td>
+                Schedule this task to run once at a given time (using the default time zone).
+              </td><td>
+                <code class="code">hour</code>: the hour (0-23) at which to schedule the task
+                <p>
+                  <code class="code">minute</code>: the minute (0-59) at which to schedule the task
+                </p>
+              </td></tr></tbody></table></div><div class="note"><h3 class="title">Note</h3><p>
+          When a task is executed a screen will always display a message indicating that the task ran successfully. In
+          fact this may not be the case. All the message is really saying is that the task executed. It does not
+          guarantee that the task achieved what it was intended to do. If a task has a problem it will typically
+          log an error message or throw an exception. This will be reported in the standard logging and monitoring of
+          the Node.
+        </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_scheduling-scheduledTaskDetail"></a>Scheduled Task MBean</h4></div></div></div><p>
+        The Scheduled Task MBean has the following attributes:
+      </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attribute</th><th>Description</th></tr></thead><tbody><tr><td>nextEventEnabled</td><td>
+                This attribute displays whether or not the next
+                scheduled execution of this task is enabled. Normally it
+                will be enabled. However, it is possible to disable it. In
+                that case the task will not be executed at that time.
+              </td></tr><tr><td>nextEvents</td><td>
+                This attribute holds the next few scheduled times at which the task is due to be executed.
+                <p>
+                  If an event has been disabled, the displayed time will be followed by "<code class="code">(disabled)</code>".
+                </p>
+              </td></tr></tbody></table></div><p>
+        The Scheduled Task MBean has the following operations:
+      </p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Operation</th><th>Description</th><th>Parameters</th></tr></thead><tbody><tr><td><a name="stdfeature_scheduling-doTaskNow"></a>doTaskNow</td><td>
+                Executes this task immediately.
+
+                <p>
+                  Depending on its <code class="code">disableNextEvent</code> parameter, you can also automatically disable the next
+                  scheduled execution of this task. (This is equivalent to setting the <code class="code">nextEventEnabled</code>
+                  attribute).
+                </p>
+              </td><td>
+                <code class="code">disableNextEvent</code>: if set to <code class="code">true</code>, the next scheduled event will be disabled,
+                i.e. the task is executed immediately instead of at its scheduled time. If this parameter is set to
+                false then the task is executed immediately as well as at its scheduled time.
+              </td></tr><tr><td>setNextEventEnabled</td><td>Enable or disabled the next scheduled event.</td><td><code class="code">enabled</code>: whether to enable or disable the next event.</td></tr><tr><td>isNextEventEnabled</td><td>Query whether the next event is enabled.</td><td>None</td></tr><tr><td>getNextEventsAsStrings</td><td>Get a list of the next few scheduled events.</td><td>None</td></tr></tbody></table></div></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch05.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;5.&nbsp;Standard Features&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;5.3.&nbsp;FIX Routing</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:34+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

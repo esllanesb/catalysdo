@@ -1,0 +1,931 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.2.&nbsp;Catalys Rules Engine</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="next" href="ch06s03.html" title="6.3.&nbsp;File Lookup Service"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_rules_engine"></a>6.2.&nbsp;Catalys Rules Engine</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_rules_engine-introduction"></a>6.2.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Catalys Rules Engine (CRE) provides built-in functionality to interact with inbound and outbound FIX
+      messages on any session and does not require writing Java code. The CRE is typically used for these purposes:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Enrichment: Adding, removing, copying, converting or replacing FIX fields
+        and their values.
+      </li><li class="listitem">
+        Routing: Routing messages from one session to another or drop copying
+        messages to one or more sessions. Also the ability to route messages to different technology adapters.
+      </li><li class="listitem">
+        Validation: Ensuring that inbound messages contain or do not contain
+        particular tags and/or values or that a field's value is unique on a session, and giving the option of
+        rejecting the message if it is invalid.
+      </li><li class="listitem">Store/Restore: Storing FIX fields to be restored on a related message.</li></ul></div><p>
+      In addition, if there is desired functionality that is not supported by the CRE, an API is provided that allows
+      custom conditions and actions to be developed. See
+      <a href="ch06s02.html#optfeature_rules_engine_conditions-generic" title="GenericCondition"><code class="code">GenericCondition</code></a> and
+      <a href="ch06s02.html#optfeature_rules_engine_actions-generic" title="GenericAction"><code class="code">GenericAction</code></a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_rules_engine-overview"></a>6.2.2.&nbsp;Configuration</h3></div></div></div><p>
+      Rules are grouped into one or more <span class="emphasis"><em>rules packs</em></span>, which are defined at the application scope.
+      Individual sessions can then reference rules packs by ID. Multiple sessions can reference the same rules pack.
+    </p><p>
+      A rule is a made up of <span class="emphasis"><em>conditions</em></span> and <span class="emphasis"><em>actions</em></span>; each action is performed
+      on the message if the conditions are satisfied. Rules are executed in the order they are listed in rules pack.
+      Certain actions (reject, route, discard) are considered <span class="emphasis"><em>final</em></span>; after such an action is
+      executed, the message does not pass through any subsequently defined rules.
+    </p><p>
+      It is possible to add or modify rules at runtime via the Dashboard, the JMX API or by manually editing the XML
+      configuration file. Care needs to be taken when changing rules dynamically, especially when changing rules which
+      have inbound and outbound interactions, for example a response to a message created by the original set of rules
+      may be received by the new set of rules.
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e4010"></a>6.2.2.1.&nbsp;Configuration Example</h4></div></div></div><p>
+        In example below, the TimeInForce(59) field is added to all outbound order messages, and the Account(1) and
+        TimeInForce(59) fields are removed from incoming execution reports:
+      </p><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="FIX-INSTANCE1"&gt;
+    &lt;!-- the rules pack defining rules --&gt;
+    &lt;RulesPack id="order-rules"&gt;
+      &lt;!-- the rule defining conditions and actions --&gt;
+      &lt;Rule direction="outbound" description="Outbound Order Rules"&gt;
+        &lt;Conditions&gt;
+          &lt;!-- condition which matches order messages --&gt;
+          &lt;Inclusions&gt;
+            &lt;ConditionMatchMsgType values="D,G,F" /&gt;
+          &lt;/Inclusions&gt;
+          &lt;Exclusions/&gt;
+        &lt;/Conditions&gt;
+        &lt;Actions&gt;
+          &lt;!-- action which adds tag 59 with value "1" to the message --&gt;
+          &lt;ActionAddTags tags="59" value="1" /&gt;
+        &lt;/Actions&gt;
+      &lt;/Rule&gt;
+      &lt;Rule direction="inbound" description="Inbound Exec Rules"&gt;
+        &lt;Conditions&gt;
+          &lt;!-- condition which matches exec report messages --&gt;
+          &lt;Inclusions&gt;
+            &lt;ConditionMatchMsgType values="8" /&gt;
+          &lt;/Inclusions&gt;
+          &lt;Exclusions/&gt;
+        &lt;/Conditions&gt;
+        &lt;Actions&gt;
+          &lt;!-- action which removes tag1 and 58 from the message --&gt;
+          &lt;ActionRemoveTags tags="1,58"/&gt;
+        &lt;/Actions&gt;
+      &lt;/Rule&gt;
+    &lt;/RulesPack&gt;
+    &lt;Sessions&gt;
+      &lt;Session fixversion="4.4" compid="FUND" counterpartycompid="BROKER"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="CC1" port="2000" hostname="localhost" /&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors&gt;
+            &lt;!-- Enable the rules engine on outbound messages --&gt;
+            &lt;CatalysRulesEngine id="cre" rulesPackId="order-rules"/&gt;
+          &lt;/SourceMessageProcessors&gt;
+          &lt;ListenerMessageProcessors&gt;
+            &lt;!-- Enable the rules engine on inbound messages --&gt;
+            &lt;MessageProcessorReference id="cre_listener" refid="cre"/&gt;
+          &lt;/ListenerMessageProcessors&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre><p>Each of the configuration elements is explained in detail below.</p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine-rulespack"></a>RulesPack Element</h5></div></div></div><p>
+          Contains a set of rules that typically perform a logical task. The <code class="code">id</code> attribute is how
+          sessions refer to a <code class="code">RulesPack</code> element; the value must be unique across all other rules packs.
+        </p><p>
+          For a complete list of attributes, see the
+          <a href="config_reference.html#config_ref_RulesPack" title="RulesPack">RulesPack Configuration Reference</a>.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine-rules"></a>Rule Element</h5></div></div></div><p>
+          Contains <code class="code">Condition</code> and <code class="code">Action</code> elements. Normally a rule performs one operation on
+          the message. Rules are executed in the order they are listed in the rules pack.
+        </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Attribute</th><th>Description</th></tr></thead><tbody><tr><td>direction</td><td>
+                  <p>
+                    The direction of the rule. Can be <code class="code">inbound</code>, <code class="code">outbound</code>,
+                    <code class="code">biDirectional</code>, or <code class="code">exception</code>. The <code class="code">exception</code> direction is a
+                    special value  which applies to inbound message processing only. When this value is set, exceptions
+                    thrown by any of the downstream processors are caught, and transformed into a message configured by
+                    the rule's actions. For example, in a routing scenario where downstream links are not up yet,
+                    exceptions which would normally result in Business Message Rejects can be transformed into
+                    Execution Reports with the appropriate Order Status value.
+                  </p>
+
+                  <p>Required.</p>
+                </td></tr><tr><td>description</td><td>
+                  <p>
+                    A textual description of the rule which is displayed in the Rules configuration GUI of the
+                    MIS/Dashboard.
+                  </p>
+
+                  <p>Optional.</p>
+                </td></tr><tr><td>defaultCase</td><td>
+                  <p>
+                    If <code class="code">true</code>, this rule will be executed if no other previous rules have been executed.
+                    Note that no other rules will be evaluated after this rule is executed.
+                  </p>
+                  <p>Optional. Defaults to <code class="code">false</code>.</p>
+                </td></tr><tr><td>disabled</td><td>
+                  <p>Whether this rule is currently active or not.</p>
+                  <p>Optional. Defaults to <code class="code">false</code>.</p>
+                </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4064"></a>Condition and Action Elements</h5></div></div></div><p>
+          Please refer to the <a href="ch06s02.html#optfeature_rules_engine_conditions" title="6.2.4.&nbsp;Conditions">Conditions</a>
+          and <a href="ch06s02.html#optfeature_rules_engine_actions" title="6.2.5.&nbsp;Actions">Actions</a> sections.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine-catalysrulesengine"></a>CatalysRulesEngine Element</h5></div></div></div><p>
+          The <code class="code">CatalysRulesEngine</code> element is configured as part of a session's source and/or listener
+          message processor chain. To use a single instance of the processor in both the source and listener chains,
+          define the <code class="code">CatalysRulesEngine</code> in one chain, and refer to it using the
+          <a class="code" href="ch03.html#config_basic-session-mp-reference" title="MessageProcessorReference Configuration">MessageProcessorReference</a>
+          element in the other.
+        </p><p>
+          For a complete list of attributes, see the
+          <a href="config_reference.html#config_ref_CatalysRulesEngine" title="CatalysRulesEngine">CatalysRulesEngine Configuration Reference</a>.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4077"></a>Tags Attribute</h5></div></div></div><p>
+          Many of the conditions and actions have a <code class="code">tags</code> attribute. This consists of a comma- or
+          space-delimited list of FIX field integers or names. For example, the following values are all valid:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">tags="Symbol, OrderQty, Currency"</li><li class="listitem">tags="55 38 15"</li><li class="listitem">tags="55, OrderQty, 15"</li></ul></div></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_rules_engine-expressions"></a>6.2.3.&nbsp;Expression Language</h3></div></div></div><p>
+        The <code class="code">ConditionEvaluate</code> condition and <code class="code">SetExpression</code> action support an expression
+        language that is similar to JSTL. Fields can be referenced using FIX integer or name values, and basic logical
+        and arithmetic operations are supported.
+      </p><p>If specified using XML, quote characters in expressions must be escaped as <code class="code">&amp;quot;</code></p><div class="tip"><h3 class="title">Tip</h3><p>
+          While quick to configure, expression evaluation is much slower than the equivalent <code class="code">GenericAction</code>
+          or <code class="code">GenericCondition</code> implemented in Java. If performance is degraded due to use of expressions,
+          consider replacing them with an equivalent custom or built-in action.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e4096"></a>General Examples</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Expression</th><th>Result</th></tr></thead><tbody><tr><td>1</td><td>1</td></tr><tr><td>tag35</td><td>The value of the MsgType(35) field</td></tr><tr><td>MsgType</td><td>The value of the MsgType(35) field</td></tr><tr><td>tag11==tag2011</td><td>True - if the values of the two fields are equal</td></tr><tr><td>tag11!=tag2011</td><td>True - if the values of the two fields are not equal</td></tr><tr><td>1+2</td><td>3</td></tr><tr><td>OrderQty/100</td><td>The value of the OrderQty(38) field divided by 100</td></tr><tr><td>tag38&gt;100 &amp;&amp; tag38&lt;200</td><td>True - if the value OrderQty(38) is between 100 and 200</td></tr><tr><td>tags[78]</td><td>The value of the NoAllocs(78) field</td></tr><tr><td>fields[78]</td><td>The value of the NoAllocs(78) field</td></tr><tr><td>tags[78][1][79]</td><td>
+                   The value of the AllocAccount(79) field from the second repeating group entry. Note: repeating group
+                   entries are zero indexed based.
+                 </td></tr><tr><td>fields[78][1][79]</td><td>
+                  The value of the AllocAccount(79) field from the second repeating group entry. Note: repeating group
+                   entries are zero indexed based.
+                 </td></tr><tr><td>tags[78][1][539][0][524]</td><td>
+                   The value of the NestedPartyID(524) field from the first entry of the nested repeating group from
+                   the the second repeating group entry of the AllocAccount(79) field. Note: repeating group entries
+                   are zero indexed based.
+                 </td></tr><tr><td>fields[78][1][539][0][524]</td><td>
+                   The value of the NestedPartyID(524) field from the first entry of the nested repeating group from
+                   the the second repeating group entry of the AllocAccount(79) field. Note: repeating group entries
+                   are zero indexed based.
+                 </td></tr><tr><td>isFieldPresent(TimeInForce)</td><td>True - if the TimeInForce(59) field is present in the message.</td></tr><tr><td>round(tag15, maxDecimals)</td><td>
+                   Round the value of Commission(15) field up to the <code class="code">maxDecimals</code> decimal amount. Trailing
+                   zeros are not stripped. Additionally, if the input value is zero it will create a decimal equivalent.
+                   An exception is thrown if the field's value is not a number.
+                 </td></tr><tr><td>valueOf(tag31, maxDecimals)</td><td>
+                   Round the value of LastPx(31) field up to the <code class="code">maxDecimals</code> decimal amount. Trailing
+                   zeros are stripped. An exception is thrown if the field's value is not a number.
+                 </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e4160"></a>String Functions</h4></div></div></div><p>
+          The following string manipulation functions are available - see the
+          <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html" target="_top">java.lang.String</a>
+          documentation for a full explanation of their function.
+        </p><p>
+          All string-based function arguments can be FIX message fields or a string in single quotes. Fields that are
+          numbers will be converted to strings. Functions can be nested within each other, for instance:
+        </p><pre class="programlisting">concat(concat(toUpperCase(tag55), '.'), toUpperCase(tag65))</pre><p>Returns:</p><pre class="programlisting">Symbol(55) + '.' + SymbolSfx(65)</pre><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Function</th><th>Result</th></tr></thead><tbody><tr><td>concat('PRE', 'FIX')</td><td>Returns 'PREFIX'</td></tr><tr><td>concat(tag55, tag65)</td><td>Returns the combined value of the Symbol(55) and SymbolSfx(65) fields</td></tr><tr><td>substring(tagN, beginIndex, endIndex)</td><td>
+                  Returns the substring that begins at the specified beginIndex and extends to the character at index
+                  (endIndex-1) of field N or string
+                </td></tr><tr><td>toUpperCase(tagN)</td><td>Returns the value of tagN to uppercase</td></tr><tr><td>toLowerCase(tagN)</td><td>Returns the value of tagN to lowercase</td></tr><tr><td>trim(tagN)</td><td>Returns the value of tagN with the white spaced trimmed from beginning and end</td></tr><tr><td>contains(tagN, string)</td><td>Returns true if tagN contains the value of string</td></tr><tr><td>startsWith(tagN, string)</td><td>Returns true if tagN starts with the value of string</td></tr><tr><td>endsWith(tagN, string)</td><td>Returns true if tagN ends with the value of string</td></tr><tr><td>matches(tagN, regex)</td><td>Returns true if tagN matches the value of string</td></tr><tr><td>indexOf(tagN, string)</td><td>Returns zero based index of the first occurrence of string in tagN</td></tr><tr><td>lastIndexOf(tagN, string)</td><td>Returns zero based index of the last occurrence of string in tagN</td></tr><tr><td>length(tagN)</td><td>Returns the length of the tagN</td></tr><tr><td>replaceAll(tagN, string1, string2)</td><td>Replaces all occurrences of string1 with string2 in tagN</td></tr><tr><td>replaceFirst(tagN, string1, string2)</td><td>Replaces the first occurrence of string1 with string2 in tagN</td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e4222"></a>Time and Date Functions</h4></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Function</th><th>Result</th></tr></thead><tbody><tr><td>utcTimestampMs()</td><td>Returns the current GMT date and time in the yyyyMMdd-HH:mm:ss.SSS format</td></tr><tr><td>utcTimestamp()</td><td>Returns The current GMT date and time in the yyyyMMdd-HH:mm:ss format</td></tr><tr><td>dateOnly()</td><td>Returns The current GMT date in the yyyyMMdd format</td></tr><tr><td>monthYear()</td><td>Returns the current GMT date in the yyyyMM format</td></tr><tr><td>utcTimeOnly()</td><td>Returns the current GMT time in the HH:mm:ss format</td></tr><tr><td>utcTimeMsOnly()</td><td>Returns the current GMT time in the HH:mm:ss.SSS format</td></tr><tr><td>utcTZTimeOnly()</td><td>Returns the current GMT time with time zone id in the HH:mm:ssZ format</td></tr><tr><td>utcTZTimestamp()</td><td>Returns the current GMT date and time with time zone id in the yyyyMMdd-HH:mm:ssZ format</td></tr><tr><td>utcTZTimestampMs()</td><td>
+                Returns the current GMT date and time with time zone id in the yyyyMMdd-HH:mm:ss.SSSZ format
+              </td></tr><tr><td>utcTZTimeOnlyMs()</td><td>Return the current GMT time with time zone id in the HH:mm:ss.SSSZ format</td></tr><tr><td>currentTimeMillis()</td><td>Returns the current time in milliseconds</td></tr><tr><td>nanoTime()</td><td>Returns the current time in nanoseconds</td></tr><tr><td>localTimestampMs()</td><td>Returns the current Local date and time in the yyyyMMdd-HH:mm:ss.SSS format</td></tr><tr><td>localTimestamp()</td><td>Returns the current Local date and time in the yyyyMMdd-HH:mm:ss format</td></tr><tr><td>localDateOnly()</td><td>Returns the current Local date in the yyyyMMdd format</td></tr><tr><td>localMonthYear()</td><td>Returns the current Local date in the yyyyMM format</td></tr><tr><td>localTimeOnly()</td><td>Returns the current Local time in the HH:mm:ss format</td></tr><tr><td>localTimeMsOnly()</td><td>Returns the current Local time in the HH:mm:ss.SSS format</td></tr><tr><td>localTZTimeOnly()</td><td>Returns the current Local time with time zone id in the HH:mm:ssZ format
+              </td></tr><tr><td>localTZTimestamp()</td><td>
+                Returns the current Local date and time with time zone id in the yyyyMMdd-HH:mm:ssZ format
+              </td></tr><tr><td>localTZTimestampMs()</td><td>
+                Returns the current Local date and time with time zone id in the yyyyMMdd-HH:mm:ss.SSSZ format
+              </td></tr><tr><td>localTZTimeOnlyMs()</td><td>
+                Return The current Local time with time zone id in the HH:mm:ss.SSSZ format
+              </td></tr><tr><td>compareUTCTimeToCurrent(<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times">String utcTime)</td><td>
+                Compares the specified time to the current time.
+                <p>
+                  Returns a negative value if the time is earlier than the
+                  current time, zero if the times are the same, and a positive
+                  value if the time is later than the current time. For example:
+                </p>
+                <pre class="programlisting">compareUTCTimeToCurrent(myTime) &lt; 0</pre>
+              </td></tr><tr><td>compareUTCTimes(String utcTime1, String utcTime2)</td><td>
+                Compares the two times.
+                <p>
+                  Returns a negative value if the
+                  first time is earlier than the second time, zero if the times
+                  are the same, and a positive value if the first time is later
+                  than the second time. For example:
+                </p>
+                <pre class="programlisting">compareUTCTimes(myTime, '20120316-00:00:01') &gt; 0</pre>
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e4309"></a>Unique ID (UUID) Functions</h4></div></div></div><p>
+          These functions generate UUIDs in various forms. A UUID (Universally Unique Identifier) is represented by
+          32 hexadecimal digits, displayed in five groups separated by hyphens, in the form 8-4-4-4-12 for a total
+          of 36 characters (32 alphanumeric characters and four hyphens).
+        </p><p>
+          An example UUID: 12345678-1234-1234-1234-1234567890AB
+        </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Function</th><th>Result</th></tr></thead><tbody><tr><td>uuid</td><td>Returns a full 32 digit (36 with the dashes) UUID</td></tr><tr><td>uuid_hash</td><td>Returns the hash of the whole UUID as an integer in string format</td></tr><tr><td>uuid_timestamp</td><td>Returns the first three sections of the UUID (16 digits) in reverse order, without dashes</td></tr><tr><td>uuid_&lt;sections&gt;</td><td>
+                  Returns an identifier made up of the specified sections of the original UUID. For example UUID_134
+                  provides the first, third and forth sections of the five section UUID.
+                </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e4334"></a>Stored Message Query Functions</h4></div></div></div><p>
+          To be able to use these message query functions, any required tags should be stored using
+          <a class="code" href="ch06s02.html#optfeature_rules_engine_actions-action-store-tags" title="ActionStoreTags">ActionStoreTags</a>.
+        </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Function</th><th>Result</th></tr></thead><tbody><tr><td>boolean relatedRequestExists(String ClOrdID)</td><td>Returns true if a message related to the supplied ClOrdID has been previously stored</td></tr><tr><td>String getRequestMessageFieldValue(String clOrdID, int tag)</td><td>
+                  Returns the value of the field with the supplied tag from the message data corresponding to ClOrdID
+                </td></tr></tbody></table></div><p>The following example demonstrates the usage of these functions:</p><pre class="programlisting">&lt;Rule direction="outbound" description="Replace OrdStatus and ExecType in ER"&gt;
+  &lt;Conditions&gt;
+    &lt;Inclusions&gt;
+      &lt;ConditionMatchAny tags="35" values="8"/&gt;
+      &lt;ConditionMatchAny tags="39" values="6"/&gt;
+      &lt;ConditionEvaluate values="relatedRequestExists(ClOrdID) and
+                                 matches(getRequestMessageFieldValue(ClOrdID, 35), 'G')"/&gt;
+    &lt;/Inclusions&gt;
+    &lt;Exclusions/&gt;
+  &lt;/Conditions&gt;
+  &lt;Actions&gt;
+    &lt;ActionSetExpression tag="39" expression="replaceFirst(OrdStatus, '6', 'E')"/&gt;
+    &lt;ActionSetExpression tag="150" expression="replaceFirst(ExecType, '6', 'E')"/&gt;
+  &lt;/Actions&gt;
+&lt;/Rule&gt;</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_rules_engine_conditions"></a>6.2.4.&nbsp;Conditions</h3></div></div></div><p>
+    A rule is made up of a <code class="code">Conditions</code> element and an <code class="code">Actions</code> element. When the conditions
+    are satisfied then the actions are executed. Conditions consist of a set of <code class="code">Inclusions</code>  and
+    <code class="code">Exclusions</code> elements. For the conditions to be satisfied (and the actions executed), all individual
+    inclusion conditions must be met and no individual exclusion condition must be met.
+  </p><p>The following is an example showing how conditions are configured:</p><pre class="programlisting">&lt;Rule id="inbound_validation" description="Price missing on Limit Order"&gt;
+  &lt;Conditions&gt;
+    &lt;!--Look for Limit Order type messages--&gt;
+    &lt;Inclusions&gt;
+      &lt;ConditionMatchMsgType values="D,F,G" /&gt;
+      &lt;ConditionMatchAny tags="40" values="2" /&gt;
+    &lt;/Inclusions&gt;
+    &lt;!--Where the price field is missing--&gt;
+    &lt;Exclusions&gt;
+      &lt;ConditionFieldsPresent tags="44" /&gt;
+    &lt;/Exclusions&gt;
+  &lt;/Conditions&gt;
+...
+&lt;/Rule&gt;</pre><p>
+    For the actions on this rule to execute, the MsgType(35) field must be: D, F or G and the OrdType(40) field must
+    be Limit(2) and the Price(44) must be missing.
+  </p><div class="note"><h3 class="title">Note</h3><p>
+      Conditions are not required. If no conditions are specified then the rule's actions will always be executed.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_rules_engine_conditions-conditions"></a>6.2.4.1.&nbsp;Built-in Conditions</h4></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4369"></a>ConditionMatchMsgType</h5></div></div></div><p>Is satisfied when the MsgType(35) field is one of the specified values.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>values</strong></span> - a list of message types to match on.
+        </li></ul></div><pre class="programlisting">&lt;ConditionMatchMsgType values="f,h" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4377"></a>ConditionFieldsPresent</h5></div></div></div><p>Is satisfied if a message contains any of the fields listed.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - a list of fields to check for.
+        </li></ul></div><pre class="programlisting">&lt;ConditionFieldsPresent tags="11,55" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="rules_engine_conditions-ConditionFieldUnique"></a>ConditionFieldsUnique</h5></div></div></div><p>
+        Is satisfied if the values of the specified fields are unique within those that have already been stored.
+        The data store that contains these fields will be cleared out when the EOD process runs.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to check for uniqueness.
+        </li></ul></div><pre class="programlisting">&lt;RulesPack id="validate-order-fields"&gt;
+  &lt;Rule description="Reject Orders with Duplicate ClOrdIDs"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions&gt;
+        &lt;ConditionMatchMsgType values="D"/&gt;
+      &lt;/Inclusions&gt;
+      &lt;Exclusions&gt;
+        &lt;ConditionFieldsUnique tags="11" updateStore="true" /&gt;
+      &lt;/Exclusions&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionReject rejectType="OrderReject" reason="Duplicate ClOrdIDs" /&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4393"></a>ConditionMatchAny</h5></div></div></div><p>Is satisfied if any of the specified fields have any of the specified values.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to check.
+        </li><li class="listitem"><span class="bold"><strong>values</strong></span> - the values to check for in the fields.
+        </li></ul></div><pre class="programlisting">&lt;ConditionMatchAny tags="39" value="2,4"/&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4403"></a>ConditionEvaluate</h5></div></div></div><p>
+        Is satisfied if the expression evaluates to true. For information on the expression syntax and a list of
+        supported functions, see the
+        <a href="ch06s02.html#optfeature_rules_engine-expressions" title="6.2.3.&nbsp;Expression Language">Rules Expression Language</a> section.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>values</strong></span> - the expression to evaluate.
+        </li></ul></div><pre class="programlisting">&lt;!-- Evaluate if 1st instance of tag523 (nested repeating group) equals "BIC12345" --&gt;
+&lt;ConditionEvaluate values="matches(fields[453][0][802][0][523],'BIC12345')"/&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4412"></a>ConditionValidChar</h5></div></div></div><p>
+        Is satisfied if all of the values of the fields corresponding to <code class="code">tags</code> are valid characters and
+        they match one of <code class="code">values</code>.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to validate.
+        </li><li class="listitem"><span class="bold"><strong>values</strong></span> - allowable character values.
+        </li></ul></div><pre class="programlisting">&lt;ConditionValidChar values="Y,N" tags="43" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4424"></a>ConditionValidInt</h5></div></div></div><p>
+        Is satisfied if all of the values of the fields corresponding to <code class="code">tags</code> are valid integers and are
+        between the minValue and maxValue (if supplied).
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to validate.
+        </li><li class="listitem"><span class="bold"><strong>minValue</strong></span> - the minimum allowable value for each of these integer fields.
+        </li><li class="listitem"><span class="bold"><strong>maxValue</strong></span> - the maximum allowable value for each of these integer fields.
+        </li></ul></div><pre class="programlisting">&lt;ConditionValidInt minValue="1" maxValue="1000" tags="38" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4437"></a>ConditionValidUTCTimeStamp</h5></div></div></div><p>
+        Is satisfied if all of the values of the fields corresponding to <code class="code">tags</code> are valid UTC timestamps.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to validate.
+        </li></ul></div><pre class="programlisting">&lt;ConditionValidUTCTimeStamp tags="52,60" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4446"></a>ConditionValidFIX</h5></div></div></div><p>
+        Is satisfied if the message contains valid FIX fields. The default behavior can be overridden by modifying
+        the XML files in <span class="emphasis"><em>resources/validation</em></span> and specifying the path to a modified file in 
+        <span class="bold"><strong>validationRulesFileName</strong></span> attribute
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>validationRulesFileName</strong></span> - the validation rules file to validate against.
+          The value of this file is a path relative to <span class="emphasis"><em>resources/validation</em></span> directory.
+          If not specified, validation is performed against the dictionary of the corresponding FIX session.
+        </li><li class="listitem"><span class="bold"><strong>validateDataTypesOnly</strong></span> - if <code class="code">true</code>, validates the data types only
+          instead of data types and required fields.
+        </li></ul></div><pre class="programlisting">&lt;RulesPack id="inbound-validation"&gt;
+  &lt;Rule direction="inbound" description="Reject Invalid Messages"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions/&gt;
+      &lt;Exclusions&gt;
+        &lt;!--Must be an Exclusion to fire when messages do not pass validation--&gt;
+        &lt;ConditionValidFIX /&gt;
+      &lt;/Exclusions&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionReject rejectType="SessionReject"/&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4460"></a>ConditionStaleTime</h5></div></div></div><p>
+        Is satisfied if the limit specified has been exceeded at the time the message is processed.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tag</strong></span> - the tag whose value specifies the time to check against,
+          SendingTime(52) for example.
+        </li><li class="listitem"><span class="bold"><strong>staleTimeLimit</strong></span> - if the amount of time (in milliseconds) between the time
+          found in the message and the current time exceeds this value, then the condition is satisfied.
+        </li><li class="listitem"><span class="bold"><strong>staleIfTagMissing</strong></span> - if set to true, the condition is also satisfied if the
+          tag is missing from the message.
+        </li></ul></div><pre class="programlisting">&lt;ConditionStaleTime staleIfTagMissing="true" staleTimeLimit="5000" tag="52" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4472"></a>ConditionTimeInterval</h5></div></div></div><p>
+        Is satisfied if the time that the message is processed is between the limits of the time interval specified.
+        Can be used for time-based routing or validation.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>fromDayOfWeek</strong></span> - the day of the week that the interval starts.
+        </li><li class="listitem"><span class="bold"><strong>fromHour</strong></span> - the hour of the day that the interval starts.
+        </li><li class="listitem"><span class="bold"><strong>fromMinute</strong></span> - the minute of the hour that the interval starts.
+        </li><li class="listitem"><span class="bold"><strong>toDayOfWeek</strong></span> - the day of the week that the interval finishes.
+        </li><li class="listitem"><span class="bold"><strong>toHour</strong></span> - the hour of the day that the interval finishes.
+        </li><li class="listitem"><span class="bold"><strong>toMinute</strong></span> - the minute of the hour that the interval finishes.
+        </li><li class="listitem"><span class="bold"><strong>timeZone</strong></span> - the timezone in which the interval is specified.
+        </li><li class="listitem"><span class="bold"><strong>dayBoundary</strong></span> - whether the interval crosses over a day boundary.
+        </li></ul></div><pre class="programlisting">&lt;ConditionTimeInterval dayBoundary="true" timeZone="America/Chicago"&gt;
+  &lt;From dayOfWeek="1" hour="8" minute="0" /&gt;
+  &lt;To dayOfWeek="5" hour="17" minute="0" /&gt;
+&lt;/ConditionTimeInterval&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_conditions-generic"></a>GenericCondition</h5></div></div></div><p>
+        <code class="code">GenericCondition</code> allows custom conditions to be added to the Node. A custom condition class must
+        implement the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/rules/conditions/ICondition.html" target="_top">ICondition</a>
+        interface. In particular, <code class="code">ICondition.isSatisfied(IFIXMessage message)</code> should return
+        <code class="code">true</code> if the condition is met and <code class="code">false</code> otherwise. Custom properties can be
+        passed to the condition by defining one or more nested <code class="code">Property</code> elements.
+      </p><p>
+        For an example see
+        <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/rules/test/SampleCustomCondition.java</em></span>
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>class</strong></span> - the fully qualified class name of the custom condition class.
+        </li></ul></div><pre class="programlisting">&lt;GenericCondition class="com.camerontec.catalys.server.rules.test.SampleCustomCondition"&gt;
+  &lt;Property name="property1" value="value1" /&gt;
+&lt;/GenericCondition&gt;</pre></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_rules_engine_actions"></a>6.2.5.&nbsp;Actions</h3></div></div></div><p>
+    A rule's actions are executed when its conditions are satisfied. Actions are executed in the order in which they
+    appear under their parent <code class="code">Actions</code> element.
+  </p><p>
+    Certain actions (reject, route, discard) are considered <span class="emphasis"><em>final</em></span>; after such an action is
+    executed, the message does not pass through any subsequently defined rules. These types of actions should be the
+    last action configured in the <code class="code">Actions</code> element.
+  </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_rules_engine_actions-definitions"></a>6.2.5.1.&nbsp;Action Definitions</h4></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4519"></a>ActionAddTags</h5></div></div></div><p>Adds, replaces or appends a field to a message.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to add, replace or append to the message.
+        </li><li class="listitem"><span class="bold"><strong>value</strong></span> - the value for the fields.
+        </li><li class="listitem"><span class="bold"><strong>append</strong></span> - if <code class="code">true</code>, the tag is appended to the message, so
+          existing values of the tag are preserved in the message. If <code class="code">false</code>, then existing fields are
+          replaced with the value.
+        </li></ul></div><pre class="programlisting">&lt;ActionAddTags value="compid2" append="true" tags="106" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4533"></a>ActionRemoveTags</h5></div></div></div><p>Removes a list of fields from a message.</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to remove from a message.
+        </li></ul></div><pre class="programlisting">&lt;ActionRemoveTags tags="109" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4540"></a>ActionCopy</h5></div></div></div><p>
+        Copy the value of one field to another field, and overwrite all instances of the field if it already exists in
+        the message.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tagFrom</strong></span> - the source field to copy the value from.
+        </li><li class="listitem"><span class="bold"><strong>tagsTo</strong></span> - the target field(s) to copy the value to.
+        </li></ul></div><pre class="programlisting">&lt;ActionCopy tagFrom="11" tagsTo="58" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4550"></a>ActionReplaceAll</h5></div></div></div><p>Performs a regular expression replacement on the value of a field.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to replace.
+        </li><li class="listitem"><span class="bold"><strong>regex</strong></span> - the regular expression pattern to match on.
+        </li><li class="listitem"><span class="bold"><strong>replacement</strong></span> - the value to be substituted when the pattern is found.
+        </li></ul></div><pre class="programlisting">&lt;!--Find 'Order' replace with 'Clordid' in tag58--&gt;
+&lt;ActionReplaceAll tags="58" regex="Order" replacement="Clordid"/&gt;
+&lt;!--Remove any spaces in tags1 and tag100--&gt;
+&lt;ActionReplaceAll tags="1, 100" regex="\\s" replacement=""/&gt;
+&lt;!--Use pattern group matching and $ characters to the swap order of
+    text before and after period in tag48 --&gt;
+&lt;ActionReplaceAll tags="48" regex="(.*)\\.(.*)" replacement="$2.$1"/&gt;
+</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4562"></a>ActionDiscard</h5></div></div></div><p>
+        Silently discards the message. No reject message is sent.
+      </p><p>Parameters: none.</p><pre class="programlisting">&lt;ActionDiscard /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4567"></a>ActionMapper</h5></div></div></div><p>
+        Replaces the value of a field using a lookup properties table. If a value is not found in the lookup table,
+        the field is left unchanged. The mapping table can be applied in either direction.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields to perform the lookup on.
+        </li><li class="listitem"><span class="bold"><strong>mappingTableRefId</strong></span> - the mapping table ID to use.
+        </li><li class="listitem"><span class="bold"><strong>leftToRight</strong></span> - should the mapping be from left to right, or
+          right to left. Defaults to <code class="code">true</code>.
+        </li></ul></div><p>
+        In this example, <code class="code">ActionMapper</code> is used to map security identifiers. Outbound messages will have the
+        SEDOL format replaced with with ISIN format and the reverse mapping applied to inbound messages. Note that
+        the same mapping table is used by both <code class="code">ActionMapper</code> actions.
+      </p><pre class="programlisting">&lt;Application id="FIX_ROUTER"&gt;
+  &lt;Properties id="sedol-to-isin"&gt;
+    &lt;Property name="2543495" value="US11041RAL24" /&gt;
+    &lt;Property name="B0V3Xd1" value="AU000000GFF8" /&gt;
+  &lt;/Properties&gt;
+  ...
+  &lt;RulesPack id="securityid-mapping"&gt;
+    &lt;Rule direction="outbound" description="SEDOL to ISIN"&gt;
+      &lt;Conditions&gt;
+        &lt;Inclusions/&gt;
+        &lt;Exclusions/&gt;
+      &lt;/Conditions&gt;
+      &lt;Actions&gt;
+        &lt;ActionMapper mappingTableRefId="sedol-to-isin" tags="SecurityID" leftToRight="true"/&gt;
+      &lt;/Actions&gt;
+    &lt;/Rule&gt;
+    &lt;Rule direction="inbound" description="ISIN to SEDOL"&gt;
+      &lt;Conditions&gt;
+        &lt;Inclusions/&gt;
+        &lt;Exclusions/&gt;
+      &lt;/Conditions&gt;
+      &lt;Actions&gt;
+        &lt;ActionMapper mappingTableRefId="sedol-to-isin" tags="SecurityID" leftToRight="false"/&gt;
+      &lt;/Actions&gt;
+    &lt;/Rule&gt;
+  &lt;/RulesPack&gt;
+...
+&lt;/Application&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_actions-ActionFileLookup"></a>ActionFileLookup</h5></div></div></div><p>
+        This action performs a lookup via a
+        <a href="ch06s03.html" title="6.3.&nbsp;File Lookup Service">FileLookupService</a> element and writes the result to one
+        or more message fields. If the message doesn't contain the necessary lookup values, or if the lookup value is
+        not found in the service's data, the message is left unchanged or can optionally be rejected.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>fileLookupServiceId</strong></span> - the <code class="code">FileLookupService</code> instance to use.
+        </li><li class="listitem"><span class="bold"><strong>lookupKey</strong></span> - the column(s) in the lookup data that contain the lookup
+          value.
+        </li><li class="listitem"><span class="bold"><strong>lookupTags</strong></span> - a comma-separated list of message field(s) that contain the
+          lookup value.
+        </li><li class="listitem"><span class="bold"><strong>resultIndex</strong></span> - the column index containing the value to store in the
+          field(s).
+        </li><li class="listitem"><span class="bold"><strong>tags</strong></span> - a comma-separated list of field(s) to replace with data returned
+          by the lookup.
+        </li><li class="listitem"><span class="bold"><strong>rejectWhenNoResult</strong></span> - if <code class="code">true</code>, the message will be rejected if
+          the lookup returns no results. Defaults to <code class="code">false</code>.
+        </li></ul></div><p>
+        In this example, the data from the service named "symbolConversion" is used to convert symbols. The
+        first column of the data (index 0) is the used as the lookup key. Symbol(55) is used as the lookup value. The
+        second column (index 1) of the data's value is returned. The values of fields Symbol(55) and custom(6055) are
+        replaced with the data from the second column.
+      </p><pre class="programlisting">&lt;ActionFileLookup
+  fileLookupServiceId="symbolConversion"
+  lookupKey="0"
+  lookupTags="55"
+  resultIndex="1"
+  tags="55,6055" /&gt;</pre><p>
+        See the documentation for <a href="ch06s03.html" title="6.3.&nbsp;File Lookup Service">FileLookupService</a> for
+        more detailed examples.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4608"></a>ActionSetExpression</h5></div></div></div><p>Sets the value of a field to the result of a
+        <a href="ch06s02.html#optfeature_rules_engine-expressions" title="6.2.3.&nbsp;Expression Language">Rules Engine Expression</a>.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tag</strong></span> - the field to set the value of.
+        </li><li class="listitem"><span class="bold"><strong>expression</strong></span> - the
+          <a href="ch06s02.html#optfeature_rules_engine-expressions" title="6.2.3.&nbsp;Expression Language">expression</a>
+          to set the value to.
+        </li></ul></div><p>
+        In this example, <code class="code">ActionSetExpression</code> is used to calculate a 1% commission value on all inbound
+        fills by multiplying the (Price(44) * LastQty(32) * .01) and setting it to Commission(12).
+      </p><pre class="programlisting">&lt;RulesPack id="RulesInbound"&gt;
+  &lt;Rule direction="inbound" description="Set Commission on Fills"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions&gt;
+        &lt;ConditionMatchMsgType values="8" /&gt;
+        &lt;ConditionMatchAny tags="150" values="1,2" /&gt;
+      &lt;/Inclusions&gt;
+      &lt;Exclusions /&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionSetExpression tag="12" expression="tag44*tag32*.01"/&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4622"></a>ActionTimezoneConversion</h5></div></div></div><p>Converts the specified date/time fields from one timezone to another.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the time fields to convert.
+        </li><li class="listitem"><span class="bold"><strong>fromTimezone</strong></span> - Abbreviation of the timezone being converted from. GMT
+          is assumed if not specified.
+        </li><li class="listitem"><span class="bold"><strong>toTimezone</strong></span> - Abbreviation of the timezone being converted to. GMT
+          is assumed if not specified.
+        </li><li class="listitem"><span class="bold"><strong>validateFormat</strong></span> - If set to <code class="code">true</code> all specified timezone values
+          will be validated. if the format is invalid, the execution of this action and all further actions for this
+          rule will not be executed.
+        </li><li class="listitem"><span class="bold"><strong>dateFormat</strong></span> - The default format for the CRE is: yyyyMMdd-HH:mm:ss. This
+          can be overridden using this attribute. However, values of all specified tags must adhere to this format.
+          If at least one value's format does not match, an exception is thrown and the action has no effect.
+        </li></ul></div><pre class="programlisting">&lt;!-- See CatalysConfig.dtd for a list of valid timezones. --&gt;
+&lt;ActionTimezoneConversion
+  tags="122,52,60"
+  validateFormat="false"
+  toTimezone="America/Eastern"
+  fromTimezone="GMT" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4639"></a>ActionStripChars</h5></div></div></div><p>Strips the characters in the specified range from a value of given field.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the list of fields to strip characters from.
+        </li><li class="listitem"><span class="bold"><strong>beginIndex</strong></span> - character index at which the stripping of chars begins. If
+          the value of this attribute is negative, 0 is assumed.
+        </li><li class="listitem"><span class="bold"><strong>endIndex</strong></span>
+          - index at which stripped chars end.
+          If the value of this attribute is negative or it is lower than <code class="code">beginIndex</code>, the end of
+          the processed tag's value is assumed.
+        </li></ul></div><pre class="programlisting">&lt;ActionStripChars beginIndex="2" endIndex="4" tags="106" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_actions-store-restore"></a>Store and Restore Actions</h5></div></div></div><p>
+        These actions allow certain message fields to be stored and indexed, so that they can be retrieved and
+        restored to enhance future related messages. Fields that have previously been stored can be removed from the
+        store based on certain conditions (an order being cancelled for example).
+      </p><p>
+        Store and Restore supports the following types of messaging:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Orders and Excecution Reports - keyed off ClOrdID</li><li class="listitem">Quote Request and Response - keyed off QuoteReqID or QuoteID</li><li class="listitem">Allocation Instruction - keyed off AllocID</li><li class="listitem">Indication of Interest(IOIs) - keyed off IOIID</li><li class="listitem">Reject Messages - keyed off MsgSeqNum</li></ul></div><p>
+        Each <code class="code">CatalysRulesEngine</code> element has its own message store, so to enable storing of outbound
+        messages, and restoring into inbound messages, a single <code class="code">CatalysRulesEngine</code> must be used. The
+        <a href="ch03.html#config_basic-session-mp-reference" title="MessageProcessorReference Configuration"><code class="code">MessageProcessorReference</code></a> element can
+        be used to achieve this.
+      </p><p>
+        The diagram below shows the use of Store and Restore where an OMS uses a custom field, OMSOrderId, to track
+        orders and execution reports, but the counterparty does not accept that field. On outbound orders, the
+        <code class="code">ActionStoreTags</code> and <code class="code">ActionRemoveTags</code> actions can store the value of the field, then
+        remove it from the message. When receiving an execution report, <code class="code">ActionAddStoredTags</code> can be used to
+        look up the stored value by ClOrdID and add it to the execution report before it is processed by the OMS.
+      </p><div class="mediaobject"><img src="../resources/RulesEngineStoreRestore.png"></div><p>
+        The result of this configuration is that all messages passing to and from the OMS can contain the OMSOrderId
+        tag, while messages to and from the counterparty do not.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_actions-action-store-tags"></a>ActionStoreTags</h5></div></div></div><p>
+        Stores fields from a message for later retrieval by <code class="code">ActionAddStoredTags</code>.
+      </p><p>
+        If the <code class="code">persisterPath</code>
+        attribute is set on the
+        <a href="ch06s02.html#optfeature_rules_engine-catalysrulesengine" title="CatalysRulesEngine Element"><code class="code">CatalysRulesEngine</code></a> element,
+        then the messages stored will be persisted between restarts of the application, and replicated between Nodes
+        in a High Availability cluster.
+      </p><p>
+        In this case stored messages should be cleared (so that the do not grow indefinitely), by an
+        <a href="ch04.html#operations_lifecycle-eod" title="4.1.6.&nbsp;End-of-Day Processing">end-of-day</a> (EOD) task or command, which removes closed
+        orders from the CRE store; or by using the
+        <a class="code" href="ch06s02.html#optfeature_rules_engine_actions-actionUnstoreTags" title="ActionUnstoreTags">ActionUnstoreTags</a> action.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - a list of fields to store. Tags used as indexes are automatically
+          stored. Required.
+        </li><li class="listitem"><span class="bold"><strong>indexByMsgSeqNum</strong></span> - if set to <code class="code">true</code>, messages are also indexed by
+          the MsgSeqNum tag, so that when Reject or BusinessMessageReject messages are received, they can be enriched
+          with the information from the original message. Defaults to <code class="code">false</code>.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4694"></a>ActionAddStoredTags</h5></div></div></div><p>Adds fields to the message, if they have been previously stored by <code class="code">ActionStoreTags</code>.</p><p>
+        If the value of a field in the original message is modified by a subsequent related message, then it is the
+        modified value which is added to the message by this action. If the field is not present in any subsequent
+        related messages, then its original value is added. For example, if an order contains a custom field and the
+        value of this custom field has a different value in a subsequent amendment to the order, then this subsequent
+        value is used.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - the fields that identify the fields to copy from the store into the
+          message.
+        </li></ul></div><pre class="programlisting">&lt;RulesPack id="store-and-restore-symbol-tag"&gt;
+  &lt;Rule direction="outbound" description="Store Order Symbol"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions&gt;
+        &lt;ConditionMatchMsgType values="D"/&gt;
+      &lt;/Inclusions&gt;
+      &lt;Exclusions/&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;!-- store the stock symbol --&gt;
+      &lt;ActionStoreTags tags="Symbol"/&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+  &lt;Rule direction="inbound" description="Stored symbol update in ExecutionReport"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions&gt;
+        &lt;ConditionMatchMsgType values="8"/&gt;
+      &lt;/Inclusions&gt;
+      &lt;Exclusions/&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;!-- add the stored stock symbol into the execution report --&gt;
+      &lt;ActionAddStoredTags tags="Symbol"/&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_actions-actionUnstoreTags"></a>ActionUnstoreTags</h5></div></div></div><p>
+        Removes records that have been previously stored via the <code class="code">ActionStoreTags</code> action. For example,
+        this action can be used to remove closed orders from the store:
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>tags</strong></span> - a list of fields, whose values uniquely identify the records in
+          the store to delete. For example: ClOrdID for orders, QuoteID for quotes.
+        </li></ul></div><pre class="programlisting">&lt;!-- unstore closed orders --&gt;
+&lt;Rule direction="inbound"&gt;
+  &lt;Conditions&gt;
+    &lt;Inclusions&gt;
+      &lt;ConditionMatchMsgType values="8"/&gt;
+      &lt;ConditionMatchAny tags="39" value="2,4"/&gt;
+    &lt;/Inclusions&gt;
+    &lt;Exclusions/&gt;
+  &lt;/Conditions&gt;
+  &lt;Actions&gt;
+    &lt;ActionUnstoreTags tags="11"/&gt;
+  &lt;/Actions&gt;
+&lt;/Rule&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_actions-actionDropCopyTo"></a>ActionDropCopyTo</h5></div></div></div><p>Creates a copy of a message and sends it to another session.</p><p>
+        See the <a href="ch05s04.html" title="5.4.&nbsp;FIX Drop Copy">Drop Copy</a> documentation for more information on
+        this.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>destination</strong></span> - the session to send the copy of the message to.
+          <p>
+            This should be in the form &lt;external party&gt;~&lt;internal party&gt;. For example, for a buy-side
+            session this might be "broker~fund". If the parties of the session have sub IDs and location IDs, then
+            these should be separated by a dot, i.e. Comp.Sub.Loc.  For example:
+            "broker.depart&shy;mentA.london~fund.level2.paris".
+          </p></li></ul></div><p>
+        The message will pass through any source message processors that are configured on the destination session.
+      </p><p>
+        The following example demonstrates sending a drop copy of all fills from a broker's session with a
+        client to their compliance department:
+      </p><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="FIX_ROUTER"&gt;
+    &lt;RulesPack id="broker_rules"&gt;
+      &lt;Rule direction="inbound" description="Drop Copy Fills to Compliance"&gt;
+        &lt;Conditions&gt;
+          &lt;Inclusions&gt;
+            &lt;ConditionMatchMsgType values="8" /&gt;
+            &lt;ConditionMatchAny tags="150" values="1,2" /&gt;
+          &lt;/Inclusions&gt;
+          &lt;Exclusions/&gt;
+        &lt;/Conditions&gt;
+        &lt;Actions&gt;
+          &lt;ActionDropCopyTo destination="COMPLIANCE.BANK.PARIS~BROKER.EXCHANGE.LONDON"/&gt;
+        &lt;/Actions&gt;
+      &lt;/Rule&gt;
+    &lt;/RulesPack&gt;
+    &lt;Sessions&gt;
+      &lt;Session counterpartycompid="CLIENT" compid="BROKER" fixversion="4.4"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="sc1" hostname="localhost" port="4000"/&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors/&gt;
+          &lt;ListenerMessageProcessors&gt;
+            &lt;CatalysRulesEngine id="cre" rulesPackId="broker_rules"/&gt;
+          &lt;/ListenerMessageProcessors&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+      &lt;Session counterpartycompid="COMPLIANCE"
+               counterpartysubid="BANK"
+               counterpartylocationid="PARIS"
+               compid="BROKER"
+               subid="EXCHANGE"
+               locationid="LONDON"
+               fixversion="4.4"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="sc2" hostname="localhost" port="4001"/&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors/&gt;
+          &lt;ListenerMessageProcessors/&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_actions-action-route-to"></a>ActionRouteTo</h5></div></div></div><p>
+        Routes an inbound message to another session, and can route responses (e.g. an execution report) back to the
+        originating session.
+      </p><p>
+        A <a href="ch05s03.html#stdfeature_routing-configuration" title="5.3.7.&nbsp;FIX Routing Configuration"><code class="code">Link</code></a> element must also be
+        configured, linking the sessions. Only inbound messages can be routed using this action.
+      </p><p>
+        If more than one connection point is provided, then each one will be tried in order. Once a message has been
+        routed via one of these connection points, all related (cancels, amends, etc.) messages will be routed via the
+        same connection point.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>selectedConnectionPoint</strong></span> - A comma-separated list of connection points to
+          route messages to. These should be in the form [external party]~[internal party]. At least one connection
+          point must be provided.
+        </li><li class="listitem"><span class="bold"><strong>autoRoutingResponse</strong></span> - If set to <code class="code">true</code>, messages are routed to
+          the destination session (determined by <code class="code">selectedConnectionPoint</code>) and replies are returned back
+          to the source session. Note, that in order to store the routes after restart, you need to set 'directoryName'
+          attribute for <a href="config_reference.html#config_ref_Link" title="Link"><code class="code">Link</code></a>. 
+          Default is <code class="code">false</code>.
+        </li><li class="listitem"><span class="bold"><strong>autoRouteSubsequentRequests</strong></span> - If set to <code class="code">true</code> and there is
+          only one <code class="code">selectedConnectionPoint</code>, related messages will be automatically routed to the
+          same <code class="code">selectedConnectionPoint</code>, even if they are excluded by the configured conditions.
+        </li></ul></div><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="broker"&gt;
+    &lt;RulesPack id="RouteToExch1"&gt;
+      &lt;Rule direction="inbound" description="Route To exchange1"&gt;
+        &lt;Conditions&gt;
+          &lt;Inclusions /&gt;
+          &lt;Exclusions /&gt;
+        &lt;/Conditions&gt;
+        &lt;Actions&gt;
+          &lt;ActionRouteTo selectedConnectionPoint="exchange1~broker" /&gt;
+        &lt;/Actions&gt;
+      &lt;/Rule&gt;
+    &lt;/RulesPack&gt;
+    &lt;RulesPack id="RouteToExch2"&gt;
+      &lt;Rule direction="inbound" description="Route To exchange2"&gt;
+        &lt;Conditions&gt;
+          &lt;Inclusions /&gt;
+          &lt;Exclusions /&gt;
+        &lt;/Conditions&gt;
+        &lt;Actions&gt;
+          &lt;ActionRouteTo selectedConnectionPoint="exchange2~broker" /&gt;
+        &lt;/Actions&gt;
+      &lt;/Rule&gt;
+    &lt;/RulesPack&gt;
+    &lt;Link id="routingTable"&gt;
+      &lt;SessionGroup&gt;
+        &lt;SessionReference id="sessionref1" counterpartycompid="buy2" compid="broker" /&gt;
+        &lt;SessionReference id="sessionref2" counterpartycompid="buy1" compid="broker" /&gt;
+      &lt;/SessionGroup&gt;
+      &lt;SessionGroup&gt;
+        &lt;SessionReference id="sessionref3" counterpartycompid="exchange3" compid="broker" /&gt;
+        &lt;SessionReference id="sessionref4" counterpartycompid="exchange2" compid="broker" /&gt;
+        &lt;SessionReference id="sessionref5" counterpartycompid="exchange1" compid="broker" /&gt;
+      &lt;/SessionGroup&gt;
+    &lt;/Link&gt;
+    &lt;Sessions&gt;
+      &lt;Session counterpartycompid="buy1" compid="broker" side="buy" fixversion="4.2"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="conn.buy1" listenport="2000" /&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors&gt;
+            &lt;CatalysRulesEngine id="CRE1" rulesPackId="RouteToExch2" /&gt;
+          &lt;/SourceMessageProcessors&gt;
+          &lt;ListenerMessageProcessors&gt;
+            &lt;MessageProcessorReference id="sharedCRE1" refid="CRE1" /&gt;
+          &lt;/ListenerMessageProcessors&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+      &lt;Session counterpartycompid="buy2" compid="broker" side="buy" fixversion="4.2"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="conn.buy2" listenport="2001" /&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors&gt;
+            &lt;CatalysRulesEngine id="CRE2" rulesPackId="RouteToExch1" /&gt;
+          &lt;/SourceMessageProcessors&gt;
+          &lt;ListenerMessageProcessors&gt;
+            &lt;MessageProcessorReference id="sharedCRE2" refid="CRE2" /&gt;
+          &lt;/ListenerMessageProcessors&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+      &lt;Session counterpartycompid="exchange1" compid="broker" side="sell" fixversion="4.2"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="conn.exchange1" hostname="localhost" port="2003" /&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors /&gt;
+          &lt;ListenerMessageProcessors /&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+      &lt;Session counterpartycompid="exchange2" compid="broker" side="sell" fixversion="4.2"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="conn.exchange2" hostname="localhost" port="2004" /&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors /&gt;
+          &lt;ListenerMessageProcessors /&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+      &lt;Session counterpartycompid="exchange3" compid="broker" side="sell" fixversion="4.2"&gt;
+        &lt;Connections&gt;
+          &lt;SocketConnection id="conn.exchange3" hostname="localhost" port="2005" /&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors /&gt;
+          &lt;ListenerMessageProcessors /&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4750"></a>ActionRouteToAdapter</h5></div></div></div><p>Routes a message to an adapter.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>adapterRefId</strong></span> - the ID of the adapter to route the message to.
+        </li><li class="listitem"><span class="bold"><strong>autoRouteSubsequentRequests</strong></span> - If set to <code class="code">true</code> and there is only
+          one <code class="code">adapterRefId</code> listed, related messages will be automatically routed to the same
+          <code class="code">adapterRefId</code>, even if they are excluded by the configured conditions.
+        </li></ul></div><pre class="programlisting">&lt;!-- Route to Tech Adapter based on text in ClordID --&gt;
+&lt;RulesPack id="Queue_Selector"&gt;
+  &lt;Rule direction="inbound" description="Route to Staging MQn"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions&gt;
+        &lt;ConditionEvaluate values="contains(tag11,'NYDSTHOM1')" /&gt;
+      &lt;/Inclusions&gt;
+      &lt;Exclusions /&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionRouteToAdapter autoRouteSubsequentRequests="false" adapterRefId="msgOutNYDSTHOM1" /&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+  &lt;Rule direction="inbound" description="Route to Staging MQ"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions&gt;
+        &lt;ConditionEvaluate values="contains(tag11,'SHNYIIS01A')" /&gt;
+      &lt;/Inclusions&gt;
+      &lt;Exclusions /&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionRouteToAdapter autoRouteSubsequentRequests="false" adapterRefId="msgOutSHNYIIS01A" /&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+  &lt;Rule direction="inbound" description="defaultQueue" defaultCase="true"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions /&gt;
+      &lt;Exclusions /&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionRouteToAdapter autoRouteSubsequentRequests="false" adapterRefId="msgOut" /&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_actions-other-actions"></a>ActionReject</h5></div></div></div><p>
+        This action sends an outbound reject message and no more actions are processed on the current message, which
+        is then discarded.
+      </p><p>
+        <code class="code">ActionReject</code> can be used in Exception rules. For example, this can be used to catch an exception
+        thrown by a downstream rule (e.g. lookup fails) or message processor (e.g. target session down) and
+        turn it into a reject. The default behaviour when not using an <code class="code">ActionReject</code> is that the exception
+        eventually gets caught by the source session manager and gets turned into a Business Message Reject.
+      </p><p>
+        When the <code class="code">rejectType</code> is set to <code class="code">ApplicationReject</code>, the action dynamically determines
+        the msgType of the reject message based on the source message. For example, a new order gets rejected with an
+        execution report, an amend gets rejected with a cancel reject, etc. When this <code class="code">rejectType</code> is used,
+        the <code class="code">reasonCode</code> configuration attribute is ignored, and a default reject reason value is set in the
+        reject message.
+      </p><p>
+        Regardless of whether <code class="code">ActionReject</code> is used in an inbound rule, an outbound rule, or an exception
+        rule, the resulting reject message is injected into the source message processor of the originating session,
+        which means that this reject message can be post-processed by outbound rules attached to that session.
+      </p><p>A typical use case is to further enrich the reject message with custom or lookup fields.</p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>rejectType</strong></span> - Specifies which type of reject message to send.
+          The following values are accepted: <code class="code">BusinessReject</code>, <code class="code">CancelReject</code>,
+          <code class="code">DontKnowTrade</code>, <code class="code">MarketDataRequestReject</code>, <code class="code">OrderReject</code>,
+          <code class="code">OrderStatusRequestReject</code>, <code class="code">QuoteReject</code>, <code class="code">QuoteRequestReject</code>,
+          <code class="code">SessionReject</code>, <code class="code">ApplicationReject</code></li><li class="listitem"><span class="bold"><strong>reason</strong></span> - The reason the message was rejected.
+        </li><li class="listitem"><span class="bold"><strong>reasonCode</strong></span> - The code of the reason why the message was rejected.
+        </li></ul></div><pre class="programlisting">&lt;RulesPack id="validate-order-fields"&gt;
+  &lt;Rule description="Reject Orders with Duplicate ClOrdIDs"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions&gt;
+        &lt;ConditionMatchMsgType values="D"/&gt;
+      &lt;/Inclusions&gt;
+      &lt;Exclusions&gt;
+        &lt;ConditionFieldsUnique tags="11" updateStore="true" /&gt;
+      &lt;/Exclusions&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionReject rejectType="OrderReject" reason="Duplicate ClOrdIDs" /&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4796"></a>ActionRulesPack</h5></div></div></div><p>
+        This action allows the conditional execution of other rules packs, and gives the ability to reuse rules. When
+        this action is executed, the rules in the referenced rules pack are run, followed by any remaining rules in the
+        original rules pack.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>refid</strong></span> - the ID of the rules pack to run.
+        </li></ul></div><p>
+        The following example shows how a global rules pack could be reused by a different rules pack. The
+        "GLOBAL_RULES" rules pack is executed first, and then the remaining rules in the "SESSION_ABC" pack are
+        executed.
+      </p><pre class="programlisting">&lt;RulesPack id="SESSION_ABC"&gt;
+  &lt;!--Call to Global Rules first--&gt;
+  &lt;Rule direction="inbound" description="Call Global Rules"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions/&gt;
+      &lt;Exclusions/&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionRulesPack refid="GLOBAL_RULES"/&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+  &lt;!--Rules specific to Session ABC--&gt;
+  &lt;Rule direction="inbound" description="SESSION_ABC Enrichment"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions/&gt;
+      &lt;Exclusions/&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionAddTags tags="100" values="DEST_1" /&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;
+&lt;RulesPack id="GLOBAL_RULES"&gt;
+  &lt;Rule&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions/&gt;
+      &lt;Exclusions/&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionAddTags tags="1" values="FIRM_A" /&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e4805"></a>ActionLog</h5></div></div></div><p>
+        This action logs a message at a specified log level and can include the FIX message that triggered it.
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>logLevel</strong></span> - Specifies at which level to log the message at.
+          The following values are accepted: <code class="code">ERROR</code>, <code class="code">WARN</code>, <code class="code">INFO</code>,
+          <code class="code">DEBUG</code>, <code class="code">TRACE</code>. Defaults to <code class="code">INFO</code>.
+        </li><li class="listitem"><span class="bold"><strong>message</strong></span> - The message to log.
+        </li><li class="listitem"><span class="bold"><strong>includeFIXMsg</strong></span> (Optional) - Should the FIX message that triggered the action
+          be included in log message. Defaults to <code class="code">false</code>.
+        </li></ul></div><pre class="programlisting">&lt;ActionLog logLevel="INFO" message="Message being routed :" includeFIXMsg="true" /&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_rules_engine_actions-generic"></a>GenericAction</h5></div></div></div><p>
+        <code class="code">GenericAction</code> allows custom actions to be added to the Node. A custom action class must implement
+        the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/rules/actions/IAction.html" target="_top">IAction</a>
+        interface. In particular, <code class="code">IAction.apply(IFIXMessage message)</code> should execute the steps of the
+        custom action.
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/rules/actions/ActionBase.html" target="_top">ActionBase</a>
+        is a useful base class for custom actions. A <code class="code">GenericAction</code> should be considered as an alternative
+        to using <code class="code">ActionSetExpression</code> with complex expressions that do not provide adequate performance.
+      </p><p>
+        For an example see
+        <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/rules/test/SampleCustomAction.java</em></span>
+      </p><p>Parameters:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>class</strong></span> - the fully qualified class name of the custom action class.
+        </li></ul></div><pre class="programlisting">&lt;GenericAction
+  id="customAction"
+  class="com.camerontec.catalys.server.rules.test.SampleCustomAction"/&gt;</pre></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_rules_engine_validation"></a>6.2.6.&nbsp;Message Validation</h3></div></div></div><p>
+    The rules engine comes with built-in support to validate messages against a specific FIX version.
+    This functionality is available by using the <code class="code">ConditionValidFIX</code> element. This is especially useful in
+    a test or QA environment to flag when invalid messages are created. Validation requires inspecting the contents of
+    every field in a message which increases per message latency.
+  </p><p>
+    The following checks are performed during FIX version validation:
+  </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+      Required fields for the message type are present (if the <code class="code">validateDataTypesOnly</code> attribute isn't set
+      to <code class="code">false</code>).
+    </li><li class="listitem">The value of each field is a valid instance of the data type for that field.</li><li class="listitem">The value is within the range, or set of values specified by the FIX specification.</li></ul></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e4851"></a>Configuration Example</h4></div></div></div><p>
+      To validate inbound messages, add a rule using <code class="code">ConditionValidFIX</code> and <code class="code">ActionReject</code>.
+    </p><pre class="programlisting">&lt;RulesPack id="inbound-validation"&gt;
+  &lt;Rule direction="inbound" description="Reject Invalid Messages"&gt;
+    &lt;Conditions&gt;
+      &lt;Inclusions/&gt;
+      &lt;Exclusions&gt;
+        &lt;!--Must be an Exclusion to fire when messages do not pass validation--&gt;
+        &lt;ConditionValidFIX /&gt;
+      &lt;/Exclusions&gt;
+    &lt;/Conditions&gt;
+    &lt;Actions&gt;
+      &lt;ActionReject rejectType="SessionReject"/&gt;
+    &lt;/Actions&gt;
+  &lt;/Rule&gt;
+&lt;/RulesPack&gt;</pre><p>
+      To validate outbound messages, configure the set the <code class="code">validateDataTypesOnly</code> attribute to
+      <code class="code">true</code>, since outbound messages will not have required fields such as BeginString
+      when they are processed by the CRE.
+    </p><p>
+      By default, <code class="code">ConditionValidFIX</code> validates against the FIX version of the current session, using the
+      dictionary files. You can override this default behaviour by specifying the path to an alternative validation rules file 
+      located in the <code class="code">resources/validation</code> directory in the <code class="code">validationRulesFileName</code> attribute.
+    </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;6.&nbsp;Optional Features&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.3.&nbsp;File Lookup Service</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,318 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.6.&nbsp;SSL Socket Connection</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s05.html" title="6.5.&nbsp;FIXML Transformer"><link rel="next" href="ch06s07.html" title="6.7.&nbsp;Data Encryption"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s07.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_ssl_socket_connection"></a>6.6.&nbsp;SSL Socket Connection</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_ssl_socket_connection-intro"></a>6.6.1.&nbsp;Introduction</h3></div></div></div><p>
+      Secure Sockets Layer (SSL) and its successor Transport Layer Security (TLS) allow secure, authenticated
+      connections to be made across an insecure network, such as the Internet. SSL and TLS are well-established standard
+      protocols that are widely supported. You can connect to another party, who may be using a FIX engine from a
+      different supplier, with high confidence that the two FIX engines will communicate without difficulty.
+    </p><p>
+      SSL/TLS encrypts the whole of the data traffic between the FIX engines, including the protocol and addressing
+      fields, unlike FIX encryption which encrypts only the application data. This makes SSL/TLS unsuitable for systems
+      where an intermediate FIX engine is required to route FIX messages without decrypting them.
+    </p><p>
+      In all other situations, SSL/TLS provides the simplest and easiest way of ensuring the security and
+      confidentiality of your FIX messages.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e5072"></a>6.6.2.&nbsp;Java Keystores and Truststores</h3></div></div></div><p>
+      The Node uses the standard
+      <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html" target="_top">Java JSSE</a>
+      (Java Secure Sockets Extension) to provide secure connections between FIX parties. To accept SSL connections
+      on a FIX session, the Node must be configured with a <span class="emphasis"><em>keystore</em></span>; to initiate an SSL
+      connection with another FIX server, the Node must be configured with a <span class="emphasis"><em>truststore</em></span>.
+    </p><p>
+      A keystore contains one or more private keys, whereas a truststore contains the public key certificates of
+      those organizations that the user is prepared to trust. JSSE will not permit a client connection to an SSL server
+      unless the certificate presented by the server has been installed in the truststore.
+    </p><p>
+      There is no difference in the file format of the keystore and the truststore, and in fact one file can serve as
+      both, though for practical reasons this is not generally recommended. The main reason for this is that the
+      entities you trust are likely to be the same for all of your applications, but the key you use is likely to be
+      different per application.
+    </p><p>
+      In most cases, you will need to create and manage your own stores.  This is most easily done using the
+      <a class="code" href="http://docs.oracle.com/javase/7/docs/technotes/tools/index.html#security" target="_top">keytool</a>
+      command-line utility bundled with the Oracle JRE. However, if your counterparty uses a commercial
+      certificate authority to sign its certificates, you may be able to use the default truststore,
+      <span class="emphasis"><em>cacerts</em></span>, that is bundled with the JRE and includes details for several well-known
+      certificate authorities. This file is found in <span class="emphasis"><em>JAVA_HOME/jre/lib/security</em></span>.
+    </p><p>
+	  We support usage of standard keystore(PKCS12). PKCS12 keystore file must have the extension ".p12" 
+	  for it to be recognized as a PKCS12 format file. Truststore, however, cannot be PKCS12 because 
+	  truststore cannot contain private keys. PKCS12 format is a container for a keypair (private + public key).
+     </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e5085"></a>6.6.3.&nbsp;SSL Protocols</h3></div></div></div><p>
+      JSSE supports a number of SSL/TLS protocols including TLSv1, TLSv1.1, TLSv1.2, SSLv2Hello and SSLv3.
+    </p><div class="warning"><h3 class="title">Warning</h3><p>
+        Due to security vulnerabilities in SSLv3, it is recommended that this protocol not be used.
+      </p></div><p>
+      In all newer releases of Oracle's JRE,
+      <a href="https://www.java.com/en/download/help/disable_sslv3.xml" target="_top">SSLv3 is disabled by default</a>.
+      If you're running an older release, SSLv3 should be explicitly disabled via the <code class="code">enabledProtocols</code>
+      attribute of <code class="code">SSLSocketConnection</code>.  We recommend setting the value of this attribute to
+      <code class="code">TLSv1 TLSv1.1 TLSv1.2</code>, assuming your counterparty supports one of these.
+    </p><p>
+      The TLSv1 specification indicates that an SSLv2 "HELLO" message should initiate the handshake so that
+      TLS servers can still talk to v2 servers. Normally the protocol will be negotiated at the highest level of
+      security that both parties support. However some parties may have disallowed, or do not support, the old v2
+      handshake. In this case you can prevent the Node from sending a v2 HELLO by setting the <code class="code">noSSLv2Hello</code>
+      attribute to <code class="code">true</code> on the <code class="code">SSLSocketConnection</code>. Note that if this is a listening server
+      socket, this will also disallow clients who try to connect using a v2 HELLO, which in most cases is not desirable.
+      Please be sure that you understand the compatibility and security implications before changing this option.
+      Except for the initial handshake, SSL v2 should not be used and is not supported by the Node due to widely known
+      vulnerabilities.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e5099"></a>6.6.4.&nbsp;Configuration</h3></div></div></div><p>
+      Configuring the Node for SSL involves two main steps: creating the necessary keystores/truststores, and adding
+      the requisite SSL settings to each applicable session in the Node's configuration file.  This process differs
+      depending on whether you are <span class="emphasis"><em>accepting</em></span> SSL connections from other parties or you are
+      <span class="emphasis"><em>initiating</em></span> SSL connections with a counterparty.
+    </p><p>
+      A working template that demonstrates the SSL configuration can be found in the
+      <span class="emphasis"><em>templates/SSL/</em></span> directory of your Node installation.
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_ssl-acceptor-config"></a>6.6.4.1.&nbsp;Configuring a Session to Accept SSL Connections</h4></div></div></div><p>
+        When accepting SSL connections (you are the SSL server), you must create a keypair and a keystore that contains
+        it.  You'll then generate a public key certificate that corresponds to your key; this certificate must be
+        distributed to your clients so that they can configure their system to trust your server.
+      </p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e5109"></a>Creating a Keystore and Keypair</h5></div></div></div><p>
+          To create the keypair in a new keystore:
+        </p><pre class="programlisting">$ keytool -genkeypair -alias fixSSL -keystore server.keystore
+Enter keystore password:  ********
+Re-enter new password: ********
+What is your first and last name?
+  [Unknown]:  FIX
+What is the name of your organizational unit?
+  [Unknown]:  FIX
+What is the name of your organization?
+  [Unknown]:  Company
+What is the name of your City or Locality?
+  [Unknown]:  Chicago
+What is the name of your State or Province?
+  [Unknown]:  IL
+What is the two-letter country code for this unit?
+  [Unknown]:  US
+Is CN=FIX, OU=FIX, O=Company, L=Chicago, ST=IL, C=US correct?
+  [no]:  y
+
+Enter key password for &lt;fixSSL&gt;
+	(RETURN if same as keystore password):</pre><p>
+          This will generate a new keystore, <span class="emphasis"><em>server.keystore</em></span>, in the current directory. The
+          passwords you choose for the store and the key will be used later when configuring the Node to use this file.
+        </p><p>
+          Now the public key certificate must be exported:
+        </p><pre class="programlisting">$ keytool -exportcert -alias fixSSL -keystore server.keystore -file server.cer
+Enter keystore password:  ********  (the password chosen in the previous step)
+Certificate stored in file &lt;server.cer&gt;</pre><p>
+          This will create a PKCS7 file, <span class="emphasis"><em>server.cer</em></span>, which can be distributed to your
+          counterparties. The certificate in this file is <span class="emphasis"><em>self-signed</em></span>; if you wish, you can have
+          your public key signed by a well-known commercial certificate authority, in which case you would provide your
+          counterparty with the certificate(s) created by that CA instead.
+        </p><p>
+          It is recommended to keep just a single private key and its associated certificate in any keystore. This is
+          because JSSE by default selects the first private key that it finds in the keystore. You have no control over
+          which private key is selected if there is more than one present.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e5121"></a>Configuring the Session</h5></div></div></div><p>
+          With the keystore in hand, you can now configure the FIX session to accept SSL connections:
+        </p><pre class="programlisting">&lt;Session compid="SERVER"
+         counterpartycompid="CLIENT"
+         fixversion="4.2"
+         keyStore="/path/to/server.keystore"
+         keyStorePassword="keyStorePassword"
+         keyPassword="keyPassword"&gt;
+  &lt;Connections&gt;
+    &lt;SSLSocketConnection id="conn" listenport="2000" enabledProtocols="TLSv1.2"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+          Note we are using an <a class="code" href="config_reference.html#config_ref_SSLSocketConnection" title="SSLSocketConnection">SSLSocketConnection</a>
+          element instead of the standard <code class="code">SocketConnection</code>. The <code class="code">keyStorePassword</code> and
+          <code class="code">keyPassword</code> attributes of the <code class="code">Session</code> must match the passwords you chose when
+          creating the keystore and key in the previous step.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_ssl-initiator-config"></a>6.6.4.2.&nbsp;Configuring a Session to Initiate an SSL Connection</h4></div></div></div><p>
+        When initiating SSL connections (you are the SSL client), you must create a truststore that contains the
+        public key certificate of the server to which you are connecting. Your counterparty should have provided
+        this file (or sometimes multiple files).
+      </p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e5134"></a>Importing the Server's Certificate into a Truststore</h5></div></div></div><p>
+          In this example, we'll assume the counterparty we are trusting has provided one certificate,
+          <span class="emphasis"><em>server.cer</em></span>. To create a truststore and import this certificate:
+        </p><pre class="programlisting">$ keytool -importcert -alias server -file server.cer -keystore client.truststore
+Enter keystore password: ********
+Re-enter new password: ********
+Owner: CN=FIX, OU=FIX, O=Company, L=Chicago, ST=IL, C=US
+Issuer: CN=FIX, OU=FIX, O=Company, L=Chicago, ST=IL, C=US
+Serial number: 7b625be9
+Valid from: Wed Aug 26 14:57:02 CDT 2015 until: Tue Nov 24 13:57:02 CST 2015
+Certificate fingerprints:
+  ...
+
+Trust this certificate? [no]:  y
+Certificate was added to keystore</pre><p>
+          This will generate a new truststore, <span class="emphasis"><em>client.truststore</em></span>, in the current directory.
+          The password you chose will be used later when configuring the Node to use this file.
+        </p><p>
+          The import command asks if you want to trust the imported certificate. In a live SSL environment, you'll
+          be connecting to a remote SSL server, possibly one that belongs to another organization. The owner of that
+          server will have sent you a certificate, most likely via email. How do you know that it hasn't been tampered
+          with while in transit? Every certificate has a <span class="emphasis"><em>fingerprint</em></span>, which <code class="code">keytool</code>
+          displays when asking about trust. Before you answer the question, you should contact the person who sent the
+          certificate and have them confirm the fingerprint. This should ideally be done over a different communication
+          channel than the one used to deliver the certificate. After confirming the fingerprint, you can be sure that
+          the certificate has not been interfered with and that it can be safely trusted.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e5144"></a>Configuring the Session</h5></div></div></div><p>
+          With the truststore in hand, you can now configure the FIX session to use SSL:
+        </p><pre class="programlisting">&lt;Session compid="CLIENT"
+         counterpartycompid="SERVER"
+         fixversion="4.2"
+         trustStore="/path/to/client.truststore"
+         trustStorePassword="password"&gt;
+  &lt;Connections&gt;
+    &lt;SSLSocketConnection id="conn" hostname="10.1.1.1" port="2000" enabledProtocols="TLSv1.2"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+          Note we are using an <a class="code" href="config_reference.html#config_ref_SSLSocketConnection" title="SSLSocketConnection">SSLSocketConnection</a>
+          element instead of the standard <code class="code">SocketConnection</code>. The <code class="code">trustStorePassword</code> attribute
+          of the <code class="code">Session</code> must match the password you chose when creating the truststore in the previous
+          step.
+        </p><p>
+          If your counterparty's SSL certificate was signed by a commercial certificate authority whose certificate
+          already exists in the JRE's <span class="emphasis"><em>cacerts</em></span> truststore, you can omit the
+          <code class="code">trustStore*</code> attributes.
+        </p></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_ssl_-client_auth"></a>6.6.5.&nbsp;Client Authentication</h3></div></div></div><p>
+      In the above configuration scenarios, the initiating FIX session (the SSL client) was configured to trust the
+      server to which it connects.  However, the accepting FIX session (the SSL server) had no restrictions
+      on which clients could connect. Theoretically, any client that had the server's public key certificate would be
+      able to initiate a valid SSL connection (assuming they knew the CompIDs etc).
+    </p><p>
+      To create a more comprehensive network of trust, <span class="emphasis"><em>client authentication</em></span> can be used. It
+      provides a way for the server to identify and trust each client, thereby establishing two-way trust. The client
+      is responsible for identifying itself during the connection initiation with the counterparty; the identity
+      provided must match one that the server is configured to trust. The Node can be configured to
+      <span class="emphasis"><em>require</em></span> client authentication when acting as an acceptor, and to <span class="emphasis"><em>provide</em></span>
+      client authentication when acting as an initiator.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5163"></a>Requiring Client Authentication when Accepting SSL Connections</h4></div></div></div><p>
+        To configure an acceptor FIX session to require client authentication, both a keystore and a truststore must
+        be present. The keystore holds your server's private key, and the trust store holds the public key
+        certificate(s) of the client(s) you wish to trust and accept.
+      </p><p>
+        For this example, we'll enable client authentication for the session we already configured in the
+        <a href="ch06s06.html#optfeature_ssl-acceptor-config" title="6.6.4.1.&nbsp;Configuring a Session to Accept SSL Connections">previous section</a>.  We've already created our keystore;
+        now we must create a truststore that contains the certificates of the clients we trust.  We'll assume the
+        client has provided us with its certificate in a file called <span class="emphasis"><em>clientXYZ.cer</em></span>. To create a
+        truststore and import the certificate:
+      </p><pre class="programlisting">$ keytool -importcert -alias clientXYZ -file clientXYZ.cer -keystore server.truststore
+Enter keystore password:  ********
+Re-enter new password:  ********
+Owner: CN=FIX Client, OU=FIX, O=Client XYZ, L=Chicago, ST=IL, C=US
+Issuer: CN=FIX Client, OU=FIX, O=Client XYZ, L=Chicago, ST=IL, C=US
+Serial number: 304f4989
+Valid from: Thu Oct 01 18:23:09 CDT 2015 until: Wed Dec 30 17:23:09 CST 2015
+Certificate fingerprints:
+   ...
+Extensions:
+   ...
+Trust this certificate? [no]:  yes
+Certificate was added to keystore</pre><p>
+        Now the session must be configured to use the truststore and to require clients to identify themselves:
+      </p><pre class="programlisting">&lt;Session compid="SERVER"
+         counterpartycompid="CLIENT"
+         fixversion="4.2"
+         keyStore="/path/to/server.keystore"
+         keyStorePassword="keyStorePassword"
+         keyPassword="keyPassword"
+         needClientAuth="true"
+         trustStore="/path/to/server.truststore"
+         trustStorePassword="password"&gt;
+  &lt;Connections&gt;
+    &lt;SSLSocketConnection id="conn" listenport="2000" enabledProtocols="TLSv1.2"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+        With this configuration in place, when a client connects they must present their certificate. If it matches
+        a certificate in the truststore, the connection will commence; otherwise the connection will terminate.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e5173"></a>Providing Client Authentication when Initiating an SSL Connection</h4></div></div></div><p>
+        As the initiator, a client certificate must be provided when establishing an SSL connection. The process
+        for obtaining a certificate varies depending on the security procedures in place at the counterparty.  You may
+        need to generate your own, or the counterparty may provide one for you.  To create your own, you'd first
+        generate a keypair, export the public key and then either sign the certificate yourself or have a commercial
+        certificate authority sign it.  This can all be accomplished using the <code class="code">keytool</code> utility.
+      </p><p>
+        In the following example, we'll assume the counterparty has provided everything that's needed, including the
+        private key, <span class="emphasis"><em>client_key.pem</em></span>, and its corresponding client certificate,
+        <span class="emphasis"><em>client_cert.pem</em></span>.  We'll continue with the session we configured in the
+        <a href="ch06s06.html#optfeature_ssl-initiator-config" title="6.6.4.2.&nbsp;Configuring a Session to Initiate an SSL Connection">previous section</a>, which already has a truststore
+        that includes the certificate of the server.  All that's left is to create the keystore:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+          Combine the PEM files into a single PKCS12 file for use with <code class="code">keytool</code>:
+          <pre class="programlisting">$ openssl pkcs12 -export -in client_cert.pem -inkey client_key.pem -out client.p12 -name client
+Enter Export Password:  ********   (choose a password)
+Verifying - Enter Export Password:  ********</pre></li><li class="listitem">
+          Import the PKCS12 file into a Java keystore:
+          <pre class="programlisting">$ keytool -importkeystore -srckeystore client.p12 -srcstoretype PKCS12 \
+          -destkeystore client.keystore -alias client
+
+Enter destination keystore password:  ********
+Re-enter new password:  ********
+Enter source keystore password:  ********  (password from previous step)</pre></li><li class="listitem">
+          Configure the session to use the new keystore:
+          <pre class="programlisting">&lt;Session compid="CLIENT"
+         counterpartycompid="SERVER"
+         fixversion="4.2"
+         trustStore="/path/to/client.truststore"
+         trustStorePassword="password"
+         keyStore="/path/to/client.keystore"
+         keyStorePassword="password"
+         keyPassword="password"&gt;
+  &lt;Connections&gt;
+    &lt;SSLSocketConnection id="conn" hostname="10.1.1.1" port="2000" enabledProtocols="TLSv1.2"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre></li></ol></div><p>
+        With the keystore in place, Java will automatically provide your client certificate when connecting to a
+        server that requires it.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_ssl_trouble"></a>6.6.6.&nbsp;Troubleshooting</h3></div></div></div><p>
+      The first step in troubleshooting any SSL-related issue is to enable Java SSL debugging, which provides
+      details about the keys that are configured and exchanged during an SSL connection.  All of the debug logging
+      is printed to stdout, not to the Catalys log file. To enable, set this system property in your startup command:
+    </p><pre class="programlisting">java -Djavax.net.debug=ssl,handshake,verbose ...</pre><p>
+      Some common SSL issues and their resolutions:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        On startup, an UnrecoverableKeyException exception is thrown:
+        <pre class="programlisting">java.io.IOException: Error in KeyStore set up
+	at ...
+Caused by: java.security.UnrecoverableKeyException: Cannot recover key
+	at ...</pre><p>
+          Note there are two separate keystore passwords: one for the store itself, and one for each key therein. This
+          error indicates that the session's <code class="code">keyPassword</code> attribute is either missing or does not match the
+          password of the key in the keystore.
+        </p></li><li class="listitem">
+        When attempting to initiate an SSL connection, the following error occurs:
+        <pre class="programlisting">javax.net.ssl.SSLHandshakeException:
+...
+unable to find valid certification path to requested target</pre><p>
+          This indicates that your truststore does not contain a certificate that matches the server's certificate.
+          Enable SSL debugging to see which certificates are configured in your truststore, and which certificate
+          is being presented by the server.  If these do not match, consult your counterparty to ensure you
+          have installed the correct certificate.
+        </p></li><li class="listitem">
+        When attempting to initiate an SSL connection, the following error occurs:
+        <pre class="programlisting">javax.net.ssl.SSLHandshakeException: Received fatal alert: bad_certificate</pre><p>
+          It is likely that your counterparty requires client authentication, but you have not configured a
+          keystore. Please see <a href="ch06s06.html#optfeature_ssl_-client_auth" title="6.6.5.&nbsp;Client Authentication">Client Authentication</a> for instructions
+          on how to configure this.
+        </p></li><li class="listitem"><p>
+          If you would prefer an alternative to the command line keytool, then you can make use of Portecle.
+          This graphical utility can be used to manipulate Java keystores but please see <a href="http://portecle.sourceforge.net/" target="_top">here</a> for the instructions.
+        </p></li></ul></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s05.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.5.&nbsp;FIXML Transformer&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.7.&nbsp;Data Encryption</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

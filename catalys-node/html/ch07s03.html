@@ -1,0 +1,126 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.3.&nbsp;Embedded Catalys Node Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s02.html" title="7.2.&nbsp;Advanced Socket Adapter"><link rel="next" href="ch07s04.html" title="7.4.&nbsp;JMS Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_embedded"></a>7.3.&nbsp;Embedded Catalys Node Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_embedded-intro"></a>7.3.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Embedded Catalys Node Adapter is designed to work with another Java application which starts up the Node and
+      treats it as a Java object running in the same process. The application is able to send and receive FIX messages
+      across multiple sessions and all the features of the Node (HA, Rules Engine, XML configuration, etc.) are still
+      supported.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_embedded-operation"></a>7.3.2.&nbsp;Adapter Operation</h3></div></div></div><p>
+      Normally custom code is implemented as a
+      <a href="ch08.html#prog_components_msgproc" title="8.1.4.&nbsp;Custom Message Processors">Custom Message Processor</a>
+      configured on a session. The Embedded Catalys Node Adapter is designed to provide the same internal event and
+      FIX message sending and receipt capabilities from within a standalone application by embedding a Node.
+    </p><p>Specifically, the following features are supported:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Receipt of incoming FIX messages</li><li class="listitem">Sending of outgoing FIX messages</li><li class="listitem">FIX session connection status events</li><li class="listitem">FIX session exception events</li><li class="listitem">FIX session reset events</li></ul></div><p>In order to use the Embedded Catalys Node Adapter it is necessary to:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Configure a Node with one or more <code class="code">EmbeddedCatalysNodeAdapter</code> elements.
+      </li><li class="listitem">
+        Create a Java application which instantiates and starts a single
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/EmbeddedCatalysNodeAdapter.html" target="_top">EmbeddedCatalysNodeAdapter</a>
+        instance, supplying this instance with:
+
+        <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">
+            A set of <a href="apb.html#config_intro-server-args">application parameters</a> compatible with those of
+            the <code class="code">CatalysServer</code> class that will be created by this instance, including the required
+            <code class="code">-xmlconfig</code> which references the XML configuration file.
+          </li><li class="listitem">
+            For each <code class="code">EmbeddedCatalysNodeAdapter</code> element in the configuration, a map of its ID string to a
+            corresponding
+            <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/IFIXListenerCallback.html" target="_top">IFIXListenerCallback</a>
+            component, whose methods will be called in response to received FIX session events and messages.
+          </li></ul></div></li></ul></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Implement the facility for sending FIX message from the Java application by using either
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/EmbeddedCatalysNodeAdapter.html#send(java.lang.String,%20com.camerontec.catalys.core.message.IFIXMessage)" target="_top">EmbeddedCatalysNodeAdapter.send</a>
+        or the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/IFIXSourceProxy.html" target="_top">IFIXSourceProxy</a>
+        interface.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_embedded-config"></a>7.3.3.&nbsp;Configuration</h3></div></div></div><p>
+      The following example shows how to configure an <code class="code">EmbeddedCatalysNodeAdapter</code> on both the Source and
+      Listener side of a session:
+    </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="BROKER" compid="MARKET" fixversion="4.2" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="sc1" hostname="localhost" port="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;EmbeddedCatalysNodeAdapter id="ecna1"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;MessageProcessorReference id="ecna1_listen" refid="ecna1"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre><p>
+       For a complete list of attributes, see the
+       <a href="config_reference.html#config_ref_EmbeddedCatalysNodeAdapter" title="EmbeddedCatalysNodeAdapter">EmbeddedCatalysNodeAdapter Configuration Reference</a>.
+    </p><p>
+      For details on how to add custom JMX instrumentation to your adapter, refer to the
+      <a href="ch08.html#prog_components_jmx" title="8.1.9.&nbsp;JMX Component Operations">Programming Guide</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_embedded-templates"></a>7.3.4.&nbsp;Templates and Example Client Code</h3></div></div></div><p>
+      Example configurations and source code for clients for the Embedded Adapter are packaged along with the Node.
+      Different templates exist to demonstrate different aspects of the adapter.
+    </p><p>
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Templates located in <span class="emphasis"><em>templates/EmbeddedCatalysNodeAdapter/</em></span></li><li class="listitem">
+          Source code located in
+          <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/adapter/embedded/client/</em></span></li></ul></div><p>
+    </p><p>
+      A ReadMe.txt is located in each template directory providing full details on what the template does and how each
+      is run.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7439"></a>Unqueued Template</h4></div></div></div><p>
+        This template shows the most standard usage of the adapter where inbound messages come to the
+        <code class="code">onMessageFromFIX(...)</code> event handler one at a time. The messages are never queued in
+        the Node or adapter.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7443"></a>Queued Template</h4></div></div></div><p>
+        This template shows an alternative way to process inbound messages. When messages come to the
+        <code class="code">onMessageFromFIX(...)</code> event handler they placed in a <code class="code">BlockingQueue&lt;?&gt;</code> data
+        object for consumption sometime in the future. This can be useful if the Java client using the embedded adapter
+        is a slow consumer or processor of messages.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7448"></a>MultiSession Template</h4></div></div></div><p>
+        This template shows how the embedded adapter can support more than one session. The key is to configure the
+        <code class="code">EmbeddedCatalysNodeAdapter</code> element like you would with one session and then refer to it using
+        <code class="code">MessageProcessorReference</code> elements on the rest of the sessions.
+      </p><p>
+        When multiple sessions need to be supported, the embedded client is required to set the value of the
+        TargetCompID field(s) to the same values configured on one of the sessions. In order for the client to send an
+        outbound message to the BROKER3 session for instance, it would set the TargetCompID field on the
+        message object like this:
+</p><pre class="programlisting">message.setValue(Field.TargetCompID.tag, "BROKER3");</pre><p>
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7455"></a>UnqueuedAddSession Template</h4></div></div></div><p>
+        This template is the same as the Unqueued template but demonstrates how a session can be added on the fly. The
+        Node is started without any sessions configured, then during runtime, the XML config file is updated and
+        the <code class="code">config_reload</code> command is issued which detects and adds the session at runtime.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7459"></a>Embedded Sender Class</h4></div></div></div><p>
+        This example class shows how the client can send outbound messages down a configured session by creating a
+        message object, populating fields and then calling:
+</p><pre class="programlisting">IFIXProxy.fireMessage(IFIXMessage);</pre><p>
+      </p></div><p>Relevant JavaDocs are located here:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/client/EmbeddedCatalysNodeAdapterUnqueuedListener.html" target="_top">EmbeddedCatalysNodeAdapterUnqueuedListener</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/client/EmbeddedCatalysNodeAdapterQueuedListener.html" target="_top">EmbeddedCatalysNodeAdapterQueuedListener</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/client/EmbeddedCatalysNodeAdapterSender.html" target="_top">EmbeddedCatalysNodeAdapterSender</a></li></ul></div><div class="note"><h3 class="title">Note</h3><p>
+        There are many other possibilities when implementing your Java client to interact with the Embedded Adapter and
+        the code we provide is for demonstration purposes only.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_embedded-performance"></a>7.3.5.&nbsp;Performance</h3></div></div></div><p>
+      There are 2 primary considerations when processing inbound events and FIX messages:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">Threading model</li><li class="listitem">Processing time</li></ol></div><p>
+      The Embedded Adapter delivers events and inbound FIX messages to the embedding application via one or more
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/IFIXListenerCallback.html" target="_top">IFIXListenerCallback</a>
+      instances. Each <code class="code">IFIXListenerCallback</code> instance is registered with one or more
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/embedded/EmbeddedCatalysNodeAdapterProcessor.html" target="_top">EmbeddedCatalysNodeAdapterProcessor</a>
+      (the class corresponding to the <code class="code">EmbeddedCatalysNodeAdapter</code> message processor) instances.
+    </p><p>
+      The main point to note is that all events and inbound FIX messages are delivered in the same thread as to the
+      underlying <code class="code">EmbeddedCatalysNodeAdapterProcessor</code> itself - no buffering is performed. Since the Node is
+      multi-threaded, typically with a separate delivery thread per FIX session, then listeners registered against
+      multiple FIX sessions are likely to receive events and messages concurrently from separate threads. This is not
+      the case for listeners registered with a single FIX session, unless messages are being routed between FIX sessions
+      inside the Node.
+    </p><p>
+      Since events and messages are delivered by internal Node threads, a slow running or blocking listener is likely to
+      directly affect the operation of the server itself. Therefore it is recommended never to block on receipt of
+      inbound events or FIX messages. If this is not possible to guarantee then it is recommended to queue the incoming
+      events and messages and process them in a separate thread owned by the embedding application.
+    </p><p>
+      We call the mode in which events and messages are processed directly <span class="bold"><strong>unqueued</strong></span>
+      mode and the mode in which events and messages are queued (or otherwise buffered) for subsequent processing in
+      another thread <span class="bold"><strong>queued</strong></span> mode.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.2.&nbsp;Advanced Socket Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.4.&nbsp;JMS Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:38+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

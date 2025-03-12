@@ -1,0 +1,428 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* end reset */
+
+body
+{
+  margin: 10px auto;
+  font-family: 'Lucida Grande', Geneva, Verdana, Arial, sans-serif;
+  font-size: 12px;
+  max-width: 55em;
+  padding: 0em 2em;
+  color: #333;
+  line-height: 150%;
+}
+
+p
+{
+  margin: 1em 0;
+  text-align: justify;
+}
+
+td p
+{
+  text-align: left;
+}
+
+a:link, a:visited
+{
+  color: #0066cc;
+}
+
+a:hover
+{
+  text-decoration: none;
+}
+
+a.javadoc, a.code
+{
+  font-family: Courier, monospace;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+  font-weight: bold;
+  color: #222;
+  font-family: 'Lucida Grande', Geneva, Verdana, Arial, sans-serif;
+  margin: 1.5em 0 1em 0;
+  line-height: 125%;
+}
+
+h1
+{
+  font-size: 2em;
+}
+
+h2
+{
+  font-size: 1.5em;
+}
+
+h3
+{
+  font-size: 1.3em;
+}
+
+h4
+{
+  font-size: 1.1em;
+}
+
+h5
+{
+  font-size: 1.05em;
+}
+
+h6
+{
+  font-size: 1em;
+}
+
+hr
+{
+  border-collapse: collapse;
+  border-style: none;
+  border-top: 1px dotted #bbb;
+  width: 100% !important;
+}
+
+b, strong
+{
+  font-weight: bold;
+}
+
+i, em
+{
+  font-style: italic;
+}
+
+ol, ul
+{
+  margin: 1em 0 1em 0;
+}
+
+ol
+{
+  padding-left: 1.6em;
+  list-style-type: decimal;
+}
+
+ol ol
+{
+  list-style-type: lower-alpha;
+  margin-top: 0.25em;
+}
+
+ol ol ol
+{
+  list-style-type: lower-roman;
+}
+
+ul
+{
+  padding-left: 1.5em;
+  list-style-type: disc;
+}
+
+ul ul
+{
+  list-style-type: circle;
+  margin-top: 0.25em;
+}
+
+ul ul ul
+{
+  list-style-type: square;
+}
+
+ol li, ul li
+{
+  padding-left: .1em;
+  margin: .5em 0 0 0;
+}
+
+dd
+{
+  margin: 0 0 0 2em;
+}
+
+li p:first-child, dd p:first-child
+{
+  padding: 0em;
+  margin-top: .3em;
+}
+
+ul li p:first-child
+{
+  margin: 0em;
+}
+
+code, span.code
+{
+  font-family: Courier, monospace;
+}
+
+pre.programlisting
+{
+  font-size: .9em;
+  font-family: Courier, monospace;
+  line-height: 1.3em;
+  border: 1px solid #bbb;
+  background-color: #f5f5f5;
+  padding: 15px 15px 15px 20px;
+  overflow: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+div.toc
+{
+  margin-bottom: 30px;
+}
+
+div.toc a
+{
+  text-decoration: none;
+}
+
+div.toc a:hover
+{
+  text-decoration: underline;
+}
+
+/* TOC on home page only */
+div.book div.toc
+{
+  font-size: 1.3em;
+  line-height: 150%;
+}
+
+div.book div.toc dd
+{
+  font-size: .75em;
+  line-height: 140%;
+}
+
+div.book div.toc dd
+{
+  padding: 2px 0 3px 0;
+}
+
+table th, table th, td.config_ref_attr_name
+{
+  text-align: left;
+  background-color: #ccc;
+  color: #333;
+  padding: .5em .75em;
+  border: 1px solid #bbb;
+  font-weight: bold;
+}
+
+div.section table
+{
+  margin: 1em 0;
+}
+
+table td, table td
+{
+  padding: .75em;
+  border: 1px solid #bbb;
+}
+
+table#home_header, table#home_header td
+{
+  border: none;
+}
+
+td#home_header_right
+{
+  padding-left: 40px;
+  vertical-align: middle;
+}
+
+div#home_header_title
+{
+  font-size: 1.7em;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
+
+div#home_header_version
+{
+  font-size: .9em;
+}
+
+div#navheader_chapter_title
+{
+  font-size: 1.2em;
+  padding-bottom: 2px;
+}
+
+div.navheader hr
+{
+  margin-bottom: 30px;
+}
+
+div.navheader table, div.navfooter table
+{
+  border: none;
+}
+
+div.navheader table th, div.navfooter table th
+{
+  background-color: #fff;
+  font-weight: normal;
+  text-align: center;
+  border: none;
+  padding: 0;
+}
+
+div.navheader table td, div.navfooter table td
+{
+  border: none;
+  padding: 0;
+  vertical-align: bottom;
+}
+
+div.navfooter table tr:last-child td
+{
+  vertical-align: top;
+}
+
+div.navfooter
+{
+  margin-top: 35px;
+}
+
+div#footer_copyright
+{
+  text-align: center;
+  margin-top: 30px;
+  font-size: .8em;
+  line-height: 1.5em;
+  color: #999;
+}
+
+/* Configuration Reference tables */
+
+div.config_ref_outer table
+{
+  width: 100%;
+}
+
+div.config_ref_inner
+{
+  margin-top: 1em;
+}
+
+div.config_ref_inner table
+{
+  border: none;
+  width: auto;
+}
+
+div.config_ref_inner table td
+{
+  border: none;
+  padding: 0 20px 0 0;
+  font-size: 10px;
+}
+
+div.config_ref_inner table td:first-child
+{
+  font-weight: bold;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+td.config_ref_attr_name
+{
+  padding: .5em .75em !important;
+}
+
+/* admonitions */
+
+div.note, div.important, div.tip, div.caution, div.warning
+{
+  margin: 15px 50px 15px 50px;
+  border: 1px solid #bbb;
+  border-radius: 15px;
+  padding: 15px 20px 5px 20px;
+}
+
+div.note h3, div.important h3, div.tip h3, div.caution h3, div.warning h3
+{
+  margin-top: 0;
+  padding-left: 40px;
+  line-height: 24px;
+  background-image: url(../resources/warning.png);
+  background-repeat: no-repeat;
+}
+
+div.note h3
+{
+  background-image: url(../resources/note.png);
+}
+
+div.tip h3
+{
+  background-image: url(../resources/tip.png);
+}
+
+div.important h3
+{
+  background-image: url(../resources/important.png);
+}
+
+div.mediaobject img
+{
+  display: block;
+  margin: 25px auto;
+}

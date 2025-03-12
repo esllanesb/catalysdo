@@ -1,0 +1,250 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 4.3.&nbsp;Configuration Model and Runtime Changes</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch04.html" title="Chapter&nbsp;4.&nbsp;Operations and Monitoring"><link rel="prev" href="ch04s02.html" title="4.2.&nbsp;Monitoring the Node"><link rel="next" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch04s02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;4.&nbsp;Operations and Monitoring</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="operation_configuration_model"></a>4.3.&nbsp;Configuration Model and Runtime Changes</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operation_configuration_model-intro"></a>4.3.1.&nbsp;Introduction</h3></div></div></div><p>
+      The configuration of the Node is supplied to the server when it is started, via the <code class="code">-xmlconfig</code>
+      command-line argument. The parameter of this argument is an XML configuration file, the elements of which are
+      defined by <span class="emphasis"><em>CatalysConfig.dtd</em></span>.
+    </p><p>
+      The XML configuration can be fully specified in this file before the Node is started; or it can be a partial or
+      minimal configuration, which can then be modified at runtime via one of the following methods:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Via the Dashboard</li><li class="listitem">By interfacing directly using the Catalys Node JMX interface</li><li class="listitem">By editing the original XML file and reloading it</li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operation_configuration_model-model"></a>4.3.2.&nbsp;Configuration Model vs. Runtime Model</h3></div></div></div><p>
+      The Node distinguishes between <span class="bold"><strong>configured</strong></span> properties and
+      <span class="bold"><strong>runtime</strong></span> properties. An internal model contains a representation of the
+      configuration of the engine which can be modified at anytime. The runtime model can be updated from the
+      configuration model at runtime whenever it is safe to do so.
+    </p><p>
+      In particular, this means that sessions can be added, modified, or deleted, as long as they are
+      <span class="bold"><strong>reloadable</strong></span>.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="operation_configuration_model-safeRunTimeOperations"></a>Safe Runtime Operations: Reloadable Sessions</h4></div></div></div><p>
+        It is only safe to reload a session if it is disconnected and
+        blocked or locked, and its session manager is de-activated. This
+        means that no partially processed messages can be caught in the
+        session. When a session is in this state it is said to be
+        <span class="bold"><strong>reloadable</strong></span>.
+      </p><p>
+        The runtime model can be updated (reloaded) from the
+        configuration model on a whole-application basis, or on a
+        per-session basis. An application-wide reload will only succeed
+        if all modified sessions in the application are reloadable.
+        Unmodified sessions are ignored during an application-wide
+        reload, therefore these do not have to be reloadable. This means
+        that new sessions can be provisioned and activated without
+        disrupting pre-existing active sessions.
+      </p><p>
+        A newly added session is reloadable. When it is loaded into runtime, it is put into the blocked state.
+      </p><p>
+        Shared configuration components (message processing templates,
+        schedules, selectors) which are referenced by multiple sessions
+        can only be modified and reloaded if all of the sessions that
+        include them are reloadable. Therefore there is a trade-off
+        between the efficiency of separating common configuration, and
+        the flexibility of being able to reload self-contained sessions.
+      </p><p>
+        Sessions which share runtime components (message processors or selectors) must all be reloadable for any one
+        of them to be reloaded. A shared runtime component is one which referenced by another component. e.g.
+        <a class="code" href="config_reference.html#config_ref_MessageProcessorReference" title="MessageProcessorReference">MessageProcessorReference</a> and
+        <a class="code" href="config_reference.html#config_ref_SelectorReference" title="SelectorReference">SelectorReference</a>.
+      </p><p>
+        For configurations which use the <a class="code" href="config_reference.html#config_ref_Link" title="Link">Link</a> element
+        (used to route messages from one session to another), individual sessions referenced by the
+        <a class="code" href="config_reference.html#config_ref_SessionReference" title="SessionReference">SessionReference</a> element are permitted to be
+        reloaded without all of the sessions being reloadable, but there is a chance that a message from the active
+        session will not be able to be routed to the reloadable session. The safest solution for this scenario is to
+        manually make all the sessions of the <code class="code">Link</code> reloadable.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operation_configuration_model-dynamic"></a>4.3.3.&nbsp;Dynamic Configuration</h3></div></div></div><p>
+      There are two methods available to access the server's configuration: using JMX (which the Dashboard employs)
+      or via the XML configuration file. An overview of the two methods is shown in the following figure.
+    </p><div class="mediaobject"><img src="../resources/config-access.png"></div><p>
+      Note that the two methods cannot be used simultaneously. In particular the
+      <a class="code" href="ch04s02.html#operations_monitoring-cli-default" title="4.2.2.1.&nbsp;Default Commands">config_reload</a> command should not be
+      issued at the CLI while there are any pending changes resulting from JMX operations.
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2245"></a>4.3.3.1.&nbsp;Accessing the Model via JMX</h4></div></div></div><p>
+        The configuration model can be accessed and updated via JMX. Every element of the Node's configuration,
+        from the application to sessions and components is instrumented for JMX. A number of advanced operations are
+        also implemented, such as cloning sessions and reloading a session.
+      </p><p>
+        For an application to be manageable via JMX it must define the
+        <a class="code" href="config_reference.html#config_ref_JMXManagementService" title="JMXManagementService">JMXManagementService</a> in its startup XML
+        config. To define the <code class="code">JMXManagementService</code>, place the following lines in the XML config file:
+      </p><pre class="programlisting">&lt;Services&gt;
+  &lt;JMXManagementService id="JMXManagementService"/&gt;
+&lt;/Services&gt;</pre><p>
+        This assumes that the Catalys Local Management Agent (LMA) is also running. To access the configuration MBeans
+        without running the LMA, configure the <code class="code">JMXManagementService</code> to register its configuration MBeans
+        with the platform MBean Server:
+      </p><pre class="programlisting">&lt;Services&gt;
+  &lt;JMXManagementService id="JMXManagementService"
+    registerConfigurationMBeansOnActivation="true"/&gt;
+&lt;/Services&gt;</pre><p>To install and run the LMA, please refer to the LMA documentation.</p><p>The Node's MBeans can be browsed using the JConsole application.</p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2257"></a>Runtime Changes vs. Runtime Reload</h5></div></div></div><p>
+          The general pattern for accessing the model via JMX includes two steps. The first step is to make the change
+          to the configuration by modifying the desired configuration MBean and the second is to execute one of the
+          <code class="code">reload</code> operations. There are two levels of reload operations available via JMX:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Application reload: used to reload changes to an entire application</li><li class="listitem">Session reload: used when the changes are limited to a particular session</li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2264"></a>Preparing for Reload</h5></div></div></div><p>
+          As described above, a session must be <span class="bold"><strong>reloadable</strong></span>
+          before its configuration can be loaded into runtime. A session is
+          reloadable if it is disconnected, and locked or blocked, and its
+          session manager is de-activated.
+        </p><p>
+          To enable a session for reload, execute the <code class="code">makeSessionReloadable</code> operation on the
+          <code class="code">Configuration.Application.Session</code> MBean, which will disconnect, block the session and
+          de-activate the session manager.
+        </p><p>
+          If the session shares active runtime components with another
+          session, the above operation will fail, with a message such as:
+        </p><pre class="programlisting">ERROR jmx.ConfigurationMBean: Exception thrown from 'makeSessionReloadable' operation
+  invoked with parameters []
+  com.camerontec.catalys.server.configuration.IllegalOperationConfigurationException:
+  Cannot enable sessions for reloadComponent
+  /CatalysServer/Application/Sessions/Session(MONYPNY_IINVST)/SessionManager/
+  ListenerMessageProcessors/MessageProcessor(mp_1) is active and shared
+  by a non-relodable session</pre><p>
+          In this case, both sessions needs to be enabled for reload. To do this, execute the
+          <code class="code">makeSessionReloadable</code> operation on the <code class="code">Configuration.Application</code> MBean, supplying
+          the session identifiers of both sessions in a comma-separated list.
+        </p><p>
+          The status of the session can be determined by executing the <code class="code">diagnosis</code> operation on the
+          <code class="code">Configuration.Application.Session</code> MBean for the particular session of interest. The result of
+          this operation includes whether the session is reloadable, and whether it is in/active, un/locked, un/blocked,
+          and dis/connected.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2279"></a>Reload on a Single Session</h5></div></div></div><p>
+          To reload the changes to a single session, make the changes to the desired MBeans, and then execute the
+          <code class="code">reload</code> operation of the particular <code class="code">Configuration.Application.Session</code> MBean.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2284"></a>Reload on a Whole Node Application</h5></div></div></div><p>
+          To reload changes to a whole application, make the changes to the desired MBeans, and then execute the
+          <code class="code">reload</code> operation on the particular <code class="code">Configuration.Application</code> MBean.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2289"></a>Re-activating Sessions After a Reload</h5></div></div></div><p>
+          To re-activate a single session, after a reload, execute the <code class="code">unblockAndActivate</code> operation on the
+          <code class="code">Configuration.Application.Session</code> MBean.</p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2294"></a>Backup and Rollback</h5></div></div></div><p>
+          Each time the configuration is loaded into the runtime model
+          via JMX, the current configuration is backed up into a
+          timestamped XML file. The naming convention of these backed-up configuration files is
+          <span class="emphasis"><em>&lt;config_file_name&gt;.backup_yyyyMMddHHmmss.xml</em></span>
+          where:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">'yyyy' is the year</li><li class="listitem">'MM' is the month</li><li class="listitem">'dd' is the day of the month</li><li class="listitem">'HH' is the hour</li><li class="listitem">'mm' is the minutes</li><li class="listitem">'ss' is the seconds</li></ul></div><p>
+          To restore a particular configuration from XML, the known good configuration can be copied into the master
+          configuration file (the one specified on the command-line which started the Node) and a
+          reload can be triggered from the command-line by issuing the
+          <a class="code" href="ch04s02.html#operations_monitoring-cli-default" title="4.2.2.1.&nbsp;Default Commands">config_reload</a> command.
+        </p><p>
+          To rollback the set of configuration changes that have taken place since the last JMX reload, execute the
+          <code class="code">undo</code> operation on the relevant <code class="code">Configuration.Application</code> MBean. To undo changes on
+          a particular session, execute the <code class="code">undo</code> operation on the relevant
+          <code class="code">Configuration.Application.Session</code> MBean, supplying parameters for fine-tuning the
+          <code class="code">undo</code> operation:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="code">undoMarkForDelete</code>: this will undo any <code class="code">markForDelete</code> operations that have been
+            executed on the session, since the
+            last reload.
+          </li><li class="listitem"><code class="code">undoAdd</code>: this will undo any <code class="code">add</code> operations that have been executed on the session,
+            since the last reload. For example, <code class="code">addConnection</code>, <code class="code">addMessageProcessor</code>,
+            <code class="code">addSessionEncryption</code> and <code class="code">addSessionPersistence</code>.
+          </li><li class="listitem"><code class="code">undoAll</code>: this will undo all other modifications to the session since the last reload,
+            specifically all attribute, property and macro changes.
+          </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2326"></a>4.3.3.2.&nbsp;Changing and Reloading the Model via XML</h4></div></div></div><p>
+        The configuration model can be accessed via XML by editing the
+        XML configuration file and reloading it into runtime using one of
+        the <a class="code" href="ch04s02.html#operations_monitoring-cli-default" title="4.2.2.1.&nbsp;Default Commands">config_reload</a>,
+        <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_reload</a>, or
+        <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_force_reload</a> CLI commands.
+      </p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2332"></a>Preparing for Reload</h5></div></div></div><p>
+          As described above, a session must be <span class="bold"><strong>reloadable</strong></span> before its configuration
+          can be loaded into runtime. A session is reloadable if it is disconnected, and locked or blocked, and its
+          session manager is de-activated.
+        </p><p>
+          To disconnect and block the session, and de-activate the session manager, use the
+          <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_make_reloadable</a>
+          command, which will also check for active runtime components that are shared with other non-reloadable
+          sessions, and fail if it finds any. This command must be supplied with the hash value of the session, which
+          can be retrieved by running the
+          <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_list</a> command, lists all sessions,
+          associating each party/counterparty pair with a hash value. For example:
+        </p><pre class="programlisting">&gt; s_list
+s_list
+#  TargetCompId TargetSubId TargetLocation SenderCompId     SenderSubId SenderLocation
+-- ------------ ----------- -------------- ---------------- ----------- --------------
+15 IINVST       MONYPNY
+
+&gt; s_make_reloadable #15
+INFO SessionManager.IINVST MONYPNY: inactive
+sessionId Problems
+--------- --------</pre><p>
+          If the session is not reloadable when the
+          <a class="code" href="ch04s02.html#operations_monitoring-cli-default" title="4.2.2.1.&nbsp;Default Commands">config_reload</a> command is issued then
+          the command will fail, and an error message will be printed to the console.
+        </p><pre class="programlisting">&gt; config_reload
+INFO xmlconverter.XMLConfigurationReader: Reading configuration from XML file ../config.xml
+FAILED Cannot reload XML configuration from file: Cannot change the attributes of
+  a non-reloadable session
+  /CatalysServer/Application/Sessions/Session(MONYPNY_IINVST)</pre><p>
+          To re-activate the session, use the <code class="code">s_unblock_and_activate</code> command.
+        </p><p>
+          Individual commands can also be used to disconnect and block the session, and de-activate the session manager.
+          To disconnect a session, use the <code class="code">s_disconnect</code> command. To block a session, use the
+          <code class="code">s_block</code> command. To lock a session, use the <code class="code">s_lock</code> command. Note that blocking and
+          locking a session are functionally equivalent (the session ignores new connections) but the blocked status is
+          persisted (survives an application restart), whereas the locked status is not. To de-activate a session
+          manager, use the <code class="code">c_de_activate</code> command, supplying the component name of the session manager,
+          which can be determined using the <code class="code">c_list</code> command.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2351"></a>Reloading Without Changes</h5></div></div></div><p>
+          If there is no difference between the configuration in the XML
+          file and what is currently running on the server, there will be
+          no effect on the server, and the following message will be
+          printed on the console:
+        </p><pre class="programlisting">&gt; config_reload
+INFO xmlconverter.XMLConfigurationReader: Reading configuration from XML file ../config.xml
+INFO configuration.ConfigurationReloader: Old and new configurations are identical. \
+                                          Nothing to reload.</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2355"></a>Non-structural Changes</h5></div></div></div><p>
+          If there are changes to a reloadable session then these
+          changes will be accepted and loaded into the runtime model.
+          Non-structural changes (modifying the values of attributes) will
+          produce a message such as the following:
+        </p><pre class="programlisting">&gt; config_reload
+INFO xmlconverter.XMLConfigurationReader: Reading configuration from XML file ../config.xml
+INFO configuration.ConfigurationReloader: Reloading configuration using reader ../config.xml
+     The following session(s) have changed, but with no structural differences, \
+     they are to be reloaded:
+     Session: /CatalysServer/Application/Sessions/Session(MONYPNY_IINVST)
+     After reload the following session(s) will exist:
+     Session: /CatalysServer/Application/Sessions/Session(MONYPNY_IINVST)</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2359"></a>Structural Changes</h5></div></div></div><p>
+          Structural changes consist of modifying the hierarchy or order
+          of elements within the configuration. A structural change will
+          produce console output such as:
+        </p><pre class="programlisting">&gt; config_reload
+INFO xmlconverter.XMLConfigurationReader: Reading configuration from XML file ../config.xml
+INFO configuration.ConfigurationReloader: Reloading configuration using reader ../config.xml
+  The following session(s) have changed, with structural differences, they are to be reloaded:
+  Session: /CatalysServer/Application/Sessions/Session(MONYPNY_IINVST)
+  After reload the following session(s) will exist:
+  Session: /CatalysServer/Application/Sessions/Session(MONYPNY_IINVST)</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2363"></a>Changes to Application-wide Components</h5></div></div></div><p>
+          If there are configuration changes to components which exist
+          outside of sessions (links and services, for example) the
+          application can still be reloaded without its sessions being
+          reloadable. In this case a console message will be printed which
+          indicates that the sessions have not been reloaded, but the
+          modified application-wide components have.
+        </p><pre class="programlisting">&gt; config_reload
+INFO xmlconverter.XMLConfigurationReader: Reading configuration from XML file ../config.xml
+INFO configuration.ConfigurationReloader: Reloading configuration using reader ../config.xml
+  The following identical session(s) are to be skipped (not reloaded) :
+  Session: /CatalysServer/Application/Sessions/Session(MONYPNY_IINVST)
+  After reload the following session(s) will exist:
+  Session: /CatalysServer/Application/Sessions/Session(MONYPNY_IINVST)
+  The following new service(s) are to be added to old configuration:
+  Service: /CatalysServer/Application/Services/Service(serv)</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e2367"></a>Session-only Reload</h5></div></div></div><p>
+          Sessions can also be reloaded on an individual basis using the
+          <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_reload</a> command. For this command
+          to succeed the session must be reloadable.
+        </p><p>
+          The <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_force_reload</a> command can be
+          used to enable the session for reload, reload it, and restore it to its previous state.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="operation_configuration_model-highAvailability"></a>4.3.3.3.&nbsp;Dynamic Configuration in a High Availability Environment</h4></div></div></div><p>
+        Dynamic configuration is only available on the primary node of
+        a High Availability cluster. Changes made and reloaded on the
+        primary are automatically synchronized to any running secondary
+        nodes. If any secondary node of the cluster is not running at the
+        time the changes are reloaded, then the changes need to be made
+        manually on the secondary before starting it.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch04s02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch04.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">4.2.&nbsp;Monitoring the Node&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;5.&nbsp;Standard Features</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,101 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.9.&nbsp;JDBC Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s08.html" title="7.8.&nbsp;Microsoft MQ Adapter"><link rel="next" href="ch07s10.html" title="7.10.&nbsp;Flat File Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s08.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s10.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_jdbc"></a>7.9.&nbsp;JDBC Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jdbc-introduction"></a>7.9.1.&nbsp;Overview</h3></div></div></div><p>
+      The Node JDBC Adapter is designed to work with the Node and any JDBC compliant database product.
+    </p><p>
+      The JDBC Adapters provides communication and exchange of messages between a database and the Node. When placed in
+      the listener (inbound) side of a session, it extracts a selection of fields and inserts them into a database
+      using a SQL statement or stored procedure. Values may be converted to
+      specific data types or will default to <code class="code">varchars</code>.
+    </p><p>
+      On the source (outbound) side of a session, the adapter periodically polls a database using the a SQL statement
+      or stored procedure. The returned row(s) are used to populate fields of a FIX message object. The message is sent
+      out on a session. A <code class="code">status</code> column is updated depending on if the message was successfully sent or
+      not.
+    </p><p>
+      The same instance of the JDBC adapter can act both as a source and a listener when defined in both sections, with
+      all the attributes defined in the first section and just the same id in the second.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jdbc-install"></a>7.9.2.&nbsp;JDBC Adapter Installation</h3></div></div></div><p>
+      You must have your JDBC provider's software according to their installation instructions. Typically, you
+      will be connecting to a JDBC compliant database. You will need to locate the .jar file(s) for the JDBC class 
+      library of the database and place them in the <span class="emphasis"><em>/ext</em></span> directory of your install.
+    </p><p>
+      You will need to locate your JDBC driver and configure the <code class="code">driver</code> attribute on the JDBC adapter to
+      the driver's Java class name. For example: <code class="code">driver="sun.jdbc.odbc.JdbcOdbcDriver"</code>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jdbc-config"></a>7.9.3.&nbsp;Configuration</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8068"></a>JDBCAdapter element</h4></div></div></div><p>
+        The <code class="code">JDBCAdapter</code> element is a message processor which is configured into the source and listener
+        message processor chains of a sesson on the Node.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_JdbcAdapter" title="JdbcAdapter">JDBCAdapter Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e8074"></a>Configuration Example</h4></div></div></div><p>
+        </p><p>The following examples shows a JDBC Adapter configured on one session:</p><p>
+        </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="EXCHANGE" compid="BROKER"
+           fixversion="4.4" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="sc1" hostname="localhost" port="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;JdbcAdapter
+          id="jdbc1"
+          driver="com.mysql.jdbc.Driver"
+          url="jdbc:mysql://localhost/jdbcadapter"
+          user="user"
+          password="password"
+          fixToDbFile="../../tuples4.txt"
+          fixToDbFileFormat="desc,tag"
+          fixToDbInsertStatement="INSERT INTO from_fix VALUES"
+          peerRecoveryInterval="10000"
+          peerPollingInterval="1000"
+          dbToFixTags="ignore,ignore,ignore,55,35"
+          dbToFixPollStatement=
+            "SELECT * FROM to_fix WHERE to_fix.status &lt; '2' ORDER BY to_fix.msgId ASC"
+          dbToFixUpdateStatement=
+            "UPDATE to_fix SET to_fix.status = ? WHERE to_fix.msgId = ?"
+          dbToFixUseStrictSequencing="true"
+          dbToFixInitStatement=
+            "SELECT MAX(msgId) FROM to_fix WHERE to_fix.status &gt; '1'"
+          &gt;
+        &lt;/JdbcAdapter&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;MessageProcessorReference id="listen_jdbc1" refid="jdbc1"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre><p>
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jdbc-template"></a>7.9.4.&nbsp;Template</h3></div></div></div><p>
+      There is a working template for the JDBC Adapter in <span class="emphasis"><em>templates/JdbcAdapter</em></span> directory. This is
+      a simple template with a single FIX session where one side of a FIX session connects and sends orders to the
+      other side side. The receiving side inserts these messages into a database table by assigning a relationship from
+      a FIX fields to database column. At the same time, this side is selected data from a database, constructing FIX
+      messages and sending them outbound on the session.
+    </p><p>
+      There are two variants of the sell side. One uses prepared SQL statements, the other uses stored procedures.
+      The <code class="code">config_sell</code> instance uses prepared SQL statements, while the <code class="code">config_sellProc</code>
+      instance uses stored procedures to interact with the database.
+    </p><p>
+      The JDBC Adapter template requires that you create tables and optionally stored procedures in your database.
+      There are MySQL formatted DDL scripts for both the SQL statement and stored procedure templates
+      (<span class="emphasis"><em>createMySql.ddl</em></span> and <span class="emphasis"><em>createMySqlProc.ddl</em></span> ). These DDL scripts
+      correspond to the <code class="code">config_sell</code> and <code class="code"> config_sellProc</code> templates respectively.
+    </p><p>
+      See the <span class="emphasis"><em>ReadMe.txt</em></span> file for the instance you are running for instructions on how to run
+      the template.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jdbc-repeatinggroups"></a>7.9.5.&nbsp;Repeating Groups Considerations</h3></div></div></div><p>
+      If your FIX messages contain repeating groups you must ensure that your database schema has enough columns to
+      accommodate all possible repeating group entries in your messages, otherwise the adapter will throw a SQL
+      Exception.
+    </p><p>
+      You must also ensure that the list of tags specified via the attribute <span class="emphasis"><em>fixToDbTags</em></span> and the
+      tuples listed in the file specified via attribute <span class="emphasis"><em>fixToDbFile</em></span> contain enough placeholders to
+      accommodate as many repeating group entries as can possibly occur in your FIX messages. If a message contains
+      more repeating groups entries than the available placeholders the adapter will throw a SQLException. If the
+      message contains less entries the corresponding DB columns will simply be set to NULL.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s08.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s10.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.8.&nbsp;Microsoft MQ Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.10.&nbsp;Flat File Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:39+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

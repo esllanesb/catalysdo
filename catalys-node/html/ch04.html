@@ -1,0 +1,69 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; Chapter&nbsp;4.&nbsp;Operations and Monitoring</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="index.html" title="Catalys Node User Guide"><link rel="prev" href="ch03s04.html" title="3.4.&nbsp;Encryption of Attributes"><link rel="next" href="ch04s02.html" title="4.2.&nbsp;Monitoring the Node"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch03s04.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;4.&nbsp;Operations and Monitoring</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch04s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="d5e1564"></a>Chapter&nbsp;4.&nbsp;Operations and Monitoring</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="ch04.html#operation_lifecycle">4.1. Node Lifecycle</a></span></dt><dd><dl><dt><span class="section"><a href="ch04.html#operations_lifecycle-intro">4.1.1. Introduction</a></span></dt><dt><span class="section"><a href="ch04.html#operations_lifecycle-starting-node">4.1.2. Starting the Node</a></span></dt><dt><span class="section"><a href="ch04.html#operations_lifecycle-starting-sessions">4.1.3. Starting FIX Sessions</a></span></dt><dt><span class="section"><a href="ch04.html#operations_lifecycle-stopping-sessions">4.1.4. Stopping FIX Sessions</a></span></dt><dt><span class="section"><a href="ch04.html#operations_lifecycle-resetting-sessions">4.1.5. Resetting FIX Sessions</a></span></dt><dt><span class="section"><a href="ch04.html#operations_lifecycle-eod">4.1.6. End-of-Day Processing</a></span></dt><dt><span class="section"><a href="ch04.html#operations_lifecycle-stopping-node">4.1.7. Stopping the Node</a></span></dt><dt><span class="section"><a href="ch04.html#operations_lifecycle-persistent-data">4.1.8. Archiving Logs</a></span></dt></dl></dd><dt><span class="section"><a href="ch04s02.html">4.2. Monitoring the Node</a></span></dt><dd><dl><dt><span class="section"><a href="ch04s02.html#operations_monitoring-intro">4.2.1. Introduction</a></span></dt><dt><span class="section"><a href="ch04s02.html#operations_monitoring-command-line">4.2.2. Command-Line Interface</a></span></dt><dt><span class="section"><a href="ch04s02.html#operations_monitoring-remote-command-line">4.2.3. Remote Command-Line Interface</a></span></dt><dt><span class="section"><a href="ch04s02.html#operations_monitoring-extending-command-line">4.2.4. Custom CLI Commands</a></span></dt><dt><span class="section"><a href="ch04s02.html#operations_monitoring-jmx">4.2.5. Monitoring via JMX</a></span></dt><dt><span class="section"><a href="ch04s02.html#operations_monitoring-mis">4.2.6. Monitoring via the Dashboard</a></span></dt><dt><span class="section"><a href="ch04s02.html#operations_monitoring-custom-monitor">4.2.7. Developing a Custom Monitor Class</a></span></dt></dl></dd><dt><span class="section"><a href="ch04s03.html">4.3. Configuration Model and Runtime Changes</a></span></dt><dd><dl><dt><span class="section"><a href="ch04s03.html#operation_configuration_model-intro">4.3.1. Introduction</a></span></dt><dt><span class="section"><a href="ch04s03.html#operation_configuration_model-model">4.3.2. Configuration Model vs. Runtime Model</a></span></dt><dt><span class="section"><a href="ch04s03.html#operation_configuration_model-dynamic">4.3.3. Dynamic Configuration</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="operation_lifecycle"></a>4.1.&nbsp;Node Lifecycle</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_lifecycle-intro"></a>4.1.1.&nbsp;Introduction</h3></div></div></div><p>
+      All production FIX environments need to start, stop, reset and shutdown on a strict, well-known schedule.
+      In addition to the scheduling of the FIX engine and its sessions, logs must be periodically archived and persistent
+      data should be recycled.
+    </p><p>
+      Most FIX environments operate on a daily or weekly lifecycle, but any time period is permitted. The
+      Node supports most of these lifecycle tasks natively using the built-in
+      <a href="ch05s02.html" title="5.2.&nbsp;Scheduling">Scheduler</a>, but there are other ways to perform some of the tasks.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_lifecycle-starting-node"></a>4.1.2.&nbsp;Starting the Node</h3></div></div></div><p>
+      One lifecycle task that the Scheduler cannot perform is starting the Node process. This must
+      be performed by a process outside of the Node. In Unix-based environments this is normally
+      performed using cron. In Windows environments this is normally performed using a Scheduled Task.
+      In either case, the job or task should be configured to execute the Node's
+      <a href="ch02s06.html" title="2.6.&nbsp;Startup">startup script</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_lifecycle-starting-sessions"></a>4.1.3.&nbsp;Starting FIX Sessions</h3></div></div></div><p>
+      After the Node has started, sessions will be scheduled to connect and logon with their counterparty.
+      A listening session will allow the counterparty to connect and logon at this time; an initiator will connect
+      and attempt to logon to the counterparty. This can be scheduled using a <code class="code">StartTask</code> in the Scheduler
+      of the Node. Sessions can also be manually started via the Node's command-line interface (CLI) by issuing the
+      <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_connect</a> command.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_lifecycle-stopping-sessions"></a>4.1.4.&nbsp;Stopping FIX Sessions</h3></div></div></div><p>
+      Once a FIX session is established it will be scheduled to logout and disconnect from the counterparty. It is
+      highly recommended that FIX sessions perform a graceful logout sequence rather than abruptly disconnecting the
+      socket. This gives both sides time to send any final messages before logging out. A graceful logout can be
+      scheduled using a <code class="code">StopTask</code> in the Scheduler of the Node. Sessions can also be manually stopped by
+      issuing the <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_disconnect</a> CLI command.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_lifecycle-resetting-sessions"></a>4.1.5.&nbsp;Resetting FIX Sessions</h3></div></div></div><p>
+      A FIX session reset is normally performed after a <code class="code">StopTask</code> has executed and before the next
+      <code class="code">StartTask</code> executes. This ensures that both sides of a FIX session logon with the starting sequence
+      number #1, and it protects a counterparty from accidentally resending a batch of messages from the previous day,
+      week or session. A session reset can be scheduled using a <code class="code">ResetTask</code> in the Scheduler of the Node.
+      Sessions can also be manually reset by issuing the
+      <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_reset</a> CLI command.
+    </p><div class="caution"><h3 class="title">Caution</h3><p>
+        Resetting a FIX session that is connected will abruptly terminate the session and reset the inbound
+        and outbound sequence numbers to #1. This is not recommended and should only be performed if agreed on
+        with your counterparty.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_lifecycle-eod"></a>4.1.6.&nbsp;End-of-Day Processing</h3></div></div></div><p>
+      "End-of-Day" processing invokes end-of-day procedures on all configured message processors.  This usually
+      involves purging or compacting persistent data. There are certain features in the Node that store persistent data
+      but custom message processors could store persistent data as well. EOD processing can be scheduled using the
+      <code class="code">EndOfDay</code> task in the Scheduler of the Node. This can also be manually triggered by issuing the
+      <a class="code" href="ch04s02.html#operations_monitoring-cli-session-ref" title="Session Command Reference">s_end_of_day</a> CLI command.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_lifecycle-stopping-node"></a>4.1.7.&nbsp;Stopping the Node</h3></div></div></div><p>
+      Periodically stopping the Node is recommended but not required.  Restarts are only required when making certain
+      configuration changes. Restarting will clear out any data stored in memory and entirely reset the FIX
+      environment. Stopping a Node can be scheduled using the <code class="code">ShutdownTask</code> the Scheduler of the Node. It
+      can also be manually performed by issuing the
+      <a class="code" href="ch04s02.html#operations_monitoring-cli-default" title="4.2.2.1.&nbsp;Default Commands">exit</a> CLI command.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="operations_lifecycle-persistent-data"></a>4.1.8.&nbsp;Archiving Logs</h3></div></div></div><p>
+      Another common lifecycle task is archiving and/or purging old log data. This is normally configured to adhere
+      to the file archiving policies at your firm. The Node can produce two types of log data: text and binary.
+    </p><p>
+      Text-based logs are produced using <a href="ch03s02.html#config_logging-logback-configuration" title="3.2.3.&nbsp;Logback Configuration">Logback</a> and
+      are configured via <span class="emphasis"><em>logback.xml</em></span>. The archival of these logs can be manually managed, or you
+      can use Logback's built-in
+      <a class="code" href="https://logback.qos.ch/manual/appenders.html" target="_top">RollingFileAppender</a>.
+    </p><p>
+      Binary logs are produced using <a href="ch03s02.html#config_logging-hpl-config" title="3.2.2.&nbsp;HPL Configuration and Operation">High Performance Logger</a>. HPL
+      logs are configured via the <span class="emphasis"><em>HighPerformanceLogger.conf</em></span> file.
+      See the HPL file archiving section <a href="ch03s02.html#config_logging-archive-hpl" title="Archiving HPL Log Files">here</a>.
+      
+    </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch03s04.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch04s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">3.4.&nbsp;Encryption of Attributes&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;4.2.&nbsp;Monitoring the Node</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

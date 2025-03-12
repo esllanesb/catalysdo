@@ -1,0 +1,52 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys MIS User Guide &#151; 3.2.&nbsp;Maintenance</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys MIS User Guide"><link rel="up" href="ch03.html" title="Chapter&nbsp;3.&nbsp;Configuration And Maintenance"><link rel="prev" href="ch03.html" title="Chapter&nbsp;3.&nbsp;Configuration And Maintenance"><link rel="next" href="ch03s03.html" title="3.3.&nbsp;Management Information Server API"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;3.&nbsp;Configuration And Maintenance</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch03s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="mis_maintenance"></a>3.2.&nbsp;Maintenance</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_maintenance-logging"></a>3.2.1.&nbsp;Logging</h3></div></div></div><p>
+      The MIS uses <a href="http://logging.apache.org/log4j/1.2/index.html" target="_top">Log4j</a> to configure its logging.
+      Edit the contents of the file <span class="emphasis"><em>resources/log4j.xml</em></span> to change the logging configuration.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_maintenance-mbeans"></a>3.2.2.&nbsp;Browse CameronTec MBeans</h3></div></div></div><p>
+      The MA (Management Agent) component of the MIS is effectively a JMX management agent and JConsole can be used as
+      a simple interface between the end-user and the monitored applications. The only requirement is that JConsole
+      must use the JMXMP connector, which is not part of the
+      <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/jmx/overview/connectors.html" target="_top">standard connector set</a>.
+      The MIS installation provides the <span class="emphasis"><em>jconsole/jconsole.sh</em></span> and
+      <span class="emphasis"><em>jconsole/jconsole.bat</em></span> scripts which start a JMXMP-enabled JConsole which will attempt to
+      contact the MA on the localhost on port 10000 (properties which can be modified by changing the jconsole script).
+    </p><p>
+      To browse the CameronTec MBeans, ensure that the MIS is started, and connect JConsole to it, as described above.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_maintenance-performance-and-scalability"></a>3.2.3.&nbsp;Performance and Scalability</h3></div></div></div><p>
+      The MIS requires 512 MB of heap size to work properly. For each 100 million events that the repository is
+      expected to store, an additional 256 MB should be added to the maximum JVM heap size.
+    </p><p>
+      Logs Repository operations are very I/O intensive - a fast I/O system such as a solid-state disk (SSD) is
+      recommended. The size of the disk also needs to be sufficient to store the volume of logs that are streamed from
+      managed applications. A rough estimate is that the required disk space is three times the amount of logs being
+      processed. Thus if the applications are generating a total of 1 GB of logs every day, the MIS file-system
+      requires a minimum of 3 GB of free space. Some of this space can be reclaimed every day by doing some
+      <a href="ch03s02.html#mis_maintenance-clean-up" title="3.2.4.&nbsp;Logs Clean-up">clean up</a>.
+    </p><p>
+      Likewise, if the machine running the MIS is too slow and large amounts of logs data is being streamed, there may
+      be some lag while browsing logs in the GUI.
+    </p><p>
+      Log tailing is a CPU and memory-intensive process; for large repositories, tailing can significantly impact the
+      performance of the MIS and so should be used judiciously.
+    </p><p>
+      To improve performance, logging and streaming strategies can be adjusted in order to reduce the amount of
+      information exported to the MIS. For example, limiting the level of logging that managed applications generate to
+      INFO, and only using DEBUG if strictly necessary. Alternatively, only streaming logs to the MIS for some sessions.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mis_maintenance-clean-up"></a>3.2.4.&nbsp;Logs Clean-up</h3></div></div></div><p>
+      By default, at start-up, the MIS performs an automatic clean-up of the data in the log events repository (which
+      by default is stored in <span class="emphasis"><em>data/log-events-repository</em></span>), and only retains up to 24 hours of
+      data. The amount of data and the frequency of clean-up can be configured via the Admin Tab of the Dashboard.
+    </p><p>
+      This clean-up does not apply to the log files that are replicated from the hosts that generate them (which are by
+      default stored in <span class="emphasis"><em>data/replicatedLogs</em></span>). These files are only deleted if their corresponding
+      source log file is deleted. (The files are re-replicated if they are deleted from this directory).
+    </p><p>
+      All the log-related data of the MIS can be safely removed before starting the MIS, by deleting the directory
+      called <span class="emphasis"><em>data/log-events-repository</em></span> under the MIS installation directory. This directory should
+      only be deleted when the MIS process is stopped.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch03.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch03s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;3.&nbsp;Configuration And Maintenance&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;3.3.&nbsp;Management Information Server API</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:53:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

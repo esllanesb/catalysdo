@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 5.9.&nbsp;Message Factories</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="prev" href="ch05s08.html" title="5.8.&nbsp;Inbound Message Validation"><link rel="next" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05s08.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;5.&nbsp;Standard Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="stdfeature_message_factory"></a>5.9.&nbsp;Message Factories</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_message_factory-intro"></a>5.9.1.&nbsp;Introduction</h3></div></div></div><p>
+      Message Factories are used by sessions to create <code class="code">IFIXMessage</code> message objects. Two typical scenarios
+      for using non-default message factories are: adding non-standard fields to a specific session layer message
+      type, and controlling the type of <code class="code">IFIXMessage</code> object that is created. For example, the
+      <code class="code">FastFriendlyFIXMessageFactory</code> creates a special implementation of <code class="code">IFIXMessage</code>
+      optimized for sending FIX messages over a FAST-encoded session.
+    </p><p>
+      The default message factories are
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/DefaultFromFIXMessageFactory.html" target="_top">DefaultFromFIXMessageFactory</a>
+      and
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/DefaultToFIXMessageFactory.html" target="_top">DefaultToFIXMessageFactory</a>
+      which create messages of type
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/FIXMessageAsIndexedByteArray.html" target="_top">FIXMessageAsIndexedByteArray</a>
+      and
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/FIXMessageAsArray.html" target="_top">FIXMessageAsArray</a>
+      respectively. However, it is possible to configure a a session to use a different message factory. There are a
+      number of <a href="ch05s09.html#stdfeature_message_factory-provided" title="5.9.3.&nbsp;Provided Implementations">provided message factory implementations</a> and
+      it is possible to develop a <a href="ch05s09.html#stdfeature_message_factory-custom" title="5.9.4.&nbsp;Custom Implementation">custom implementation</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_message_factory-configuration"></a>5.9.2.&nbsp;Configuration</h3></div></div></div><p>
+      The <code class="code">MessageFactories</code> configuration element is used to define message factory configurations. Each
+      configured factory must have an <code class="code">id</code> attribute, which is referenced by the
+      <code class="code">toFIXMessageFactoryRefId</code> and <code class="code">fromFIX&shy;MessageFactoryRefId</code> attributes of
+      <code class="code">Session</code> elements to indicate which message factory should be used. For example:
+    </p><pre class="programlisting">&lt;Application id="CatalysSell"&gt;
+  &lt;MessageFactories&gt;
+    &lt;ConfigurableMessageClassMessageFactory
+        id="inboundFactory"
+        messageClass="com.camerontec.catalys.core.message.FIXMessageAsIndexedList"
+        /&gt;
+    &lt;ConfigurableMessageClassMessageFactory
+        id="outboundFactory"
+        messageClass="com.camerontec.catalys.core.message.FIXMessageAsIndexedByteArray"
+        /&gt;
+  &lt;/MessageFactories&gt;
+  &lt;Sessions&gt;
+    &lt;Session counterpartycompid="BROKER"
+             compid="MARKET"
+             fixversion="4.4"
+             fromFIXMessageFactoryRefId="inboundFactory"
+             toFIXMessageFactoryRefId="outboundFactory"&gt;
+      ...
+    &lt;/Session&gt;
+  &lt;/Sessions&gt;
+&lt;/Application&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_message_factory-provided"></a>5.9.3.&nbsp;Provided Implementations</h3></div></div></div><p>
+      Besides the default message factories, the Node includes a number of alternate factories:
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="stdfeature_message_factory-configurable"></a>ConfigurableMessageClassMessageFactory</h4></div></div></div><p>
+        This message factory returns instances of any class which implements <code class="code">IFIXMessage</code>. The message
+        class to use is specified via its <code class="code">messageClass</code> attribute.
+      </p><p>
+        Additionally, this message factory adds the Username(553) and Password(553) fields to Logon messages if the
+        optional <code class="code">username</code> and <code class="code">password</code> attributes are set.  While some implementations need
+        dedicated factories with special configuration elements, simpler implementations like
+        <code class="code">FIXMessage&shy;AsIndexedByteArray</code> and <code class="code">FIXMessage&shy;AsArray</code> do not need a dedicated
+        factory and can be set by using the <code class="code">ConfigurableMessageClassMessage&shy;Factory</code> element.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_ConfigurableMessageClassMessageFactory" title="ConfigurableMessageClassMessageFactory">ConfigurableMessageClassMessageFactory Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3427"></a>CMEiLink2MessageFactory</h4></div></div></div><p>
+        This message factory is required to connect to the iLink 2.0 FIX gateway at the CME. The gateway requires the
+        RawData(96) field be present in Logon messages. Messages created using this factory
+        will contain that field populated automatically as well as the associated RawDataLength(95) field.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_CMEiLink2MessageFactory" title="CMEiLink2MessageFactory">CMEiLink2MessageFactory Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3432"></a>FastFriendlyFIXMessageFactory</h4></div></div></div><p>
+        This message factory creates <code class="code">IFIXMessage</code> objects that are optimized for use over a FAST-encoded
+        session. Messages created by this factory have an order imposed by the FAST template associated with each
+        message type. Hence, addition of fields to these messages are guaranteed to be inserted in the correct order.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_FastFriendlyFIXMessageFactory" title="FastFriendlyFIXMessageFactory">FastFriendlyFIXMessageFactory Configuration Reference</a>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_message_factory-custom"></a>5.9.4.&nbsp;Custom Implementation</h3></div></div></div><p>
+      As stated above, it is possible to develop your own custom message factory. Please review the
+      <a href="ch08s05.html" title="8.5.&nbsp;Message Factories">Message Factory Programming Guide</a> for instructions. To configure
+      your custom message factory, see the following example which uses the <code class="code">GenericMessageFactory</code>.
+    </p><pre class="programlisting">&lt;Application id="CatalysSell"&gt;
+  &lt;MessageFactories&gt;
+    &lt;GenericMessageFactory
+        id="outboundFactory"
+        class="com.camerontec.catalys.core.message.CustomMessageFactory"&gt;
+      &lt;Properties id="outboundFactoryProps"&gt;
+        &lt;Property name="prop1" value="value1"/&gt;
+      &lt;/Properties&gt;
+    &lt;/GenericMessageFactory&gt;
+  &lt;/MessageFactories&gt;
+  &lt;Sessions&gt;
+    &lt;Session counterpartycompid="BROKER"
+             compid="MARKET"
+             fixversion="4.4"
+             toFIXMessageFactoryRefId="outboundFactory"&gt;
+      ...
+    &lt;/Session&gt;
+  &lt;/Sessions&gt;
+&lt;/Application&gt;</pre><p>
+      For a complete list of attributes, see the
+      <a href="config_reference.html#config_ref_GenericMessageFactory" title="GenericMessageFactory">GenericMessageFactory Configuration Reference</a>.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s08.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch05.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.8.&nbsp;Inbound Message Validation&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;6.&nbsp;Optional Features</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:35+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,87 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.4.&nbsp;Scheduled Order Cache</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s03.html" title="6.3.&nbsp;File Lookup Service"><link rel="next" href="ch06s05.html" title="6.5.&nbsp;FIXML Transformer"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_held_order_cache"></a>6.4.&nbsp;Scheduled Order Cache</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e4935"></a>6.4.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Scheduled Order Cache is a built-in message processor that provides functionality to cache order messages
+      on a session that is not active, and then release the messages at a certain time in the future. There is support
+      for replacing and cancelling orders that are held in the cache.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e4938"></a>6.4.2.&nbsp;Configuration</h3></div></div></div><p>
+      The <code class="code">ScheduledOrderCacheProcessor</code> can only be configured on the source (outbound) side of a
+      session's <code class="code">SessionManager</code> element. It will throw a configuration exception if configured as a
+      listener. Also, only one <code class="code">ScheduledOrderCacheProcessor</code> instance may be configured per session. No
+      message processor references are allowed.
+    </p><p>
+      The following shows a <code class="code">ScheduledOrderCacheProcessor</code> element configured on a session with a
+      <code class="code">Properties</code> section and a nested <code class="code">CatalysRulesEngine</code>. This instance will
+      cache messages where tag100='EXCH1' between 15:15 and 08:00 (next day) and all other messages between
+      15:30 and 08:30 (next day).
+    </p><pre class="programlisting">&lt;Session counterpartycompid="ROUTING_HUB" compid="BROKER_ABC" fixversion="4.2"&gt;
+  ...
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;ScheduledOrderCacheProcessor id="soc1"
+                                    dataDirectory="./data/ordercache/EXCHANGE_A"
+                                    msgTypes="D,F,G"&gt;
+        &lt;CatalysRulesEngine id="cre1" rulesPackId="exchange-rules" /&gt;
+        &lt;Properties id="soc1-props"&gt;
+          &lt;!--Schedule for EXCH1 messages--&gt;
+          &lt;Property name="EXCH1.condition" value="tag100=='EXCH1'" /&gt;
+          &lt;Property name="EXCH1.schedule" value="08:00,15:15" /&gt;
+          &lt;!--Default schedule for everything else--&gt;
+          &lt;Property name="schedule" value="08:30,15:30" /&gt;
+        &lt;/Properties&gt;
+      &lt;/ScheduledOrderCacheProcessor&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+      For a complete list of configuration attributes, see the
+      <a href="config_reference.html#config_ref_ScheduledOrderCacheProcessor" title="ScheduledOrderCacheProcessor">ScheduledOrderCacheProcessor Configuration Reference</a>.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e4951"></a>Schedule and Condition Configuration Properties</h4></div></div></div><p>
+        The caching and releasing of messages is controlled by one or more <code class="code">schedule</code> and
+        <code class="code">condition</code> property elements. The most basic configuration is a single default
+        <code class="code">schedule</code> property:
+      </p><pre class="programlisting">&lt;Properties id="cache1-props"&gt;
+  &lt;!--do not cache msgs between 08:40 to 15:45--&gt;
+  &lt;Property name="schedule" value="08:40,15:45" /&gt;
+&lt;/Properties&gt;</pre><p>
+        It is also possible to define multiple conditions and schedules to cache and release different
+        messages at different times. This is accomplished by using <code class="code">&lt;KEY&gt;.condition</code> and
+        <code class="code">&lt;KEY&gt;.condition</code> property elements.
+      </p><pre class="programlisting">&lt;Properties id="cache1-props"&gt;
+  &lt;!--EXCH1 Market Order schedule--&gt;
+  &lt;Property name="EXCH1_1.condition" value="tag100=='EXCH1' &amp;&amp; tag40==1" /&gt;
+  &lt;Property name="EXCH1_1.schedule" value="07:05,16:15" /&gt;
+  &lt;!--EXCH2 Non Market Order schedule--&gt;
+  &lt;Property name="EXCH1_2.condition" value="tag100=='EXCH1'" /&gt;
+  &lt;Property name="EXCH1_2.schedule" value="07:30,16:15" /&gt;
+  &lt;!--default schedule--&gt;
+  &lt;Property name="schedule" value="08:00,16:00" /&gt;
+&lt;/Properties&gt;</pre><p>
+        Refer to the  <a href="ch06s02.html#optfeature_rules_engine-expressions" title="6.2.3.&nbsp;Expression Language">Rules Engine Expression Language</a>
+        section for the information on what is supported in the <code class="code">condition</code> syntax.
+      </p><div class="important"><h3 class="title">Important</h3><p>
+          The value of the <code class="code">schedule</code> element defines when to NOT cache messages, i.e. when the venue
+          is accepting orders.
+        </p></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e4968"></a>6.4.3.&nbsp;Behavior of Scheduled Order Cache</h3></div></div></div><p>
+      NewOrderSingle (D) and OrderCancelReplaceRequest (G) will be cached without acknowledgement when the destination
+      is out of schedule. The messages will be released when the schedule opens.
+    </p><p>
+      OrderCancelRequest (F) messages will be handled in two different ways:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          If the order exists in the cache, the entire order chain will be removed and acknowledged via
+          ExecutionReport (8) back to the sender.
+        </li><li class="listitem">
+          If the order does not exists in the cache, an OrderCancelReject (9) will be sent back to the sender.
+        </li></ul></div><p>
+    </p><p>
+      Application messages generated by the <code class="code">ScheduledOrderCacheProcessor</code> are FIX version compliant for
+      FIX 4.0 to FIX 5.0SP2.
+    </p><div class="note"><h3 class="title">Note</h3><p>
+        The implicit assumption is that order cancel replace requests contain the same schedule matching conditions as
+        the originating order. It is recommended that validation be configured to guarantee this is the case.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.3.&nbsp;File Lookup Service&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.5.&nbsp;FIXML Transformer</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

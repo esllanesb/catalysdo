@@ -1,0 +1,49 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; F.2.&nbsp;Server Management MBeans</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="apf.html" title="Appendix&nbsp;F.&nbsp;JMX MBean Reference"><link rel="prev" href="apf.html" title="Appendix&nbsp;F.&nbsp;JMX MBean Reference"><link rel="next" href="apfs03.html" title="F.3.&nbsp;Session Management MBeans"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="apf.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;F.&nbsp;JMX MBean Reference</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="apfs03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="d5e34629"></a>F.2.&nbsp;Server Management MBeans</h2></div></div></div><p>
+      From an operational perspective, the monitoring of the Node focuses on the following information:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Is your server up and running?</li><li class="listitem">Should it be up and running?</li><li class="listitem">Are there any sessions that are down on this server?</li></ul></div><p>
+      Prior to checking the health of the Node, it is useful to check the integrity of the network via this MBean:
+    </p><pre class="programlisting">com.camerontec:name="localhost",type="Host"</pre><p>
+      It has a <code class="code">ping</code> operation which can be used to distinguish if the host is alive but the Node is down.
+    </p><p>
+      The next step would be to check that the Local Management Agent is running appropriately via this MBean:
+    </p><pre class="programlisting">com.camerontec:Host="&lt;hostName&gt;",type="Host.LMA"</pre><p>
+      Its <code class="code">live</code> attribute indicates whether the LMA is currently running.
+    </p><p>
+      The information above is normally sufficient to check the integrity of the network link and the presence of an
+      LMA, which in turns allows for monitoring the Node itself.
+    </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34645"></a>F.2.1.&nbsp;Viewing Basic Node Information</h3></div></div></div><p>
+        The <code class="code">CatalysServer</code> MBean provides information on the Node itself, the ability to start and stop
+        the server, and the option to receive notifications of attribute changes.  This MBean is found at:
+      </p><pre class="programlisting">com.camerontec:name="&lt;serverName&gt;",Host="&lt;hostname&gt;",type="Host.CatalysServer"</pre></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34650"></a>Custom Properties</h3></div></div></div><p>
+        User-defined properties can be used for filtering, which better enables an automated system to determine if the
+        server health is relevant. For instance, defining a custom property for all servers called
+        <code class="code">criticality</code> would allow an alert algorithm to distinguish between the failure of a critical
+        server, which may immediately trigger an escalation process, from that of a pre-production server.
+        Custom properties are defined in the server configuration as follows:
+      </p><pre class="programlisting">&lt;Application id="CatalysSell" printMessages="true"&gt;
+  &lt;Properties id="customProps"&gt;
+    &lt;Property name="Region" value="Americas"/&gt;
+    &lt;Property name="Class" value="Equities"/&gt;
+    &lt;Property name="Datacenter" value="Harrison"/&gt;
+    &lt;Property name="Escalation" value="(312) 555-5555"/&gt;
+  &lt;/Properties&gt;
+&lt;/Application&gt;</pre><p>
+        Other application-level properties will also appear in the MBean, whether defaulted or specifically mentioned
+        in the configuration. For the example above, the <code class="code">printMessages</code> attribute will be available.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34657"></a>Startup Script</h3></div></div></div><p>
+        The <code class="code">StartupScript</code> MBean provides details about the way the Node was started. The MBean can be found
+        at:
+      </p><pre class="programlisting">com.camerontec:CatalysServer="&lt;serverName&gt;",
+Host="&lt;hostname&gt;",
+type="Host.CatalysServer.StartupScript"</pre><p>
+        From this MBean, it's possible to stop the Node process via the <code class="code">killProcess</code> operation.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34664"></a>Managing High Availability Clusters</h3></div></div></div><p>
+        The <code class="code">Cluster</code> and <code class="code">Cluster.ClusterMember</code> MBeans provide information HA clusters
+        and their members and provide a way to initiate a failover. The MBeans can be found at:
+      </p><pre class="programlisting">com.camerontec:name="&lt;clusterName&gt;",type="Cluster"</pre><pre class="programlisting">com.camerontec:name="&lt;ServerNameInCluster&gt;",type="Cluster.ClusterMember",Cluster="&lt;clusterName&gt;"</pre></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="apf.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="apf.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="apfs03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Appendix&nbsp;F.&nbsp;JMX MBean Reference&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;F.3.&nbsp;Session Management MBeans</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:52+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

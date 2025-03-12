@@ -1,0 +1,258 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; C.3.&nbsp;Available Dialects</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="apc.html" title="Appendix&nbsp;C.&nbsp;FIX Session Dialects"><link rel="prev" href="apcs02.html" title="C.2.&nbsp;Configuring a Dialect"><link rel="next" href="apcs04.html" title="C.4.&nbsp;Implementations Requiring Dialects"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="apcs02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;C.&nbsp;FIX Session Dialects</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="apcs04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="d5e33755"></a>C.3.&nbsp;Available Dialects</h2></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+          <a name="dialects_dialectAllowLogonResponseWithoutEncryptMethod"></a>
+          <span class="bold"><strong>dialectAllowLogonResponseWithoutEncryptMethod</strong></span>
+        </p><p>
+          This dialect allows you to logon to a counterparty which does not specify the EncryptMethod (tag 98) in its
+          Logon response message.
+        </p><p>
+          The FIX specification requires that the EncryptMethod tag be set both in the Logon request and response.
+          However, some FIX engines do not process this tag and do not set it in the Logon response.
+          With this dialect enabled the Node will accept Logon response messages which do not contain the
+          EncryptMethod tag. However, the Catalys Node will still set the EncryptMethod tag in its Logon request.
+        </p><p>
+          This dialect only applies when the Node is the initiator of the FIX connection. That is, it does not
+          modify the requirements for Logon messages accepted by the Node.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectAllowNoLengthOnRawData"></a>
+          <span class="bold"><strong>dialectAllowNoLengthOnRawData</strong></span>
+        </p><p>
+          This dialect will attempt to process RawData field (tag 96) which do not have a corresponding RawDataLength
+          field (tag 95).
+        </p><p>
+          The FIX specification requires that RawData field is immediately preceded by a RawDataLength field. This is
+          necessary because the RawData field can contain binary data and that binary data may contain the standard FIX
+          field delimiter, <code class="code">SOH</code>. This means that this delimiter cannot be used reliably to terminate a raw
+          data field.
+        </p><p>
+          However, some FIX implementations assume that the RawData field will not contain binary data and therefore
+          omit the RawDataLength field. The Node will normally reject any message containing the RawData field
+          without a RawDataLength field. If this dialect is set, however, the Node will simply use <code class="code">SOH</code>
+          (FIX field delimiter) as an indication of the end of RawData field.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectAllowResendTimeout"></a>
+          <span class="bold"><strong>dialectAllowResendTimeout</strong></span>
+        </p><p>
+          This dialect allows you to set the <a class="code" href="config_reference.html#config_ref_Session_resendTimeout">resendTimeout</a>
+          attribute of the <code class="code">Session</code> to trigger a timer whenever a resend request is sent. If this timer
+          triggers before the requested messages start to arrive from the FIX counter-party, then processing will skip to
+          the next available message that has been received.
+        </p><p>
+          For example, the Node receives message 20 when expecting 15, it sends
+          a ResendRequest for 15 to 19. If <code class="code">resendTimeout</code> is set
+          to 10000ms and message 15 does not arrive within 10 seconds, a warning is logged and processing continues with
+          message 20.
+        </p><div class="warning"><h3 class="title">Warning</h3><p>
+            Using this dialect will cause messages to be lost when the FIX counter-party does not respond to
+            ResendRequests within the <code class="code">resendTimeout</code> window. It is designed to be used with
+            non-FIX compliant applications that cannot be changed to conform to the FIX specification.
+          </p></div></li><li class="listitem"><p>
+          <a name="dialects_dialectDisconnectAfterResendTimeout"></a>
+          <span class="bold"><strong>dialectDisconnectAfterResendTimeout</strong></span>
+        </p><p>
+          When used in conjunction with
+          <a class="code" href="apcs03.html#dialects_dialectAllowResendTimeout">dialectAllowResendTimeout</a> and
+          <a class="code" href="config_reference.html#config_ref_Session_resendTimeout">resendTimeout</a>, this dialect causes the
+          session to logout and disconnect when there is no response to a resend request during the timeout period.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectAlwaysSendPossDupFlagAndOrigSendingTime"></a>
+          <span class="bold"><strong>dialectAlwaysSendPossDupFlagAndOrigSendingTime</strong></span>
+        </p><p>
+          This dialect adds the PossDupFlag and OrigSendingTime to each outbound FIX message odd if the message is not
+          for resend. If the message is for resend, the values of PossDupFlag and OrigSendingTime will follow
+          standard FIX specification. If the message is not for resend, PossDupFlag will have value "N" and
+          OrigSendingTime is set to be equal to the value of SendingTime.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectAlwaysSendResendRequest"></a>
+          <span class="bold"><strong>dialectAlwaysSendResendRequest</strong></span>
+        </p><p>
+          This dialect causes the Node to generate a ResendRequest message every time a message is received with a
+          sequence number higher than expected. Normally, if a first message is received with a sequence number higher
+          than expected and other messages follow sequentially following the first, only one ResendRequest
+          would be issued. With the dialect set, one will be issued for the first message and each subsequent one.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectDoNotSendTargetCompID"></a>
+          <span class="bold"><strong>dialectDoNotSendTargetCompID</strong></span>
+        </p><p>
+          Causes TargetCompID (tag 56) to be removed from every outbound FIX message.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectEnableShortTestReqIDFormat"></a>
+          <span class="bold"><strong>dialectEnableShortTestReqIDFormat</strong></span>
+        </p><p>
+          Causes TestReqID (tag 112) to be formatted as "HHmmss", where HH is hours 0-24, mm is minutes and ss is seconds.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectIgnoreIDFieldsInLogonResponse"></a>
+          <span class="bold"><strong>dialectIgnoreIDFieldsInLogonResponse</strong></span>
+        </p><p>
+          This dialect will not use the ID fields (compID, subID and locationID) that are returned in a Logon response
+          message.
+        </p><p>
+          When a party sends a logon request, the TargetCompID, SubID and LocationID fields together define the party with
+          whom we wish to start a FIX session. The other party must reply with a responding logon message. Normally, the
+          SenderCompID, SubID and LocationID in that response will be the same as the Target ID values in the request. If,
+          however, they are not the same, the Node assumes that the other party wishes to use these new IDs and will
+          use those IDs for referring to the party for the rest of the session.
+        </p><p>
+          However, some FIX implementations do not correctly set the Sender IDs in a logon response. If this dialect is
+          set, the Node will use the original party Target IDs regardless of what IDs the party responds with.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectIgnoreInputMessageSequencing"></a>
+          <span class="bold"><strong>dialectIgnoreInputMessageSequencing</strong></span>
+        </p><p>
+          This dialect causes the Node to ignore out-of-sequence sequence numbers on incoming messages and process
+          them immediately as if their sequence numbers were correct. If this dialect is set, all input messages are
+          processed as if their sequence numbers were correct. Note the session's input sequence number will not be
+          updated until logout.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectInitializeCipherOncePerSession"></a>
+          <span class="bold"><strong>dialectInitializeCipherOncePerSession</strong></span>
+        </p><p>
+          This dialect relates to encryption. If set, the encryption cipher is initialized only once at the beginning of
+          each session (at logon).
+        </p><p>
+          Normally the encryption cipher should be reinitialized for each FIX message. Otherwise, any missed or corrupted
+          messages will result in the sending party's cipher and receiving party's cipher getting "out of sync".
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectInsertCustomFieldsInHeader"></a>
+          <span class="bold"><strong>dialectInsertCustomFieldsInHeader</strong></span>
+        </p><p>
+          This dialect allows you to send custom fields in the header of every FIX message to a counterparty who is
+          expecting these fields in the header. This parameter contains a comma-separated list of custom tag and value
+          pairs.
+        </p><p>
+          For example: <code class="code">dialectInsertCustomFieldsInHeader="5004=1,5006=0"</code>
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectNumericSendingTime"></a>
+          <span class="bold"><strong>dialectNumericSendingTime</strong></span>
+        </p><p>
+          This dialect causes the SendingTime and OrigSendingTime fields to be numeric values instead of FIX-format date
+          strings. The time is represented as the number of milliseconds since midnight, January 1, 1970 UTC. This can
+          be useful for FAST, if the SendingTime and OrigSendingTime fields are defined as integers by the FAST template.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectOrigSendingTimeInGapFill"></a>
+          <span class="bold"><strong>dialectOrigSendingTimeInGapFill</strong></span>
+        </p><p>
+          This dialect adds the OrigSendingTime field to gap fill messages. The field will contain the current time.
+        </p><p>
+          We believe that this field has no meaning on a GapFill message and therefore do not normally include it.
+          However, the Fujitsu FIX engine requires its presence. Fujitsu maintain that OrigSendingTime should be present
+          on every message that has PossDup flag set. We do not believe that the FIX specification requires this.
+          Moreover, we do not believe that this field can carry any useful information on a gap fill message and
+          therefore it is completely redundant.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectProcessSkippedMessages"></a>
+          <span class="bold"><strong>dialectProcessSkippedMessages</strong></span>
+        </p><p>
+          This dialect requires that messages skipped as a result of a Sequence Reset or Gap Fill should be processed if
+          they have been received by our application.
+        </p><p>
+          For example, suppose that we have received messages 1, 2, 4 and 5. We have missed message 3 so we will send a
+          resend request. In the meantime we will have held up the processing of messages 4 and 5 until 3 has arrived. If
+          the other side replies with a sequence reset or gap fill setting the new sequence number to 6, we would normally
+          forget about message 3 and throw away messages 4 and 5. The sequence reset from the other side is telling us
+          that it is okay to do this. This is standard FIX behaviour.
+        </p><p>
+          However, some FIX implementations assume that we will process <span class="emphasis"><em>any message we have received</em></span>,
+          even if they have sent us a sequence reset. This dialect instructs the FIX engine to behave in this non-standard
+          fashion.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectResendRequestEndSeqNoAlwaysInfinity"></a>
+          <span class="bold"><strong>dialectResendRequestEndSeqNoAlwaysInfinity</strong></span>
+        </p><p>
+          Some FIX implementations require that any ResendRequest message you send them must have the infinity
+          value ("999999" for FIX 4.0 and 4.1, "0" for later versions) in the EndSeqNo field. This dialect causes the Node
+          to generate ResendRequest messages with this field value. This is useful for CME iLink 2.0 and SWIFTNet FIX.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectSendNextExpectedMsgSeqNumOnLogin"></a>
+          <span class="bold"><strong>dialectSendNextExpectedMsgSeqNumOnLogin</strong></span>
+        </p><p>
+          The FIX specification allows for message recovery at login using the NextExpectedMsgSeqNum tag, the
+          use of which is optional, and used by agreement between parties. As the session acceptor, the Node will use
+          this tag if the initial logon message from the session initiator contains it - so this dialect is not needed in
+          this case. As session initiator, the Node will use this tag only if this dialect is enabled.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectSequenceResetToLastSeqno"></a>
+          <span class="bold"><strong>dialectSequenceResetToLastSeqno</strong></span>
+        </p><p>
+          The FIX specification states that the NewSeqNo field in a Sequence Reset message should specify the
+          "<span class="emphasis"><em>next</em></span> sequence number immediately following the messages and/or sequence numbers being
+          skipped".
+        </p><p>
+          However, some FIX engines place the <span class="emphasis"><em>last</em></span> sequence number in this field. This dialect
+          causes the Node to interpret this field as the <span class="emphasis"><em>last</em></span> sequence number received. The next
+          sequence number will be NewSeqNo + 1.
+        </p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectIgnoreEmptyTags</strong></span>
+        </p><p>
+          The FIX specification states that "All tags must have a value specified". By default, the Node enforces
+          this restriction on inbound messages and will reject messages that have tags with no values.
+        </p><p>
+          If this dialect is enabled, this restriction will not be enforced and tags without values will be permitted.
+        </p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectIgnoreBeginString</strong></span>
+        </p><p>
+          In FIX, the BeginString field specifies the FIX version in use. If the Node receives a message where this does
+          not match the session's configured version then the message will be rejected.
+        </p><p>This dialect can be used to disable the check.</p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectIgnoreTimestampFormat</strong></span>
+        </p><p>
+          In the FIX protocol, the SendingTime and OrigSendingTime fields must comply with a certain timestamp format.
+          This format is actually FIX version dependent. The Node validates that these fields on incoming messages comply
+          with the correct timestamp format and rejects messages that don't.
+        </p><p>
+          If this dialect is enabled, the Node will not validate the format of these fields on incoming messages.
+        </p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectIgnoreCompanyID</strong></span>
+        </p><p>
+          By default, the Node checks the consistency of the SenderCompID and TargetCompID fields over the course of a
+          FIX session.
+        </p><p>
+          If this dialect is enabled, the Node will not validate these fields. Note that it is still possible for
+          the Node to identify the session a message (except Logons) is intended for by looking at which socket the
+          message was received on.
+        </p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectIgnoreTagOrdering</strong></span>
+        </p><p>
+          The Node enforces a certain ordering on the fields of incoming messages:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">BeginString must be first</li><li class="listitem">BodyLength must be second</li><li class="listitem">MsgType must be third</li><li class="listitem">CheckSum must be last</li></ul></div><p>
+          This dialect can be used to disable validation of the ordering of the MsgType field on incoming messages. Per
+          the FIX spec, the order of these fields is fixed, but in order to support non-compliant engines
+          sometimes you might need to allow an out-of-order MsgType field.
+        </p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectAllowNonResetLogonMessagesMidSession</strong></span>
+        </p><p>
+          Normally the Node does not permit Logon messages to be sent to an already logged on session unless the
+          ResetSeqNumFlag (field 141) is set to 'Y'. If this dialect is enabled the Node accepts any Logon message and
+          will reply with a Logon reply.
+        </p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectHandleMissingPossDupOnGapFill</strong></span>
+        </p><p>
+          The Node expects SequenceReset/GapFill messages to have PossDupFlag set to 'Y'. The Node will terminate the
+          session when PossDupFlag is not set in the inbound message and its sequence number is lower than expected.
+          If this dialect is enabled the Node will instead process the message as if it was received in sequence..
+        </p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectDontSendPossDupFlag</strong></span>
+        </p><p>
+          By default, the Node sets PossDupFlag to 'Y' in all messages that were sent before. If this dialect is enabled
+          the PossDupFlag will not be set.
+        </p></li><li class="listitem"><p>
+          <a name="dialects_dialectToFixResendRequestMaxGap"></a>
+          <span class="bold"><strong>dialectToFixResendRequestMaxGap</strong></span>
+        </p><p>
+          If the value of this attribute is greater than zero, the Node limits message gap range in ResendRequest to this
+          value. This is required by CME drop-copy session. From the CME DropCopyImpact document: The maximum limit of
+          messages allowed per resend request is 2500. In this scenario, multiple Resend Request messages must be
+          submitted by the client spanning the desired sequence range.
+        </p></li><li class="listitem"><p>
+          <span class="bold"><strong>dialectCustomResendRequestMaxGap</strong></span>
+        </p><p>
+          If set to <code class="code">true</code> and
+          <a class="code" href="apcs03.html#dialects_dialectToFixResendRequestMaxGap">dialectToFixResendRequestMaxGap</a>
+          is greater than zero, the Node will not send a ResendRequest if the detected gap is greater than
+          <code class="code">dialectToFixResendRequestMaxGap</code>. In this case application can implement custom limit gap handling.
+        </p></li></ul></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="apcs02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="apc.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="apcs04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">C.2.&nbsp;Configuring a Dialect&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;C.4.&nbsp;Implementations Requiring Dialects</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:50+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

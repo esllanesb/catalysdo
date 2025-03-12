@@ -1,0 +1,163 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 5.8.&nbsp;Inbound Message Validation</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="prev" href="ch05s07.html" title="5.7.&nbsp;FIX Dictionaries"><link rel="next" href="ch05s09.html" title="5.9.&nbsp;Message Factories"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05s07.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;5.&nbsp;Standard Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05s09.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="stdfeature_message_validation"></a>5.8.&nbsp;Inbound Message Validation</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_message_validation-introduction"></a>5.8.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Catalys Node enforces several levels of validation on inbound FIX messages. This document
+      describes the different checks that are performed on each inbound messages, how the Node responds
+      when each check fails and how to disable the check (if allowed).
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_message_validation-rules"></a>5.8.2.&nbsp;Validation Rules</h3></div></div></div><div class="informaltable"><table border="1"><colgroup><col><col><col><col></colgroup><thead><tr><th>Problem Description</th><th>FIX Validation Type</th><th>Node Response</th><th>Setting to Disable</th></tr></thead><tbody><tr><td>The BeginString field isn't at the first position in a message.</td><td>Garbled Message</td><td>
+              Message will be discarded silently. After 2 consecutive garbled messages, session will be logged out.
+            </td><td>-none-</td></tr><tr><td>BodyLength field isn't at the second position in a message.</td><td>Garbled Message</td><td>
+              Message will be discarded silently. After 2 consecutive garbled messages, session will be logged out.
+            </td><td>-none-</td></tr><tr><td>MsgType field isn't at third position in a message.</td><td>Garbled Message</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check, and other checks, can be disabled by setting the <code class="code">trustedMode</code> attribute to
+              <code class="code">true</code> on a <a class="code" href="config_reference.html#config_ref_Session" title="Session">Session</a> element.
+
+              <p>
+                This check alone can be disabled by setting the <code class="code">dialectIgnore&shy;TagOrdering</code> attribute to
+                <code class="code">true</code>.
+              </p>
+            </td></tr><tr><td>Message BodyLength is incorrect.</td><td>Garbled Message</td><td>
+              Message will be discarded silently. After 2 consecutive garbled messages, session will be logged out.
+            </td><td>-none-</td></tr><tr><td>Message has incorrect ending sequence (i.e. 10=###&lt;SOH&gt;).</td><td>Garbled Message</td><td>
+              Message will be discarded silently. After 2 consecutive garbled messages, session will be logged out.
+            </td><td>-none-</td></tr><tr><td>
+              Message CheckSum is incorrect, FIX bytes representing a CheckSum cannot
+              be converted to a positive integer or the calculated CheckSum does not match
+              the one provided in the message.
+            </td><td>Garbled Message</td><td>
+              Message will be discarded silently. After 2 consecutive garbled messages, session will be logged out.
+            </td><td>-none-</td></tr><tr><td>Message Signature wrong type of data or couldn't be converted to bytes.</td><td>Message Integrity Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>-none-</td></tr><tr><td>Exception during Signature decryption.</td><td>Message Integrity Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>-none-</td></tr><tr><td>Exception during message field decryption.</td><td>Message Integrity Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>-none-</td></tr><tr><td>Message has a field without a value.</td><td>Message Parsing Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>-none-</td></tr><tr><td>Message bytes representing a field cannot be converted to a positive integer.</td><td>Message Parsing Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>-none-</td></tr><tr><td>Message bytes have an encoded field but no corresponding MessageEncoding field.</td><td>Message Parsing Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>-none-</td></tr><tr><td>
+              Message has <code class="code">DATA</code> field data type without preceding data length field.
+            </td><td>Message Parsing Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check can be disabled by for the RawData field (tag96) by setting the
+              <code class="code">dialectAllowNo&shy;LengthOnRawData</code> attribute to <code class="code">true</code>.
+            </td></tr><tr><td>
+              Message has <code class="code">DATA</code> field preceded by invalid
+              data length field or cannot be converted to a positive integer or is missing the
+              field delimiter character (SOH).
+            </td><td>Message Parsing Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check can be disabled by for the RawData field (tag96) by setting the
+              <code class="code">dialectAllowNo&shy;LengthOnRawData</code> attribute to <code class="code">true</code>.
+            </td></tr><tr><td>
+              Message missing field delimiter character (SOH) at the end of a message bytes stream.
+            </td><td>Message Parsing Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>-none-</td></tr><tr><td>Message missing one or more of the following fields: 8, 9, 35, 52, 49, 56, 34, 10.</td><td>Message Validation Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check, and other checks, can be disabled by setting the <code class="code">trustedMode</code> attribute to
+              <code class="code">true</code> on a <a class="code" href="config_reference.html#config_ref_Session" title="Session">Session</a> element.
+            </td></tr><tr><td>Message field is missing a value.</td><td>Message Validation Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check, and other checks, can be disabled by setting the <code class="code">trustedMode</code> attribute to
+              <code class="code">true</code> on a <a class="code" href="config_reference.html#config_ref_Session" title="Session">Session</a> element.
+
+              <p>
+                This check alone can be disabled by setting the <code class="code">dialectIgnore&shy;TagOrdering</code>
+                attribute to <code class="code">true</code>.
+              </p>
+            </td></tr><tr><td>
+              Message BeginString value in Logon message does not match the FIX version
+              configured on the <code class="code">Session</code> element.
+            </td><td>Message Validation Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check, and other checks, can be disabled by setting the <code class="code">trustedMode</code> attribute to
+              <code class="code">true</code> on a <a href="config_reference.html#config_ref_Session" title="Session"><code class="code">Session</code></a> element.
+
+              <p>
+                This check alone can be disabled by setting the <code class="code">dialectIgnore&shy;BeginString</code>
+                attribute to <code class="code">true</code>.
+              </p>
+            </td></tr><tr><td>
+              Message received that BeginString value that is not consistent with other messages
+              on a single session.
+            </td><td>Message Validation Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check can be disabled by setting the <code class="code">dialectIgnore&shy;BeginString</code>
+              attribute to <code class="code">true</code>.
+            </td></tr><tr><td>
+              Timestamp message fields 52 and 122 are a format that is not a supported FIX timestamp format.
+            </td><td>Message Validation Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check, and other checks, can be disabled by setting the <code class="code">trustedMode</code> attribute to
+              <code class="code">true</code> on a <a class="code" href="config_reference.html#config_ref_Session" title="Session">Session</a> element.
+
+              <p>
+                This check alone can be disabled by setting the <code class="code">IgnoreTimestampFormat</code>
+                attribute to <code class="code">true</code>.
+              </p>
+            </td></tr><tr><td>
+              Message received with a sender or target compID that is not consistent with
+              other messages on a single session.
+            </td><td>Message Validation Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check, and other checks, can be disabled by setting the <code class="code">trustedMode</code> attribute to
+              <code class="code">true</code> on a <a class="code" href="config_reference.html#config_ref_Session" title="Session">Session</a> element.
+
+              <p>
+                This check alone can be disabled by setting the <code class="code">dialectIgnoreCompanyID</code>
+                attribute to <code class="code">true</code>.
+              </p>
+            </td></tr><tr><td>Message fields 43 or 97 does not contain <code class="code">Y</code> or <code class="code">N</code> value.</td><td>Message Validation Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check, and other checks, can be disabled by setting the <code class="code">trustedMode</code> attribute to
+              <code class="code">true</code> on a <a class="code" href="config_reference.html#config_ref_Session" title="Session">Session</a> element.
+            </td></tr><tr><td>Message exceeds provided maximum message length in bytes.</td><td>Message Validation Issue</td><td>Session is disconnected.</td><td>
+              To configure the maximum message length, use the <code class="code">maxMessageLength</code> attribute on the
+              <a class="code" href="config_reference.html#config_ref_Session" title="Session">Session</a> element. 
+              By default this is 1MB.</td></tr><tr><td>
+              Message MsgType value is invalid for the FIX version of the Session. If the
+              MsgType value beings with 'U' then it's ignored.
+            </td><td>Message Validation Issue</td><td>
+              Message will be discarded and Logout will be sent in case when incoming Logon
+              message is garbled. In all other cases a Session Reject will be sent to the counterparty.
+            </td><td>
+              This check is disabled by default. To enforce, set the <code class="code">validateMessageTypes</code> attribute to
+              <code class="code">true</code> and the <code class="code">trustedMode</code> attribute to <code class="code">false</code> on a
+              <a class="code" href="config_reference.html#config_ref_Session" title="Session">Session</a> element.
+            </td></tr></tbody></table></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s07.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch05.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05s09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.7.&nbsp;FIX Dictionaries&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;5.9.&nbsp;Message Factories</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:34+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

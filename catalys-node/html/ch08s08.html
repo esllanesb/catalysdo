@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 8.8.&nbsp;JMX API Advanced Operations</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="prev" href="ch08s07.html" title="8.7.&nbsp;Repeating Groups"><link rel="next" href="ch08s09.html" title="8.9.&nbsp;Authentication"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch08s07.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08s09.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_jmx_advanced_operations"></a>8.8.&nbsp;JMX API Advanced Operations</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10489"></a>8.8.1.&nbsp;Configuring via JMX</h3></div></div></div><p>
+      All Catalys configuration elements have been instrumented for JMX. In addition, to support the ease of
+      configuration via JMX, advanced operations have been added. These advanced operations fall into the following
+      categories:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Addition Operations</strong></span>:
+        There are operations for the addition of each configuration element. These <code class="code">addXXX</code> operations are
+        executed on the particular MBean for which the XXX element is a child. Once the element has been added to the
+        configuration, a new MBean is created, which can be edited and operated upon. There are two variants of some
+        addition operations, the <code class="code">addXXX</code> variant where the component does not have any custom JMX
+        configuration, and the <code class="code">addCustomXXX</code> variant where the component does have custom JMX configuration.
+        For the second variant, the additional <code class="code">configurationPackageName</code> parameter must be supplied. This
+        is the location of the Java package where the configuration class resides (this must be in the same package as
+        the runtime class, or in a configuration sub-package). For further information on JMX configuration
+        customization, refer to the <a href="ch08.html#prog_components" title="8.1.&nbsp;Custom Components">Programming Guide</a>.
+
+        <p>
+          The <code class="code">class</code> attribute of elements added using the non-custom variant must be set before the
+          element can be reloaded into runtime, and for some MBeans additional configuration is also required. Then the
+          configuration can be loaded into runtime by one of the <code class="code">reload</code> operations (either
+          <code class="code">Application</code> or <code class="code">Session</code>).
+        </p><p>
+          For those elements which can have custom properties, there is an operation called
+          <code class="code">addChildProperties</code>, which takes <code class="code">id</code> and <code class="code">refid</code> parameters, where the
+          <code class="code">refid</code> parameter is used to refer to another already defined properties element.
+        </p></li><li class="listitem"><span class="bold"><strong>Copy Operations</strong></span>:
+        These are convenience operations that group together all of the addition operations that are required to
+        duplicate an existing element.
+      </li><li class="listitem"><span class="bold"><strong>Move Operations</strong></span>:
+        These are operations which move elements from one place in the configuration hierarchy to another.
+      </li><li class="listitem"><span class="bold"><strong>Deletion Operations</strong></span>:
+        Most MBeans have a <code class="code">markForDelete</code> operation. To delete the element, execute this operation, then
+        reload the session or the application. The element will be deleted from the configuration and runtime. The
+        description of this operation is not repeated below (except in the cases where the MBean does not have a
+        <code class="code">markForDelete</code> operation), as its functionality is the same for each different MBean.
+      </li><li class="listitem"><span class="bold"><strong>Maintenance Operations</strong></span>:
+        These operations allow the configuration to be saved, reloaded, undone and diagnosed. They do not create or
+        delete any MBeans. All MBeans have a <code class="code">showConfigurationAsProperties</code> operation which returns a
+        formatted string with a list of all of the MBean's attributes and their values.
+      </li></ul></div><p>
+      Note that the configuration elements belonging to a <code class="code">HighAvailabilityCluster</code> are not instrumented to
+      be changed at runtime. These elements are read-only. Consequently there are no advanced operations for the High
+      Availability components of a Catalys configuration.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10523"></a>Available Configuration MBeans</h4></div></div></div><p>
+        The following configuration MBeans available in the Node.  For details about the operations of each MBean,
+        follow the link to each Javadoc.
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/ApplicationConfigurationMXBeanSpecific.html" target="_top">Configuration.Application</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/LinkConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.Link</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/MessageProcessingTemplateConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.MessageProcessingTemplate</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/MessageProcessorConfigurationMXBean.html" target="_top">Configuration.Application.MessageProcessor</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/PropertiesConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.Properties</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/RulesPackConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.RulesPack</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/SchedulingDefinitionsConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.SchedulingDefinitions</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/EventListConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.SchedulingDefinitions.EventList</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/ScheduleConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.SchedulingDefinitions.Schedule</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/SelectorConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.Selector</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/SessionConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.Session</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/management/mxbean/configuration/SessionManagerConfigurationMXBeanSpecific.html" target="_top">Configuration.Application.Session.SessionManager</a></li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10551"></a>8.8.2.&nbsp;Monitoring via JMX</h3></div></div></div><p>
+      Any Java application can interact with the <a href="ch04s02.html#operations_monitoring-jmx" title="4.2.5.&nbsp;Monitoring via JMX">Management Agent</a> (MA)
+      through the standard JMX API for the purpose of monitoring and managing the applications it exposes. This is in
+      fact what JConsole does.
+    </p><p>
+      The following example program can serve as a blueprint for a custom monitoring program.  It illustrates
+      how to access the MA's MBeans, which are registered in the <code class="code">com.camerontec</code> domain.  Before running,
+      the MIS, LMA, and Node must be started.
+    </p><pre class="programlisting">import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
+public class MAAccessExample
+{
+  /**
+   * Establishes a connection with the MA and displays the MBeans that are 
+   * available for monitoring.
+   */
+  public static void main (String[] args) throws Exception
+  {
+    String serviceURL = "service:jmx:jmxmp://localhost:10000";
+    JMXConnector maConnector = JMXConnectorFactory.connect(new JMXServiceURL(serviceURL));
+    maConnector.connect();
+    MBeanServerConnection mbeanServerConnection = maConnector.getMBeanServerConnection();
+
+    for (Object o: mbeanServerConnection.queryNames(new ObjectName("com.camerontec:*"), null))
+    {
+      ObjectName objectName = (ObjectName)o;
+      System.out.printf("%s\n", objectName);
+    }
+
+    maConnector.close();
+  }
+}</pre><p>
+      For more information on the types of MBeans available, refer to
+      <a href="apf.html" title="Appendix&nbsp;F.&nbsp;JMX MBean Reference">JMX MBean Reference</a>
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch08s07.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch08.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08s09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">8.7.&nbsp;Repeating Groups&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;8.9.&nbsp;Authentication</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:41+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

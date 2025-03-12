@@ -1,0 +1,58 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys MIS User Guide &#151; 2.3.&nbsp;License Management</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys MIS User Guide"><link rel="up" href="ch02.html" title="Chapter&nbsp;2.&nbsp;Installation and Startup"><link rel="prev" href="ch02s02.html" title="2.2.&nbsp;Support Portal"><link rel="next" href="ch02s04.html" title="2.4.&nbsp;Installation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch02s02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;2.&nbsp;Installation and Startup</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch02s04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="common_license_management"></a>2.3.&nbsp;License Management</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="common_license_management-license"></a>2.3.1.&nbsp;License File</h3></div></div></div><p>
+      You will receive an XML license file with one or more license keys for the software you are permitted to run. To
+      use the license file, the name of the file must be <span class="emphasis"><em>camerontec_license.xml</em></span>.
+    </p><p>
+      There are a number of ways to instruct the CameronTec software to find the license file. When a CameronTec
+      application starts up it will search the following directories (in the order listed) until a license file is
+      found:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Java system property specified in the startup command:
+        <pre class="programlisting">java -Dlicense-dir=/path/to/license/directory ...</pre></li><li class="listitem"><code class="code">CAMERON_LICENSE_ROOTDIR</code> environment variable:
+        <pre class="programlisting">$ export CAMERON_LICENSE_ROOTDIR=/path/to/license/directory</pre></li><li class="listitem">
+        Classpath of the Java application:
+        <pre class="programlisting">java -cp /path/to/license/directory:...</pre></li></ol></div><p>
+      If you use an installer, you will have the option of importing a license file. If selected, the installer will
+      prompt you for the location of the file, which will be copied into the root of the install and renamed
+      accordingly. You must ensure that the license directory is included on the classpath of the Catalys application
+      you are running.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="common_license_management-options"></a>2.3.2.&nbsp;How to Read Your License File</h3></div></div></div><p>
+      Your license is an XML file distributed by our license management team. One license file can contain multiple
+      license keys for each product and version you are licensed for. It can be viewed with a text editor and
+      is structured as follows:
+    </p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;camerontecLicense&gt;
+  &lt;!-- Customer identifier --&gt;
+  &lt;customer&gt;Customer Name&lt;/customer&gt;
+  &lt;!-- Licensed product. Multiple product keys can be present in one file. --&gt;
+  &lt;product key="Catalys-Node-2.2"&gt;
+    &lt;license&gt;
+      &lt;!--  Type of license, e.g. production or evaluation --&gt;
+      &lt;licenseType&gt;Evaluation&lt;/licenseType&gt;
+      &lt;!-- License expiration date at 23:59:59 --&gt;
+      &lt;expirationDate&gt;yyyy-mm-dd&lt;/expirationDate&gt;
+      &lt;!-- Scope of authorised usage --&gt;
+      &lt;scope&gt;Instance&lt;/scope&gt;
+      &lt;!-- Licensed product features --&gt;
+      &lt;features&gt;
+        &lt;feature name="FAST" enabled="true" /&gt;
+        &lt;feature name="FIX Routing" enabled="true" /&gt;
+        &lt;feature name="High Availability" enabled="true" /&gt;
+        &lt;feature name="Scheduling" enabled="true" /&gt;
+        &lt;!-- Number of features (-1 is unlimited) --&gt;
+        &lt;limitedFeature name="Sessions Count" count="-1" /&gt;
+      &lt;/features&gt;
+    &lt;/license&gt;
+    &lt;!-- Product key signature, which cannot be modified --&gt;
+    &lt;signature&gt;...&lt;/signature&gt;
+  &lt;/product&gt;
+  &lt;product key="Catalys-MIS-2.2"&gt;...&lt;/product&gt;
+&lt;/camerontecLicense&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="common_license_management-maintenance"></a>2.3.3.&nbsp;License Maintenance</h3></div></div></div><p>
+      License files expire periodically and customers may be required to replace their existing license. In most cases
+      you can just overwrite the existing <span class="emphasis"><em>camerontec_license.xml</em></span> file with the new one.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch02s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">2.2.&nbsp;Support Portal&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;2.4.&nbsp;Installation</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:53:32+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

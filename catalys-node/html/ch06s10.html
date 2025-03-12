@@ -1,0 +1,59 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 6.10.&nbsp;Message Compression</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features"><link rel="prev" href="ch06s09.html" title="6.9.&nbsp;Market Compliance"><link rel="next" href="ch06s11.html" title="6.11.&nbsp;Market Data Services"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch06s09.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s11.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_message_compression"></a>6.10.&nbsp;Message Compression</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_message_compression-us"></a>6.10.1.&nbsp;FAST Support</h3></div></div></div><p>To configure the Catalys Node Server to use FAST:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Place a FAST template file in a known location.</li><li class="listitem">
+        Add a <code class="code">Compression</code> element to your configuration. The <code class="code">templateFile</code> attribute of the
+        FAST sub-element must point to your template file.
+      </li><li class="listitem">
+        Add <code class="code">toFIXCompressionRefId</code> and <code class="code">fromFIXCompressionRefId</code> attributes to the
+        <code class="code">Session</code> elements that are required to use FAST.
+      </li></ul></div><p>See the templates located in <span class="emphasis"><em>templates/Fast</em></span> directory.</p><p>Sessions configured to use FAST will:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Encode outgoing messages and decode incoming messages using FAST.</li><li class="listitem">
+        Use a <code class="code">FastFriendlyFIXMessageFactory</code> to create <code class="code">IFIXMessage</code> objects that are optimized
+        for FAST.
+      </li><li class="listitem">
+        The <code class="code">printMessages</code> attribute will produce additional information. This information can give you an
+        insight into the FAST encoding/decoding process.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_message_compression-core"></a>6.10.2.&nbsp;FAST and the FIX Libraries</h3></div></div></div><p>
+      The Catalys Node Libraries can be programmatically configured to use FAST when they are not used within the
+      larger framework of the Node. The Session API contains set and get methods for the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/SessionFastConfigurationHelper.html" target="_top">SessionFastConfigurationHelper</a>
+      class. This class is used to construct and configure the session's inbound and outbound FAST configuration.
+    </p><p>
+      So that messages of the most efficient type are created, it is
+      also advisable to set the message factories of the session to
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/FastFriendlyFIXMessageFactory.html" target="_top">FastFriendlyFIXMessageFactory</a>.
+      Message factories of the session are set by the following methods:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/Session.html#setFromFIXMessageFactory(com.camerontec.catalys.core.message.IFIXMessageFactory)" target="_top">Session.setFromFIXMessageFactory(IFIXMessageFactory)</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/Session.html#setToFIXMessageFactory(com.camerontec.catalys.core.message.IFIXMessageFactory)" target="_top">Session.setToFIXMessageFactory(IFIXMessageFactory)</a></li></ul></div><p>
+      Sample code demonstrating how to create FAST server and client(s) can be found in the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/test/fast/FastServerExample.html" target="_top">FastServerExample</a>
+      and
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/test/fast/FastClientExample.html" target="_top">FastClientExample</a>
+      classes located in the <span class="emphasis"><em>templates/src</em></span> directory. These template classes are used as part of
+      the FastServer and FastClient templates found in the <span class="emphasis"><em>templates/Fast/Core</em></span> directory of the
+      Node distribution. The same example shows how to setup the client/server code to use the FAST Session Control
+      Protocol (SCP).
+    </p><p>
+      Sample code demonstrating how to create <code class="code">FastInputStream</code> and <code class="code">FastOutputStream</code> objects
+      can be found in the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/fast/FastEncoder.html" target="_top">FastEncoder</a>
+      and
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/fast/FastDecoder.html" target="_top">FastDecoder</a>
+      classes located in the <span class="emphasis"><em>templates/src</em></span> directory. These template classes are used as part of
+      the FastEncoder and FastDecoder templates found in the <span class="emphasis"><em>templates/Fast/Encoding</em></span> directory of
+      the Catalys Node distribution. Note that these templates show how to use FAST in a stand-alone manner, not in an
+      integrated manner as described here.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_message_compression-notes"></a>6.10.3.&nbsp;Additional Notes</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        If there is more than one <code class="code">SocketConnection</code> configured to listen on the same port,
+        they must all be attached to sessions with the same compression configuration.
+      </li><li class="listitem">
+        The Node FAST libraries use the <code class="code">id</code> attribute of FAST templates to associate each template with a
+        FIX MsgType. This means that each FAST message template must contain a MsgType field whose value is constant
+        and corresponds to the FIX message type. The <code class="code">id</code> of each template must also be unique.
+      </li><li class="listitem">
+        The session dialect <a class="code" href="apcs03.html#dialects_dialectNumericSendingTime">dialectNumericSendingTime</a>
+        allows sending times to be represented as numeric values. This is allows the Node to handle FAST templates that
+        define sending times using numeric field types.
+      </li></ul></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s09.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s11.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.9.&nbsp;Market Compliance&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.11.&nbsp;Market Data Services</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:36+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,107 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 8.9.&nbsp;Authentication</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="prev" href="ch08s08.html" title="8.8.&nbsp;JMX API Advanced Operations"><link rel="next" href="ch09.html" title="Chapter&nbsp;9.&nbsp;Performance Tuning"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch08s08.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch09.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_authentication"></a>8.9.&nbsp;Authentication</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_authentication-intro"></a>8.9.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Node Authentication component enables a pluggable authentication module (PAM) style framework for the
+      authentication of FIX counterparties via the FIX Logon message. The implementation is based on the standard
+      <a href="http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136007.html" target="_top">Java Authentication and Authorisation Service (JAAS)</a>.
+
+    </p><p>
+      Apart from a simple template for demonstration purposes, this package does not ship with any login modules as it
+      is expected that the requirements for these will be mostly customer specific. However, the source code for the
+      demonstration login module is included for reference.
+    </p><p>
+      Note that Oracle supplies a number of standard alternatives for storing user information. These include:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">JndiLoginModule</li><li class="listitem">KeyStoreLoginModule</li><li class="listitem">Krb5LoginModule</li><li class="listitem">NTLoginModule</li><li class="listitem">UnixLoginModule</li></ul></div><p>
+      The Node ships with a simple implementation which takes user information from a specified XML file:
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/security/auth/XmlLoginModule.html" target="_top">XmlLoginModule</a>.
+    </p><p>
+      See the standard
+      <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/security/jaas/tutorials/LoginConfigFile.html" target="_top">Oracle documentation on Login configuration files</a>
+      for more details.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_authentication-refs"></a>8.9.2.&nbsp;References</h3></div></div></div><p>
+      Since the FIX authentication implementation is based on standard set of Java APIs, this document references
+      Javadocs for various interfaces and classes. It is recommended that the Javadoc for referenced
+      interfaces and classes be read in conjunction with this documentation.
+    </p><p>The most important of these are listed below:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/Configuration.html" target="_top"><code class="code">Configuration</code></a></li><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/LoginContext.html" target="_top"><code class="code">LoginContext</code></a></li><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/spi/LoginModule.html" target="_top"><code class="code">LoginModule</code></a></li><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/callback/Callback.html" target="_top"><code class="code">Callback</code></a>
+        and its standard implementations used by this package
+        <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/callback/NameCallback.html" target="_top"><code class="code">NameCallback</code></a></li><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/callback/PasswordCallback.html" target="_top"><code class="code">PasswordCallback</code></a></li><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/callback/TextOutputCallback.html" target="_top"><code class="code">TextOutputCallback</code></a></li></ul></div></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_authentication-implementation"></a>8.9.3.&nbsp;FIX Authentication Implementation</h3></div></div></div><p>
+      FIX counterparty authentication is handled by a <a href="ch08.html#prog_components_monitor" title="8.1.7.&nbsp;Custom Monitors">custom monitor</a>
+      designed specifically for this purpose.
+    </p><p>
+      When configured the <code class="code">FixLoginAuthenticationMonitor</code> does the following:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Intercepts each FIX Logon message, creates a
+        <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/LoginContext.html" target="_top"><code class="code">LoginContext</code></a>
+        and calls its associated
+        <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/LoginContext.html#login()" target="_top"><code class="code">login</code></a>
+        method.
+      </li><li class="listitem">
+        On authentication failure, the FIX Logon attempt is rejected and the socket connection with the counterparty
+        is dropped.
+      </li><li class="listitem">
+        On authentication success the
+        <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/LoginContext.html" target="_top"><code class="code">LoginContext</code></a>
+        is stored until the FIX session is lost, at which point a
+        <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/LoginContext.html#logout()" target="_top"><code class="code">logout</code></a>
+        is initiated.
+      </li></ul></div><p>
+      Exactly how a FIX Logon message is used in the authentication
+      process depends on which
+      <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/spi/LoginModule.html" target="_top"><code class="code">LoginModule</code></a>(s)
+      are used. See the sections below on
+      <a href="ch08s09.html#prog_authentication-config" title="8.9.4.&nbsp;FIX Authentication Configuration">login module configuration</a>
+      and
+      <a href="ch08s09.html#prog_authentication-support" title="8.9.6.&nbsp;Support for Custom Login Module Implementations">support for custom login module implemen&shy;tations</a>
+      for more details.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_authentication-config"></a>8.9.4.&nbsp;FIX Authentication Configuration</h3></div></div></div><p>
+      The <code class="code">FixLoginAuthenticationMonitor</code> can be defined as a
+      <a href="ch08.html#prog_components_monitor" title="8.1.7.&nbsp;Custom Monitors"><code class="code">CustomMonitor</code></a>.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="prog_authentication-attributesFixLoginAuthenticationMonitor"></a>FixLoginAuthenticationMonitor Attributes</h4></div></div></div><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_FixLoginAuthenticationMonitor" title="FixLoginAuthenticationMonitor"><code class="code">FixLoginAuthenticationMonitor</code> Configuration Reference</a>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_authentication-loginConfig"></a>8.9.5.&nbsp;Login Module Configuration</h3></div></div></div><p>
+      The templates shipped with this package make use of the default
+      <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/Configuration.html" target="_top"><code class="code">Configuration</code></a>
+      implementation supplied with the JDK. See the
+      <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/Configuration.html" target="_top">documentation</a>
+      for the required configuration file format.
+    </p><p>
+      A custom configuration provider may be plugged in which retrieves login module in a completely different manner by
+      changing the value of the <code class="code">login.configuration.provider</code> security property (in the Java security
+      properties file <span class="emphasis"><em>&lt;JAVA_HOME&gt;/lib/security/java.security</em></span>).
+    </p><p>
+      The executable templates supplied with the FIX authentication package contain login configuration files which
+      conform to the file format supported by the default
+      <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/login/Configuration.html" target="_top"><code class="code">Configuration</code></a>
+      implementation.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_authentication-support"></a>8.9.6.&nbsp;Support for Custom Login Module Implementations</h3></div></div></div><p>
+      Custom login modules must implement the
+      <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/spi/LoginModule.html" target="_top"><code class="code">LoginModule</code></a>
+      interface. See the
+      <a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/spi/LoginModule.html" target="_top">documentation</a>
+      for the implementation contract.
+    </p><p>
+      In order to facilitate custom login module implementations the following callbacks are supported:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/callback/NameCallback.html" target="_top"><code class="code">NameCallback</code></a>
+        - login modules use this callback to obtain the username from the FIX Logon message
+      </li><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/callback/PasswordCallback.html" target="_top"><code class="code">PasswordCallback</code></a>
+        - login modules use this callback to obtain the password from the FIX Logon message
+      </li><li class="listitem"><a href="http://download.oracle.com/javase/7/docs/api/javax/security/auth/callback/TextOutputCallback.html" target="_top"><code class="code">TextOutputCallback</code></a>
+        - login modules use this callback to communicate arbitrary text back to the authenticator
+      </li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/security/auth/login/TagValueCallback.html" target="_top"><code class="code">TagValueCallback</code></a>
+        - login modules use this callback to obtain the value of any arbitrary tag in the FIX Logon message
+      </li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/server/security/auth/login/ConnectionPointCallback.html" target="_top"><code class="code">ConnectionPointCallback</code></a>
+        - login modules use this callback to obtain the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/IConnectionPoint.html" target="_top"><code class="code">IConnectionPoint</code></a>
+        associated with the FIX session on which the Logon message was received.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_authentication-templates"></a>8.9.7.&nbsp;FIX Authentication Templates</h3></div></div></div><p>There are two separate templates shipped with the FIX authentication package under
+      <span class="emphasis"><em>templates/Authentication:</em></span>
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><span class="bold"><strong>Simple</strong></span> - Uses a single login module.
+      </li><li class="listitem"><span class="bold"><strong>Stacked</strong></span> - Uses multiple stacked login modules.
+      </li></ol></div><p>
+      See the <span class="emphasis"><em>ReadMe.txt</em></span> files in each of the respective template directories for more details.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch08s08.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch08.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">8.8.&nbsp;JMX API Advanced Operations&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;9.&nbsp;Performance Tuning</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:42+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

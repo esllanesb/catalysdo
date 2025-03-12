@@ -1,0 +1,149 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 9.2.&nbsp;Measuring Performance</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch09.html" title="Chapter&nbsp;9.&nbsp;Performance Tuning"><link rel="prev" href="ch09.html" title="Chapter&nbsp;9.&nbsp;Performance Tuning"><link rel="next" href="ch09s03.html" title="9.3.&nbsp;Hardware Considerations"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch09.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;9.&nbsp;Performance Tuning</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch09s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="perf_instrumentation"></a>9.2.&nbsp;Measuring Performance</h2></div></div></div><p>
+    The standard Node installation includes tools that allow you to measure the throughput and latency of messages
+    passing through the engine.  You may also find it useful to measure performance using your own tools, either
+    within the application or externally.
+  </p><p>
+    For working demonstrations of the examples illustrated below, please see the templates in the
+    <span class="emphasis"><em>templates/Benchmark</em></span> directory.
+  </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10700"></a>9.2.1.&nbsp;Measuring Throughput</h3></div></div></div><p>
+      The built-in <code class="code">PerformanceMessageTester</code> is a message processor that measures throughput in terms of
+      messages per second.  It can measure inbound or outbound throughput and can be nested at any level in the message
+      processing chain.  This flexibility allows you to measure throughput at specific points in the engine, which is
+      useful for isolating sources of poor performance.
+    </p><p>
+      To configure inbound throughput measurement:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="SEND" compid="RECV" fixversion="4.2"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="5001"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors&gt;
+      &lt;PerformanceMessageTester id="pmt" cycles="10000"/&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+      To configure outbound throughput measurement:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="RECV" compid="SEND" fixversion="4.2"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" hostname="localhost" port="5001"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;PerformanceMessageTester id="pmt" cycles="10000"&gt;
+        &lt;!-- message generator --&gt;
+        &lt;SampleMessageSource id="sms" interval="1" checkBeforeSend="true"/&gt;
+      &lt;/PerformanceMessageTester&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+      The <code class="code">PerformanceMessageTester</code> outputs its measurements to the Node's log file:
+    </p><pre class="programlisting">INFO (Inbound) Last: 100000 messages, 4437ms, 22537.75 messages/sec
+INFO (Inbound) Total: 100000 messages, 4437ms, 22537.75 messages/sec
+INFO (Inbound) Last: 100000 messages, 3240ms, 30864.2 messages/sec
+INFO (Inbound) Total: 200000 messages, 7677ms, 26051.84 messages/sec
+INFO (Inbound) Last: 100000 messages, 3168ms, 31565.66 messages/sec
+INFO (Inbound) Total: 300000 messages, 10845ms, 27662.52 messages/sec</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10711"></a>9.2.2.&nbsp;Measuring Latency</h3></div></div></div><p>
+      The Node's native FIX message representation, <code class="code">IFIXMessage</code>, contains a timestamp property that
+      stores time expressed in nanoseconds. Latency within the Node is measured by setting this timestamp at a certain
+      point in the message path and then comparing it with the current time at some later point.
+    </p><p>
+      Using the built-in <code class="code">Timestamp</code> and <code class="code">Timerecord</code> configuration elements, you can control
+      where the starting and ending timestamps are taken, whether on inbound or outbound messages.
+    </p><p>
+      The <code class="code">Timerecord</code> element will collect the measurements using a class that implements
+      <code class="code">IAccumulator</code>. We provide the following implementations:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/util/stats/HistogramAccumulator.html" target="_top">HistogramAccumulator</a>
+        stores the samples and groups them into equally sized bins to form a histogram, which provides a distribution
+        of message latencies.
+      </li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/util/stats/AggregatingStatisticalAccumulator.html" target="_top">AggregatingStatisticalAccumulator</a>
+        aggregates the samples and keeps track of the average and standard deviation.
+      </li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/catalys/util/stats/StoringStatisticalAccumulator.html" target="_top">StoringStatisticalAccumulator</a>
+        stores the samples and apart from average and standard deviation, it can provide information about median and
+        percentiles.
+      </li></ul></div><p>
+      To measure inbound message latency using the <code class="code">HistogramAccumulator</code>:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="SEND" compid="RECV" fixversion="4.4"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" listenport="8000"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;!-- Timestamp incoming FIX message --&gt;
+    &lt;Timestamp id="tsInbound" /&gt;
+    &lt;SourceMessageProcessors/&gt;
+    &lt;ListenerMessageProcessors&gt;
+      &lt;NullMessageProcessor id="placeholder"&gt;
+        &lt;Timerecord id="trInbound"
+                    class="com.camerontec.catalys.util.stats.HistogramAccumulator"&gt;
+          &lt;Properties id="props"&gt;
+            &lt;Property name="dumpEvery" value="10000"/&gt;
+            &lt;Property name="name" value="inbound" /&gt;
+          &lt;/Properties&gt;
+        &lt;/Timerecord&gt;
+      &lt;/NullMessageProcessor&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+      To measure outbound message latency using the <code class="code">HistogramAccumulator</code>:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="RECV" compid="SEND" fixversion="4.4"&gt;
+  &lt;Connections&gt;
+    &lt;SocketConnection id="sc" hostname="localhost" port="8000"/&gt;
+  &lt;/Connections&gt;
+  &lt;SessionManager&gt;
+    &lt;Timerecord id="trOutbound"
+                class="com.camerontec.catalys.util.stats.HistogramAccumulator"&gt;
+      &lt;Properties id="props"&gt;
+        &lt;Property name="dumpEvery" value="10000"/&gt;
+        &lt;Property name="name" value="outbound" /&gt;
+      &lt;/Properties&gt;
+    &lt;/Timerecord&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;!-- message generator --&gt;
+      &lt;SampleMessageSource id="sms" interval="1" checkBeforeSend="true"&gt;
+        &lt;!-- Timestamp outbound FIX message --&gt;
+        &lt;Timestamp id="tsOutbound"/&gt;
+      &lt;/SampleMessageSource&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors/&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+      The results are output to the Node's log file.
+    </p><p>
+      Each configured <code class="code">Timerecord</code> is exposed as an MBean via JMX. They are located underneath
+      <code class="code">Catalys&shy;Server.Session.TimeRecord</code> and are named corresponding to the ID assigned in the
+      configuration file.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10738"></a>9.2.3.&nbsp;Instrumenting Message Counts</h3></div></div></div><p>
+      Message count statistics can be collected using the <code class="code">MessageCountsStatsService</code>, which writes
+      the statistics to a CSV file. For example:
+    </p><pre class="programlisting">TIMESTAMP,TOTAL.in,TOTAL.out,TOTAL.total,Party1~Party2.in,Party1~Party2.out,Party1~Party2.total
+20110429141549,5,1,6,5,1,6
+20110429141649,9,2,11,9,2,11
+20110429141749,13,3,16,13,3,16
+20110429141849,17,4,21,17,4,21
+20110429141908,17,4,21,17,4,21</pre><p>
+      The service is configured as follows:
+    </p><pre class="programlisting">&lt;Application id="app"&gt;
+  &lt;Services&gt;
+    &lt;GenericService
+        id="MessageCountsStatsService"
+        class="com.camerontec.catalys.server.sessionmanager.MessageCountsStatsService"&gt;
+      &lt;Properties id="props"&gt;
+        &lt;Property name="sessionIdentifierNeutral" value="true" /&gt;
+        &lt;Property name="counterIntervalInMinutes" value="15" /&gt;
+        &lt;Property name="fileName" value="stats.csv" /&gt;
+      &lt;/Properties&gt;
+    &lt;/GenericService&gt;
+  &lt;/Services&gt;
+&lt;/Application&gt;
+</pre><p>
+      If the <code class="code">sessionIdentifierNeutral</code> attribute is set to true, the actual session names are replaced with
+      anonymous names.  The <code class="code">counterIntervalInMinutes</code> should be set to a value less than the number
+      of minutes in 24 hours.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch09.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch09.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch09s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;9.&nbsp;Performance Tuning&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;9.3.&nbsp;Hardware Considerations</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:42+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

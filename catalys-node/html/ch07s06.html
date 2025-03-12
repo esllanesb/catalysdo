@@ -1,0 +1,152 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.6.&nbsp;IBM MQSeries Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s05.html" title="7.5.&nbsp;Solace Adapter"><link rel="next" href="ch07s07.html" title="7.7.&nbsp;TIBCO Rendezvous Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s07.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_ibm_mq"></a>7.6.&nbsp;IBM MQSeries Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_ibm_mq-intro"></a>7.6.1.&nbsp;Introduction</h3></div></div></div><p>
+      The IBM MQ Adapter is designed to work with the Node and IBM's messaging platform. Together with the Node, FIX
+      messages can be sent and received to and from any application connected over IBM MQSeries queues or topics.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_ibm_mq-install"></a>7.6.2.&nbsp;MQSeries Installation</h3></div></div></div><p>
+      IBM MQSeries should be installed per the IBM documentation. The IBM MQ Adapter is a built-in message processor
+      in the Node. It also requires the standard IBM MQSeries jar files be added to the classpath.
+    </p><p>
+      The adapter is compiled against the MQSeries v7.0 Java libraries. Other MQSeries/WebSphere MQ versions should
+      work with the adapter, but are not officially supported. Note that IBM always provides a JMS bridge, so our
+      <a href="ch07s04.html" title="7.4.&nbsp;JMS Adapter">JMS adapter</a> will also work with all MQSeries/WebSphere MQ versions.
+    </p><p>
+      The adapter was originally developed for the WebSphere MQ v5.3 Java libraries and is currently compiled
+      against <span class="bold"><strong>v7.0</strong></span>. WebSphere MQ v7.0 queue managers and clients interpolate with
+      queue managers and clients from previous versions of the WebSphere MQ or MQSeries products
+      (<a href="http://www-01.ibm.com/support/docview.wss?uid=swg21312967" target="_top">read more</a>). The adapter has
+      been tested thoroughly on versions v5.3, v6.0 and v7.0 of the IBM product and we provide support on all of
+      them, however we do recommend v7.0.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_ibm_mq-mq-config"></a>7.6.3.&nbsp;Typical Configuration and Message Conversion</h3></div></div></div><p>A typical scenario for message interaction between the Node and a MQSeries application might be:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">A FIX counterparty establishes a socket connection with the Node</li><li class="listitem">The Node writes inbound FIX messages to a queue or topic</li><li class="listitem">The customer application reads inbound messages from the queue or topic</li><li class="listitem">The customer application writes outbound messages to another queue or topic</li><li class="listitem">The Node consumes messages from the queue or topic</li><li class="listitem">The Node sends these messages out a FIX session to a counterparty</li></ol></div><p>
+      The MQ Adapter does not assume that the customer application is written in Java. It can be written in any
+      programming language that can communicate with the IBM WebSphere technology. MQSeries supports a very simple
+      message format and makes few assumptions about the message payload. The body of an MQSeries message is an array
+      of bytes.
+    </p><p>
+      In order to retain the flexibility that results from this, while making it fairly easy to parse FIX messages in
+      and out of the Node, a simple language-neutral representation is used by the adapter. If you are programming
+      entirely in Java there are helper methods in the
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/adapter/mq/MQHelper.html" target="_top">MQHelper</a>
+      class which convert to and from the <code class="code">IFIXMessage</code> message object used by Node and the "raw" MQSeries
+      message.
+    </p><p>The format of the MQSeries character-based message is a simple XML-style tag/value format as follows:</p><pre class="programlisting">&lt;fixMessage&gt;
+  &lt;field&gt;
+    &lt;key&gt;[key-data]&lt;/key&gt;
+    &lt;value&gt;[value-data]&lt;/value&gt;
+  &lt;/field&gt;
+&lt;/fixMessage&gt;</pre><p>
+      It is not necessary to populate the header and trailer FIX fields. The Node will populate these fields
+      in the session layer before the message is sent. You need to populate the fields required by the message type you
+      are sending - for example order quantity, symbol, side for a FIX NewOrderSingle. The one exception is that you
+      will need to populate the TargetCompID header fields so the Node can route outbound messages to the matching FIX
+      session.
+    </p><p>There are three other types of message that may be placed on the queue by the IBM MQ Adapter:</p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Document Root Tag</th><th>Keys</th><th>Value</th></tr></thead><tbody><tr><td>connectionStatusMessage</td><td>status</td><td>[true|false]</td></tr><tr><td>exceptionMessage</td><td>exception</td><td>Exception details</td></tr><tr><td>resetMessage</td><td>N/A</td><td>N/A</td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_ibm_mq-config"></a>7.6.4.&nbsp;Configuration</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7820"></a>Configuration Elements</h4></div></div></div><p>
+        There are two Catalys Node IBM MQ message processors:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+            <span class="bold"><strong>IBMMQMessageListener</strong></span>  - listens for inbound FIX messages received on a
+            session and writes to an MQSeries queue or topic.
+          </p><p>
+            For a complete list of attributes, see the
+            <a href="config_reference.html#config_ref_IBMMQMessageListener" title="IBMMQMessageListener">IBMMQMessageListener Configuration Reference</a>.
+          </p></li><li class="listitem"><p>
+            <span class="bold"><strong>IBMMQMessageSource</strong></span> - reads messages from an MQSeries queue and sends them
+            out a session.
+          </p><p>
+            For a complete list of attributes, see the
+            <a href="config_reference.html#config_ref_IBMMQMessageSource" title="IBMMQMessageSource">IBMMQMessageSource Configuration Reference</a>.
+          </p></li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7834"></a>Single Session Configuration Examples</h4></div></div></div><p>The following example shows an MQ Adapter configured on one session:</p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="EXCHANGE" compid="BROKER"
+           fixversion="4.4" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="sc1" hostname="localhost" port="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;IBMMQMessageSource queue.manager.name="QM_local"
+                            queue.name="EXCH_OUTBOUND"
+                            id="mqsource1"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;IBMMQMessageListener queue.manager.name="QM_local"
+                              queue.name="EXCH_INBOUND"
+                              id="mqlisten1"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7838"></a>Multi-Session Configuration Examples</h4></div></div></div><p>
+        The MQ Adapter can be configured such that one queue is used to send messages out multiple FIX sessions.
+        When this configuration is used, the FIX payload in the MQ message must contain valid TargetCompID field(s)
+        that match one of the configured FIX sessions. The following example illustrates multiple sessions
+        sharing the same queue:
+      </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="EXCHANGE_A" compid="BROKER" subid="Trader1"
+           fixversion="4.2" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="idN65553" hostname="localhost" port="2000"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;IBMMQMessageSource queue.manager.name="QM_local"
+                            queue.name="EXCH_OUTBOUND"
+                            id="mq_source1"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;IBMMQMessageListener queue.manager.name="QM_local"
+                              queue.name="EXCH_INBOUND"
+                              id="mq_listen1"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+  &lt;Session counterpartycompid="EXCHANGE_B" compid="BROKER" subid="Trader2"
+           fixversion="4.2" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="idN65587" hostname="localhost" port="2001"/&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;IBMMQMessageSource queue.manager.name="QM_local"
+                            queue.name="EXCH_OUTBOUND"
+                            id="mq_source2"/&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;IBMMQMessageListener queue.manager.name="QM_local"
+                              queue.name="EXCH_INBOUND"
+                              id="mq_listen2"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre><p>
+        In this particular configuration, outbound messages put onto the "BUY_OUTBOUND" queue must contain
+        valid TargetCompID and TargetSubID fields. The Node will then use these two fields to decide which session to
+        send the message out.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e7843"></a>7.6.4.1.&nbsp;Templates</h4></div></div></div><p>
+        Fully working templates of a Node configured with the IBM MQ Adapter can be found in the
+        <span class="emphasis"><em>templates/MQAdapter</em></span> directory. The ReadMe.txt file located in each directory gives a full
+        description on how to run these templates.
+      </p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="adapter_mq-test-classes"></a>Test Utility Classes</h5></div></div></div><p>
+          There are test utility classes available in the Node to test IBM MQ Series configurations. These are in the
+          <span class="emphasis"><em>com.camerontec.catalys.server.adapter.mq.test</em></span> package.
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+              <span class="bold"><strong>ReadandParseInboundMessageFromMQ</strong></span> - this utility waits for messages on a
+              MQ queue subject, when one is received, it transforms it into an <code class="code">IFIXMessage</code> using the
+              MQHelper provided, and then prints the message contents to <code class="code">System.out</code>.
+            </p><p>
+              This can be invoked as follows:
+              </p><pre class="programlisting">java -classpath &lt;MQ_JARS_AND_CATALYS_NODE_JAR%&gt; \
+                com.camerontec.catalys.server.adapter.mq.test.ReadandParseInboundMessageFromMQ \
+                -q.manager &lt;%MQ_QUEUE_MANAGER_NAME%&gt; -q &lt;MQ_QUEUE_NAME%&gt;</pre><p>
+            </p></li><li class="listitem"><p>
+              <span class="bold"><strong>SendOutboundFIXMMessagetoMQ</strong></span> - this utility publishes a FIX message to
+              a MQ queue every five seconds. It uses the MQHelper to transform the message from an
+              IFIXMessage object to a raw character-based message and prints the message contents to
+              <code class="code">System.out</code>.
+            </p><p>
+              This can be invoked as follows:
+              </p><pre class="programlisting">java -classpath &lt;MQ_JARS_AND_CATALYS_NODE_JAR%&gt; \
+                com.camerontec.catalys.server.adapter.mq.test.SendOutboundFIXMMessagetoMQ \
+                -q.manager &lt;%MQ_QUEUE_MANAGER_NAME%&gt; -q &lt;MQ_QUEUE_NAME%&gt;</pre><p>
+            </p></li></ul></div></div></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s05.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.5.&nbsp;Solace Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.7.&nbsp;TIBCO Rendezvous Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:39+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

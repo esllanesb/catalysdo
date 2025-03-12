@@ -1,0 +1,319 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 3.2.&nbsp;Logging</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch03.html" title="Chapter&nbsp;3.&nbsp;Configuration"><link rel="prev" href="ch03.html" title="Chapter&nbsp;3.&nbsp;Configuration"><link rel="next" href="ch03s03.html" title="3.3.&nbsp;JMX Configuration API"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;3.&nbsp;Configuration</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch03s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="config_logging"></a>3.2.&nbsp;Logging</h2></div></div></div><p>
+    The Catalys Node has a highly configurable logging sub-system.  It can be configured to use:
+  </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+      High Performance Logger (HPL), which produces log files in binary format and
+      is often used in conjunction with the Catalys MIS and Dashboard
+    </li><li class="listitem">Logback, which produces text-based log files and console output</li><li class="listitem">A combination of both HPL and Logback</li></ul></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_logging-choosing"></a>3.2.1.&nbsp;Choosing a Logging Implementation</h3></div></div></div><p>
+      When using only HPL-based logging, no log messages appear on the console and no human-readable
+      log files are created. Instead the logs are written to disk in binary format.  Apart from the performance
+      benefit of logging binary data instead of text, using HPL also enables the real-time streaming of log data to
+      the MIS for viewing in the Dashboard. Please refer to the Catalys MIS documentation for more details.
+    </p><p>
+      When HPL is disabled, Logback is implicitly enabled and standard text-based logging will be produced. Log
+      messages can be output to the console and to one or more files. The format and level of the logs are
+      configured via the <span class="emphasis"><em>logback.xml</em></span> configuration file.
+    </p><p>
+      Mixed-mode operation of the two logging implementations is possible. This is most common when you require
+      text-based logging but also wish to stream logs to the MIS. To use mixed-mode operation, HPL must be
+      disabled in <span class="emphasis"><em>HighPerformanceLogger.conf</em></span> and the
+      <code class="code">HighPerformanceLoggerAppender</code> must be configured in <span class="emphasis"><em>logback.xml</em></span>. Note that
+      in mixed-mode operation, even though HPL is "disabled", the HPL configuration is still applicable (e.g. the
+      directory where HPL logs are created).  A complete  <a href="ch03s02.html#config_logging-example" title="Example Logback Configuration">configuration</a>
+      that uses mixed-mode logging is shown below.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_logging-hpl-config"></a>3.2.2.&nbsp;HPL Configuration and Operation</h3></div></div></div><p>
+      HPL can be enabled or disabled in the <span class="emphasis"><em>HighPerformanceLogger.conf</em></span> configuration
+      file, whose directory location must appear in the classpath for the Node instance using it. If you used the
+      installer this is located in the <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/&lt;INSTANCE&gt;/conf</em></span>
+      directory. The configuration file has the following parameters:
+    </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>enabled</td><td>
+              Controls the state of the High Performance Logger.
+              <p>When true, HPL is enabled. When false, HPL is disabled.</p>
+              <p>Defaults to true.</p>
+            </td></tr><tr><td>logAppenderClassName</td><td>
+              Choose between the asynchronous or synchronous logger.
+              <p>Defaults to asynchronous.</p>
+            </td></tr><tr><td>directory</td><td>
+              The directory where the log files are written.
+              <p>Defaults to the working directory of the application.</p>
+            </td></tr><tr><td>level</td><td>
+              The level of logging.
+              <p>Can be ALL, TRACE, DEBUG, INFO, WARN, ERROR, OFF.</p>
+              <p>Defaults to INFO.</p>
+            </td></tr><tr><td>maxFileLength</td><td>
+              The maximum length of the log file before it is rolled over.
+              <p>Defaults to 2GB.</p>
+            </td></tr><tr><td><a name="config_logging-maxTotalFileLength"></a>maxTotalFileLength</td><td>
+              The following property specifies the maximum total file length (in bytes) for all high performance log
+              files before deleting the oldest files. Log files will be deleted until the total current length of all
+              existing high performance log files plus the maxFileLength is equal or below the total length cap. A value
+              of 0 disables the cap.
+              <p>Defaults to 0.</p>
+            </td></tr><tr><td>minBufferSize</td><td>
+              The minimum number of entries in the asynchronous appender's buffer. The buffer is allocated in memory
+              at startup to avoid garbage created as the result of dynamic allocations at runtime. The actual buffer
+              size is the next power of two greater then the specified minimum. Increasing the buffer size decreases
+              the probability that a logger will block when trying to produce a log entry.
+              <p>Defaults to 10,000 entries</p>
+            </td></tr><tr><td>minBufferEntrySize</td><td>
+              The minimum number of bytes allocated to each buffer entry in the asynchronous appender's buffer. The
+              memory for each buffer entry is allocated at startup to avoid garbage created as the result of dynamic
+              allocations at runtime. Individual buffer entries grow as required but never release any additional
+              memory acquired. Increasing the buffer entry size decreases the probability of additional memory
+              allocation at runtime.
+            </td></tr><tr><td>logWriterBatchSize</td><td>
+              The number of bytes allocated to the writer's batch buffer. The log writer uses a batch buffer to avoid
+              excessive writes to disk under high throughput conditions. Optimal results usually occur when the batch
+              size is a multiple of the underlying device's block size. Batching by the log writer only occurs when
+              it detects that there are multiple log entries queued up waiting to be written. This value must not be
+              larger than the configured 'maxFileLength'.
+              <p>Defaults to 8MB.</p>
+            </td></tr><tr><td>beaconInterval</td><td>
+              Specifies how long to wait (in seconds) of no log messages being logged before a beacon log message is
+              logged. A value of 0 disables beacon logging.
+              <p>Defaults to 0.</p>
+            </td></tr></tbody></table></div><div class="caution"><h3 class="title">Caution</h3><p>
+        It is recommended that each Node instance use its own set of logging configuration files.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1242"></a>Viewing Binary HPL Files</h4></div></div></div><p>
+        HPL log files are created in the current working directory by default and are named
+        <span class="emphasis"><em>camerontec.log.n</em></span>, where <span class="emphasis"><em>n</em></span> is a sequential number starting from 1.
+        The binary logs can be viewed in human-readable format using any of the following classes:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/util/logger/hpl/io/TailingHighPerformanceLogPlayer.html" target="_top">TailingHighPerformanceLogPlayer</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/util/logger/hpl/io/OfflineHighPerformanceLogPlayer.html" target="_top">OfflineHighPerformanceLogPlayer</a></li><li class="listitem"><a class="javadoc" href="../javadoc/com/camerontec/util/logger/hpl/io/ViewLogs.html" target="_top">ViewLogs</a>.
+          This class is designed to be used from the command line.  Example scripts are provided in the HPL
+          <a href="ch03s02.html#config_logging-hpl-template" title="HPL Template">template</a>. See <code class="code">viewlogs[.sh|.bat]</code>.
+        </li></ul></div><p>
+        If using the installer, there is a <span class="emphasis"><em>view-hpl-logs.[sh|bat]</em></span> script located in the<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times">
+        <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/example/scripts</em></span> directory.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1259"></a>Configuration Variables</h4></div></div></div><p>
+        HPL allows environment variables and Java system properties to be referenced from the configuration file.
+      </p><p>
+        To set the directory path using an environment variable, first create the variable on the system and then
+        reference the variable in the HPL configuration file using the syntax <code class="code">${env:VariableName}</code>.
+        For example:
+      </p><pre class="programlisting">directory = ${env:HPL_Directory_Path}</pre><p>
+        To set the directory path using a Java system property, add the following to your startup script:
+      </p><pre class="programlisting">java -DHPL_Directory_Path="../HPL_Logs/" ...</pre><p>
+        Reference the Java system property in the configuration file using the syntax
+        <code class="code">${system:PropertyName}</code>.  For example:
+      </p><pre class="programlisting">directory = ${system:HPL_Directory_Path}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_logging-archive-hpl"></a>Archiving HPL Log Files</h4></div></div></div><p>
+        HPL log files should be regularly archived in order to avoid excessive disk space consumption.
+
+        If <a href="ch03s02.html#config_logging-maxTotalFileLength">maxTotalFileLength</a> is not configured to
+        limit the size of HPL log files, a custom script or other manual procedure can be implemented to
+        archive and/or purge older logs.
+      </p><p>
+        If HPL log streaming is enabled, the log files are replicated to the MIS.
+        Archiving and purging HPL log files on the Node host will also decrease disk space consumption on the MIS host.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_logging-hpl-template"></a>HPL Template</h4></div></div></div><p>
+        A template demonstrating the High Performance Logger can be found in
+        <span class="emphasis"><em>templates/HighPerformanceLogging</em></span>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_logging-logback-configuration"></a>3.2.3.&nbsp;Logback Configuration</h3></div></div></div><p>
+      Logback is configured using a <span class="emphasis"><em>logback.xml</em></span> file, whose directory must be
+      present in the classpath of the Node.  If multiple files with this name are present in the classpath,
+      only the first one will be effective. Refer to the
+      <a href="https://logback.qos.ch/manual/configuration.html" target="_top">Logback Configuration</a> documentation for
+      complete details on this file.
+    </p><p>
+      We bundle two <span class="emphasis"><em>logback.xml</em></span> configuration files with the Node. If using the installer, the
+      file is located <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/example/conf</em></span>. A simpler configuration file is
+      located in the <span class="emphasis"><em>resources</em></span> directory of the Node distribution. It logs to standard output at
+      INFO level.
+    </p><p>
+      Logback allows Java system properties to be referenced from the configuration file. For example you may want
+      to set a unique log file name for each Node instance. To do this, add a -D Java system property to your startup
+      script:
+    </p><pre class="programlisting">java ... -DLOG_FILE_NAME="catalys-broker.log" ...</pre><p>
+      To refer to this value in <span class="emphasis"><em>logback.xml</em></span>, use the <code class="code">${LOG_FILE_NAME}</code> replacement
+      parameter.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1293"></a>Logback Appenders</h4></div></div></div><p>
+        Log messages are output by Logback using appenders. An appender definition consists of an appender class as
+        well as the individual loggers which it creates. Each individual appender must have a unique name. For a full
+        list of Logback logging appender classes, refer to the
+        <a href="https://logback.qos.ch/manual/appenders.html" target="_top">Appenders chapter in the Logback manual</a>.
+        The <a href="ch03s02.html#config_logging-example" title="Example Logback Configuration">example</a> below demonstrates how to configure the following
+        Logback appenders:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">ConsoleAppender</li><li class="listitem">FileAppender</li><li class="listitem">RollingFileAppender</li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1302"></a>Logger Names</h4></div></div></div><p>
+        In general, most Java classes in the Node have their own logger, whose name is the complete class name.
+        For example, the <code class="code">CatalysServer</code> class logs messages to a logger named<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times">
+        <code class="code">com.camerontec.catalys.server.CatalysServer</code>.
+      </p><p>
+        Sessions and components (i.e. message processors) use a different naming scheme: <br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times">
+        <code class="code">CameronTec.Session.&lt;session_name&gt;</code><br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times">
+        <code class="code">CameronTec.Component.&lt;component_type&gt;.&lt;component_id&gt;</code>
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1310"></a>Log Format</h4></div></div></div><p>
+        The format of Logback strings is highly configurable. See the examples below and the
+        <a href="https://logback.qos.ch" target="_top">Logback</a> documentation for more detail, in particular the
+        <a href="https://logback.qos.ch/manual/layouts.html#conversionWord" target="_top">Conversion Words</a> section.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1315"></a>Logback Configuration via JMX</h4></div></div></div><p>
+        Logback supports reconfiguration from the default configuration file. See the
+        <a href="https://logback.qos.ch/manual/jmxConfig.html" target="_top">JMX Configurator</a> for more information.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_logging-example"></a>Example Logback Configuration</h4></div></div></div><p>This example demonstrates how to:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          Log inbound and outbound FIX messages to individual files, and all FIX messages to a combined file
+        </li><li class="listitem">
+          Log DEBUG messages to a separate file
+        </li><li class="listitem">
+          Use the <code class="code">HighPerformanceLoggerAppender</code> to generate binary logs that can be streamed to the MIS
+          (mixed-mode logging)
+        </li></ul></div><pre class="programlisting">&lt;configuration&gt;
+  &lt;appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"&gt;
+    &lt;!-- deny all events with a level below INFO, that is TRACE and DEBUG --&gt;
+    &lt;filter class="ch.qos.logback.classic.filter.ThresholdFilter"&gt;
+      &lt;level&gt;INFO&lt;/level&gt;
+    &lt;/filter&gt;
+    &lt;encoder&gt;
+      &lt;pattern&gt;
+        %date %-5level [%thread] %logger - %marker%msg%n
+      &lt;/pattern&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+
+  &lt;appender name="SESSION1_FIX" class="ch.qos.logback.core.FileAppender"&gt;
+    &lt;file&gt;session1_fix.log&lt;/file&gt;
+    &lt;encoder&gt;
+      &lt;pattern&gt;
+        %date %-5level [%thread] %logger - %marker%msg%n
+      &lt;/pattern&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+
+  &lt;appender name="SESSION1_FIX_IN" class="ch.qos.logback.core.FileAppender"&gt;
+    &lt;file&gt;session1_in.log&lt;/file&gt;
+    &lt;encoder&gt;
+      &lt;pattern&gt;
+        %date %-5level [%thread] %logger - %marker%msg%n
+      &lt;/pattern&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+
+  &lt;appender name="SESSION1_FIX_OUT" class="ch.qos.logback.core.FileAppender"&gt;
+    &lt;file&gt;session1_out.log&lt;/file&gt;
+    &lt;encoder&gt;
+      &lt;pattern&gt;
+        %date %-5level [%thread] %logger - %marker%msg%n
+      &lt;/pattern&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+
+  &lt;appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;
+    &lt;file&gt;debug.log&lt;/file&gt;
+    &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;
+      &lt;!-- daily rollover --&gt;
+      &lt;fileNamePattern&gt;debug.%d{yyyy-MM-dd}.log&lt;/fileNamePattern&gt;
+      &lt;!-- keep 30 days' worth of history --&gt;
+      &lt;maxHistory&gt;30&lt;/maxHistory&gt;
+    &lt;/rollingPolicy&gt;
+    &lt;encoder&gt;
+      &lt;pattern&gt;
+        %date %-5level [%thread] %logger - %marker%msg%n
+      &lt;/pattern&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+
+  &lt;appender name="HPL"
+            class="com.camerontec.catalys.util.logger.logback.HighPerformanceLoggerAppender"&gt;
+    &lt;filter class="ch.qos.logback.classic.filter.ThresholdFilter"&gt;
+      &lt;level&gt;INFO&lt;/level&gt;
+    &lt;/filter&gt;
+  &lt;/appender&gt;
+
+  &lt;logger name="CameronTec.Session.CTPTYCOMPID_OURCOMPID" level="info"&gt;
+    &lt;appender-ref ref="SESSION1_FIX"/&gt;
+  &lt;/logger&gt;
+
+  &lt;logger name="CameronTec.Session.CTPTYCOMPID_OURCOMPID.in" level="info"&gt;
+    &lt;appender-ref ref="SESSION1_FIX_IN"/&gt;
+  &lt;/logger&gt;
+
+  &lt;logger name="CameronTec.Session.CTPTYCOMPID_OURCOMPID.out" level="info"&gt;
+    &lt;appender-ref ref="SESSION1_FIX_OUT"/&gt;
+  &lt;/logger&gt;
+
+  &lt;logger name="CameronTec" level="debug"&gt;
+    &lt;appender-ref ref="DEBUG"/&gt;
+  &lt;/logger&gt;
+
+  &lt;logger name="com.camerontec.catalys" level="debug"&gt;
+    &lt;appender-ref ref="DEBUG"/&gt;
+  &lt;/logger&gt;
+
+  &lt;root level="info"&gt;
+    &lt;appender-ref ref="STDOUT"/&gt;
+    &lt;appender-ref ref="HPL"/&gt;
+  &lt;/root&gt;
+&lt;/configuration&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1328"></a>Logback Template</h4></div></div></div><p>
+        A template demonstrating Logback can be found in <span class="emphasis"><em>templates/AdvancedLogging</em></span>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_logging-fix-messages"></a>3.2.4.&nbsp;FIX Message Logging</h3></div></div></div><p>
+      By default, the Node logs all inbound and outbound FIX messages at INFO level.  There are three
+      <code class="code">Application</code> attributes which control FIX message logging for all sessions:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="code">printMessages</code><p>
+          If true, all FIX messages are logged at INFO level.
+        </p></li><li class="listitem"><code class="code">printAdminMessagesOnly</code><p>
+          If true, only administrative messages (logon, logout, heartbeat, sequence reset, test request and resend
+          request) are logged, regardless of the value of <code class="code">printMessages</code>.
+        </p></li><li class="listitem"><code class="code">printFormattedMessages</code><p>
+          If true, a brief message summary showing the sequence number and message type will be logged in addition
+          to the entire message. For example:
+        </p><pre class="programlisting">2015-08-12 11:47:20,045 INFO CameronTec.Session.BROKER_CLIENT.in \
+                             &lt; 2 NewOrderSingle (8=FIX.4.49=27035=D56=BROKER49=CLIENT...)
+</pre></li></ul></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1348"></a>Logger Names</h4></div></div></div><p>
+        Messages are logged by each session using loggers with the following naming scheme:
+      </p><p>
+        Inbound: <code class="code">CameronTec.Session.&lt;session_name&gt;.in</code><br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times">
+        Outbound: <code class="code">CameronTec.Session.&lt;session_name&gt;.out</code>
+      </p><p>
+        The <span class="emphasis"><em>&lt;session_name&gt;</em></span> is composed of the CompID attributes configured for the session.
+        Consider the following configuration:
+      </p><pre class="programlisting">&lt;Session compid="A"
+         subid="B"
+         locationid="C"
+         counterpartycompid="D"
+         counterpartysubid="E"
+         counterpartylocationid="F" ...&gt;</pre><p>
+        This session's inbound logger will be named <code class="code">CameronTec.Session.A.B.C_D.E.F.in</code>
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1359"></a>Manually Logging FIX Messages</h4></div></div></div><p>
+        If you wish to print or manually log an <code class="code">IFIXMessage</code> from a custom component, we recommend that you
+        use the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessage.html#toString(int)" target="_top">IFIXMessage.toString(int)</a>
+        method. It accepts an <code class="code">int</code> argument that represents one of several constants that define an output
+        format. Please refer to the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessage.html#toString(int)" target="_top">IFIXMessage</a>
+        JavaDoc for a list and explanation of each format.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_logging-logging-api"></a>3.2.5.&nbsp;Logging API</h3></div></div></div><p>
+      Developers of custom Catalys Node components can take advantage of our logging API, specifically the
+      <a class="javadoc" href="../javadoc/com/camerontec/util/logger/ILogger.html" target="_top">ILogger</a> interface,
+      which derives from the standard <a href="https://www.slf4j.org/apidocs/index.html" target="_top">slf4j</a> interface.
+    </p><p>
+      All of the slf4j methods are implemented, except the variants which take a
+      <a class="code" href="https://www.slf4j.org/apidocs/org/slf4j/Marker.html" target="_top">Marker</a>
+      argument. These are mapped onto the equivalent methods which do not take a
+      <code class="code">Marker</code> argument.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1374"></a>Getting a Logger</h4></div></div></div><p>
+        Each class should have a logger, whose name is usually based on the class name:
+      </p><pre class="programlisting">package com.mycompany;
+...
+ILogger logger = LoggerManager.getLogger(SomeComponent.class);</pre><p>This will obtain the logger named <code class="code">com.mycompany.SomeComponent</code>.</p><p>
+        Or the logger name can be a concatentation of the class and a unique identifier:
+      </p><pre class="programlisting">package com.mycompany;
+...
+String id = AttributeUtility.getStringAttribute("id");
+ILogger logger = LoggerManager.getLogger(SomeComponent.class.getName() + "." + id);</pre><p>
+        This will obtain the logger named <code class="code">com.mycompany.SomeComponent.component1</code> when the value of
+        <code class="code">id</code> is <code class="code">component1</code>.
+      </p><p>Note: It's a common mistake to append with the class itself:</p><pre class="programlisting">ILogger logger = LoggerManager.getLogger(SomeComponent.class + "." + id); // Wrong</pre><p>
+        This will obtain the logger named <code class="code">SomeComponent.component1</code>, which no longer has the package
+        hierarchy information.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1390"></a>Using the Logger</h4></div></div></div><a name="config_logging-logginglevels"></a><p>
+        There are logging methods corresponding to each logging level: <code class="code">error</code>, <code class="code">warn</code>,
+        <code class="code">info</code>, <code class="code">debug</code> and <code class="code">trace</code>.
+      </p><p>The simplest calls are the methods which take a <code class="code">String</code> argument:</p><pre class="programlisting">logger.info("Primary Server: " + myServer + " is releasing the lock");</pre><p>
+        There are method calls which take an <code class="code">Exception</code> and print the associated stacktrace:
+      </p><pre class="programlisting">logger.warn("Exception reading file", ioException);</pre><p>The interface also provides methods to lookup a message string from a resource bundle:</p><pre class="programlisting">logger.errorWithLookup(myResourceBundleCode, myParameter1, myParameter2);</pre><p>
+        Refer to the
+        <a class="javadoc" href="../javadoc/com/camerontec/util/logger/ILogger.html" target="_top">ILogger</a>
+        documentation for the complete set of available methods.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch03.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch03s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;3.&nbsp;Configuration&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;3.3.&nbsp;JMX Configuration API</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

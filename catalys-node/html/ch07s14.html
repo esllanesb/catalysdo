@@ -1,0 +1,235 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.14.&nbsp;C/C++ API</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s13.html" title="7.13.&nbsp;EMX Delimited File Adapter"><link rel="next" href="ch07s15.html" title="7.15.&nbsp;Microsoft .NET API"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s13.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s15.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_api_c"></a>7.14.&nbsp;C/C++ API</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_api_c-intro"></a>7.14.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Catalys Node acts as a gateway process between your applications and your FIX counter-parties. The C/C++
+      API gives FIX access to your C or C++ application.
+    </p><p>
+      This API provides a static library to link into your application to connect to Catalys Node, which will in turn
+      connect to FIX counter-parties. This API is designed for C and C++ users on Windows and Unix systems.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_api_c-install"></a>7.14.2.&nbsp;Overview</h3></div></div></div><p>
+      The following diagram shows how your application, labelled SocketClient, connects to the Node to communicate
+      over one or more FIX sessions. A FIX session is a unique connection with a FIX counter-party.
+    </p><p>
+      </p><div class="mediaobject"><img src="../resources/AdvancedSocketAdapterOverview.gif"></div><p>
+    </p><p>
+      Your application connects to the Node using a
+      statically linked library. Use this library to
+      establish a connection with the Catalys Node and pass FIX
+      messages to and from your FIX counter-parties.
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9262"></a>7.14.2.1.&nbsp;Data Transport</h4></div></div></div><p>
+        Behind the scenes, the C/C++ API will
+        create a TCP socket connection to the Node, which will be
+        configured to accept TCP socket connections by specifying the
+        Socket Adapter in the Node's <span class="emphasis"><em>config.xml</em></span>. There are two
+        different Socket Adapter implementations available (Socket
+        Adapter and Advanced Socket Adapter), having different
+        characteristics with regard to server control and application topology:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          Number of applications that can connect to a single FIX session
+
+          <p>
+            The Advanced Socket Adapter allows multiple
+            client applications to connect to a single (or multiple) FIX
+            sessions. Some clients use this to implement a GUI that can
+            send and receive messages to any of the FIX counter-parties.
+          </p><p>
+            In contrast, the simple Socket Adapter will only accept a
+            single application connection per FIX session.
+          </p></li><li class="listitem">
+          Catalys Node Command Line Access
+
+          <p>
+            With the Advanced Socket Adapter, you can give commands to the Node to start or stop sessions and set
+            sequence numbers, among others.
+          </p></li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9272"></a>7.14.3.&nbsp;Programming Notes</h3></div></div></div><p>
+      This API does no memory allocation using malloc and free (or other C++ allocation calls). Therefore, no memory
+      pointers returned from any functions within the API require clean-up or <code class="code">free()</code>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9276"></a>7.14.4.&nbsp;Library</h3></div></div></div><p>
+      The C library has been tested with Microsoft Visual C++ 6.0 and GNU gcc 3.2.2.
+    </p><p>
+      A pre-built <span class="emphasis"><em>sockapi.lib</em></span> and <span class="emphasis"><em>simplapi.lib</em></span> are provided for
+      Windows users under the <code class="code">lib</code> directory. You can find the source code for the library under the
+      <span class="emphasis"><em>templates/src/cApi/c</em></span> directory.
+    </p><p>
+      To build the library for Linux or Solaris go to the templates directory,
+      <span class="emphasis"><em>templates/cApi/unix/Advanced</em></span> or <span class="emphasis"><em>templates/cApi/unix/Simple</em></span>, and follow
+      the instructions in <span class="emphasis"><em>Readme.txt</em></span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9288"></a>7.14.5.&nbsp;Class Diagram</h3></div></div></div><p>
+      This diagram includes the two object classes for this library
+      and an <code class="code">Application</code> class as a place holder for the application
+      since the library classes relate to the application rather than directly to one another.
+    </p><p>
+      </p><div class="mediaobject"><img src="../resources/clibrary2.gif"></div><p>
+    </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9296"></a>7.14.5.1.&nbsp;Overview</h4></div></div></div><p>
+        From a high-level view, this API has a data transport class, <code class="code">FIXSockCli</code>, and a data representation
+        class, <code class="code">FIXMsg</code>.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9301"></a>7.14.5.2.&nbsp;FIXSockCli</h4></div></div></div><p>
+        This class is used to transport data to and from the Socket Adapter. In order to use this class in both C and
+        C++, the class has attributes only. The methods shown above are called by concatenating class and method name
+        and passing the object address as the first parameter. For example, <code class="code">FIXSockCliInit(&amp;connect)</code>.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9305"></a>7.14.5.2.1.&nbsp;Init() and Shutdown()</h5></div></div></div><p>
+          These methods will initialize the object and, for MS Windows, load and unload the socket DLL.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9308"></a>7.14.5.2.2.&nbsp;Connect()</h5></div></div></div><p>
+          <code class="code">Connect()</code> opens a socket connection and handshakes with the Node (with <code class="code">CONNECT</code>
+          messages). While <code class="code">Init()</code> must be called prior to <code class="code">Connect()</code>, a
+          side effect of <code class="code">Connect()</code> under Windows is to reload the winsock DLL if it has been unloaded
+          resultant of a socket error.
+        </p><p>
+          <code class="code">Connect()</code> must also be called after <code class="code">Send()</code> or <code class="code">Recv()</code> return an
+          error. Errors reported by these functions will result in the automatic closure of the socket.
+        </p><p>
+          One important aspect of <code class="code">Connect()</code> is the recovery
+          mechanism. In case of a disconnect, a socket reconnect must
+          be followed by another <code class="code">CONNECT</code> message. If the data field is
+          empty, every message from the beginning of the session (typically
+          the start of the trading day) will be resent from the Socket
+          Adapter. To receive only messages missed while disconnected,
+          the connect message must contain a table of sessions (since
+          Socket Adapter and the API can accommodate simultaneous separate
+          FIX sessions) along with the last <code class="code">AckId</code> received for the
+          session.
+        </p><p>
+          The recommended approach is to let the API maintain this persistence automatically by calling
+          <code class="code">SetPersist()</code> after <code class="code">Init()</code>.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9327"></a>7.14.5.2.3.&nbsp;Send() and Recv()</h5></div></div></div>
+
+        These methods will handle I/O, but may return errors requiring a another call to
+        <code class="code">Connect()</code>. <code class="code">Send()</code> will send the Socket Adapter buffer held in
+        <code class="code">FIXMsg</code> which may contain any of the defined Advanced Socket Adpater message types.
+
+        <p>
+          <code class="code">Recv()</code> will wait for messages from the Socket Adapter and
+          populate a <code class="code">FIXMsg</code> object. Any Socket Adapter message type
+          may be received, but of primary importance are FIX messages, ACK,
+          and NACK. Receipt of a FIX message will require an Ack reply
+          (using <code class="code">SendAck()</code>).
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9336"></a>7.14.5.2.4.&nbsp;SendAck()</h5></div></div></div><p>Send acknowledgment Socket Adapter message for a given FIX message.</p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9339"></a>7.14.5.2.5.&nbsp;GetFd()</h5></div></div></div><p>
+          Provides access to the file handle for direct system calls (e.g., setting socket attributes or for an
+          event manager).
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9342"></a>7.14.5.2.6.&nbsp;SetPersist()</h5></div></div></div><p>
+          This function activates the libraries built-in inbound message-id persistence and auto-reconnect
+          ability. This is tied into the <code class="code">Recv()</code> and <code class="code">SendAck()</code>
+          functions. When a FIX message is <code class="code">SendAck()</code>'d, the id is
+          saved in an internal array and backed up to a flat file. When the application is restarted and
+          <code class="code">SetPersist()</code> is called, the internal array is rebuilt from the flat
+          file. When <code class="code">Connect()</code> is called (on start-up or after a socket disconnect), the connect protocol
+          includes the last message id received for each session.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9350"></a>7.14.5.2.7.&nbsp;ResetPersist()</h5></div></div></div><p>
+          Clears internal and flat file list of sessions and last message IDs received for those sessions.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e9353"></a>7.14.5.3.&nbsp;FIXMsg</h4></div></div></div><p>
+        <code class="code">FIXMsg</code> will be the logical class name for this set of methods to manipulate message content.
+        Actual function names are the concatenated class and function. E.g., <code class="code">Create()</code> actual name is
+        <code class="code">FIXMsgCreate(FIXMsg*)</code>.
+      </p><p>
+        This class hold contains an envelope for the message (used for
+        communication with the Node) as well as a FIX message
+        within. Messages other than a FIX message (such as a message ACK)
+        do not contain a FIX message in the envelope (in the <code class="code">data</code>
+        field). It is possible to use this data field to import
+        non-FIX style messages into the Node to be converted to
+        FIX from within your custom Java class.
+      </p><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9361"></a>7.14.5.3.1.&nbsp;Create()</h5></div></div></div><p>
+          <code class="code">Create()</code> will initialize the user provided
+          structure (so no memory allocation required). It is assumed
+          that the message allocation will take place on the stack (auto
+          variable, such as <code class="code">FIXMsg x;</code> declared in the first lines of a
+          function), so it will be kept small for efficiency.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9366"></a>7.14.5.3.2.&nbsp;SetSocketHeader()</h5></div></div></div><p>
+          This is used to construct non-FIX messages, but rather session control messages, and will not
+          normally be used by the application programmer. Set the Socket
+          Adapter message header for this message's message envelope
+          containing message length, message type (e.g., <code class="code">CONNECT</code>,
+          <code class="code">PROTOCOL_MSG</code>), and message data. This function would
+          typically be used to construct <code class="code">CONNECT</code> or <code class="code">COMMAND</code> messages,
+          rather than FIX messages.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9373"></a>7.14.5.3.3.&nbsp;SetFIXHeader()</h5></div></div></div><p>
+          To send a FIX message, call <code class="code">Create()</code> and
+          <code class="code">SetFixHeader()</code> to build the Socket Adapter message envelope with
+          the FIX header put in the data field. Subsequent <code class="code">AddField()</code>
+          calls will append fields to the FIX header.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9379"></a>7.14.5.3.4.&nbsp;AddField() and GetField()</h5></div></div></div><p>
+          These functions will operate on the given message using the defined tag
+          IDs. This will keep the class size down and still provide
+          compile time checking. This does not, however, provide type
+          safety.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9382"></a>7.14.5.3.5.&nbsp;GetAckId()</h5></div></div></div><p>
+          Returns the Socket Adapter's ASC ID message field. This is required to acknowledge receipt of
+          FIX messages, typically with <code class="code">FIXSockCliSendAck()</code>.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9386"></a>7.14.5.3.6.&nbsp;ToString()</h5></div></div></div><p>
+          Return the FIX output buffer of the FIX message in its current state. This will be
+          encapsulated in the Advanced Socket Adapter's small message header and trailer.
+        </p></div><div class="section"><div class="titlepage"><div><div><h5 class="title"><a name="d5e9389"></a>7.14.5.3.7.&nbsp;AddData(), SetData(), and GetData()</h5></div></div></div><p>
+          These functions manipulate the Socket Adapter's message data field. For
+          <code class="code">PROTOCOL_MSG</code>, this is typically where FIX messages are written
+          with <code class="code">AddField()</code>, but can also contain a user object that the
+          Node can convert to FIX.
+        </p><p>
+          These functions return non-zero if the buffer will not fit.
+        </p><p>
+          <code class="code">GetData()</code> returns a pointer and length to the
+          field. <code class="code">SetData()</code> copies given buffer to the field,
+          discarding any data already in that field. <code class="code">AddData()</code> appends
+          given buffer to any existing data in the message's data field.
+        </p></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9399"></a>7.14.6.&nbsp;Sequence Diagram</h3></div></div></div><p>
+      This diagram shows the sequence
+      of events to create a session and send a message to the Node. The <code class="code">Recv()</code> should repeat as many
+      times as needed until an ACK is received. <code class="code">Recv()</code> may also return a number of other
+      message types while waiting for ACK. E.g., incoming FIX messages may be received while waiting for the ACK for an
+      outbound FIX messages.
+    </p><p>
+      </p><div class="mediaobject"><img src="../resources/clibrary1.gif"></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9408"></a>7.14.7.&nbsp;Templates</h3></div></div></div><p>
+      Working templates are located in <span class="emphasis"><em>templates/cApi</em></span>. The full source code for the cApi
+      template is available in <span class="emphasis"><em>templates/src/cApi/cpp</em></span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e9413"></a>7.14.8.&nbsp;Sample user code</h3></div></div></div><p>
+      The full source code for the SocketClient Template is available at
+      <code class="filename">templates/src/cpp/main.cpp</code>.
+    </p><p>An excerpt is listed here.</p><pre class="programlisting">FIXSockCli conn;
+main () {
+  /* Open a socket connection to the Advanced Socket Adapter */
+  FIXSockCliInit(&amp;conn, "fix_link1", "localhost", 7200);
+
+  /* Set inbound seq# persistence */
+  FIXSockCliSetPersist(&amp;conn, "fix_link1_persist.dat");
+
+  while (1) {
+    if (FIXSockCliConnect(&amp;conn, NULL)) {
+      printf("Socket connect error: %d\n", FIXSockCliGetLastError(&amp;conn);
+    }
+
+    /* Create a NewOrderSingle and send it */
+    {
+      FIXMsg msg;
+      FIXMsgCreate(&amp;msg);
+      FIXMsgSetFIXHeader(&amp;msg,"ack id",
+      FIXMSG_NEWORDERSINGLE, "myCompID", "counterpartyID", NULL, NULL, NULL, NULL);
+      FIXMsgAddField(&amp;msg, FTAG_CLORDID, "ABC");
+      FIXSockCliSend(&amp;conn, &amp;msg);
+    }
+
+    /* Wait for the Ack message */
+    while (1) {
+      FIXMsg inMsg;
+      if ( FIXSockCliRecv(&amp;conn, &amp;inMsg) ) {
+        /* report socket error */
+        break;
+      }
+
+      /* process ack or nack */
+      if ( FIXMsgIsAck(&amp;inMsg) ) {
+        /* process ack back to internal application or DB */
+        break;
+      }
+      else {
+        /* Handle incoming message */
+      }
+    }
+  }
+
+  /* Clean up connection */
+  FIXSockCliShutdown(&amp;sock);
+}</pre></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s13.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s15.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.13.&nbsp;EMX Delimited File Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.15.&nbsp;Microsoft .NET API</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:40+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

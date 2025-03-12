@@ -1,0 +1,1079 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head><title>Catalys LMA User Guide</title><link rel="stylesheet" type="text/css" href="../resources/docbook_single.css"/><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"/></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><table xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="home_header"><tr><td id="home_header_left"><img src="../resources/catalys_logo.jpg" id="home_header_logo" width="100"/></td><td id="home_header_right"><div id="home_header_title">Catalys LMA User Guide</div><div id="home_header_version">
+              v2.2 rfd7d8890</div></td></tr></table><hr/><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="chapter"><a href="#Local_Management_Agent">1. Introduction</a></span></dt><dd><dl><dt><span class="section"><a href="#Catalys_Overview">1.1. Catalys Overview</a></span></dt><dt><span class="section"><a href="#d5e27">1.2. LMA Overview</a></span></dt><dt><span class="section"><a href="#common_releases">1.3. Catalys Releases</a></span></dt><dt><span class="section"><a href="#common_whats_new">1.4. What's New in Catalys 2.2</a></span></dt><dt><span class="section"><a href="#common_getting_support">1.5. Getting Support</a></span></dt></dl></dd><dt><span class="chapter"><a href="#Local_Management_Agent_Installation">2. Installation</a></span></dt><dd><dl><dt><span class="section"><a href="#Local_Management_Agent_Installation-intro">2.1. Introduction</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-compatibility">2.2. Compatibility</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-installer-steps">2.3. Installation Steps</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-trouble">2.4. Troubleshooting</a></span></dt></dl></dd><dt><span class="chapter"><a href="#Local_Management_Agent_Configuration">3. Configuration</a></span></dt><dd><dl><dt><span class="section"><a href="#Local_Management_Agent_Configuration-intro">3.1. Introduction</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-config-file">3.2. Configuration File</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent-logging">3.3. Logging</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-lmaScripts">3.4. LMA Scripts</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl">3.5. SSL</a></span></dt></dl></dd><dt><span class="chapter"><a href="#Local_Management_Agent_API">4. API</a></span></dt><dd><dl><dt><span class="section"><a href="#Local_Management_Agent_API-JMX_API">4.1. JMX API</a></span></dt><dt><span class="section"><a href="#Javadoc">4.2. JavaDoc</a></span></dt></dl></dd><dt><span class="appendix"><a href="#thid_party_software">A. Third-Party Software</a></span></dt></dl></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="Local_Management_Agent"/>Chapter&#160;1.&#160;Introduction</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="#Catalys_Overview">1.1. Catalys Overview</a></span></dt><dt><span class="section"><a href="#d5e27">1.2. LMA Overview</a></span></dt><dt><span class="section"><a href="#common_releases">1.3. Catalys Releases</a></span></dt><dt><span class="section"><a href="#common_whats_new">1.4. What's New in Catalys 2.2</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e63">1.4.1. Installers</a></span></dt><dt><span class="section"><a href="#d5e66">1.4.2. New Features in Catalys Node 2.2</a></span></dt><dt><span class="section"><a href="#d5e133">1.4.3. Public API changes Catalys Node 2.2</a></span></dt><dt><span class="section"><a href="#d5e144">1.4.4. Known Issues in Catalys Node 2.2</a></span></dt><dt><span class="section"><a href="#d5e161">1.4.5. New Features in Catalys Node 2.1 Maintenance Releases</a></span></dt><dt><span class="section"><a href="#d5e266">1.4.6. New Features in Catalys MIS 2.2</a></span></dt><dt><span class="section"><a href="#d5e291">1.4.7. Known Issues in Catalys MIS 2.2</a></span></dt><dt><span class="section"><a href="#d5e334">1.4.8. New Features in Catalys MIS 2.1 Maintenance Releases</a></span></dt><dt><span class="section"><a href="#d5e345">1.4.9. New Features in Catalys LMA 2.2</a></span></dt><dt><span class="section"><a href="#d5e350">1.4.10. Known Issues in Catalys LMA 2.2</a></span></dt></dl></dd><dt><span class="section"><a href="#common_getting_support">1.5. Getting Support</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e357">1.5.1. Contacting Support</a></span></dt><dt><span class="section"><a href="#d5e391">1.5.2. Sending Files to Your Support Team</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Catalys_Overview"/>1.1.&#160;Catalys Overview</h2></div></div></div><p>
+    Catalys is <a href="http://www.camerontecgroup.com" target="_top">CameronTec</a>'s integrated software
+    solution designed to meet the broad spectrum of functional needs
+    for firms seeking to utilize advanced FIX connectivity.
+  </p><p>
+    What makes Catalys different is its unique approach: it is an
+    unprecedented environment to develop, deploy and operate your
+    advanced FIX infrastructure as an <span class="bold"><strong>ecosystem</strong></span>.
+  </p><p>
+    Multiple components work together inside the Catalys ecosystem:
+  </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+      The Catalys Nodes handle the FIX message flows.
+      Refer to the Catalys Node Documentation.
+    </li><li class="listitem">
+      The Catalys LMA connects the nodes to the rest of the ecosystem.
+      Refer to the Catalys LMA Documentation.
+    </li><li class="listitem">
+      The Catalys MIS is the central backbone for transversal services such
+      as monitoring provided via an API or the Catalys Dashboard user interface.
+      Refer to the Catalys MIS Documentation.
+    </li><li class="listitem">
+      The Catalys Test Framework  produces and runs testing scripts for all aspects of the ecosystem.
+      Refer to the Catalys Test Framework.
+    </li></ul></div><p>
+    The various components are represented in the following diagram. For
+    more information, please consult the specific section of the
+    Catalys documentation.
+  </p><div class="mediaobject"><img src="../resources/catalys-overview.png"/></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="d5e27"/>1.2.&#160;LMA Overview</h2></div></div></div><p>
+      The Local Management Agent (LMA) is a process that runs on the same host as CameronFIX Servers or Catalys Nodes.
+      It serves as a relay between the manageable applications and the Catalys Management Information Server (MIS).
+      The LMA is also responsible for making new applications immediately manageable by the MIS via its automatic
+      discovery mechanism. The LMA is intended to be run as a daemon process on Unix machines, and as a service on
+      Windows so that it's automatically started when the system boots, and so that its logs appear in the system
+      logs (syslog on Unix, Event Manager on Windows).
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="common_releases"/>1.3.&#160;Catalys Releases</h2></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="common_releases-introduction"/>Introduction</h3></div></div></div><p>
+      Catalys products are delivered in three different types of releases: major, minor and
+      maintenance.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="common_releases-major-releases"/>Major Releases</h3></div></div></div><p>
+      A major release delivers new functionality and occasionally includes changes to the public
+      APIs, configuration schemas, data file formats and default configuration values which may
+      not be backward-compatible. New features can also replace previous features that accomplish
+      the same function.
+    </p><p>An example of a new major release is 2.0</p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="common_releases-minor-releases"/>Minor Releases</h3></div></div></div><p>
+      A minor release delivers new functionality and bug fixes and will be compatible with the
+      previous release.
+    </p><p>An example of a new minor release is 2.1</p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="common_releases-maintenance-releases"/>Maintenance Releases</h3></div></div></div><p>
+      In between each major and minor release, CameronTec provides iterative
+      updates called Maintenance Releases. These contain the baseline software
+      delivered in the current release plus bug fixes and minor new features.
+      Although it's not required, it is always recommended to download the latest
+      maintenance release for evaluation as it may provide finer tuning, performance
+      improvements or increased stability.
+    </p><p>
+      When a maintenance release is created, the product's version number does not change. Rather, the
+      <span class="emphasis"><em>revision</em></span> number is incremented.  For example: 2.1 r37928.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="common_releases-release-notes"/>Release Notes</h3></div></div></div><p>
+      Each major release is accompanied by a Release Summary which
+      provides a high-level view of the changes and new features.
+    </p><p>
+      Maintenance releases are accompanied by Release Notes that provide an incremental listing of the enhancements and
+      resolved issues in each release.
+    </p><p>Here is a sample Release Notes excerpt:</p><div class="mediaobject"><img src="../resources/release-notes-example.png"/></div></div><p>
+    All releases, documentation and release notes can be downloaded from
+    the <a href="https://docs.itiviti.com" target="_top">Docs Portal</a>.
+  </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="common_whats_new"/>1.4.&#160;What's New in Catalys 2.2</h2></div></div></div><p>
+    The following new features are available in Catalys 2.2 products at launch. In addition, Catalys 2.2 includes a
+    large number of new features that were also back-ported to Catalys 2.1 as part of maintenance releases.
+  </p><p>
+    For any changes made after the initial release of Catalys 2.2, refer to the release notes for each maintenance
+    release. Release notes are available from the
+    <a href="https://docs.itiviti.com/display/HOME/Catalys+FIX" target="_top">Docs Portal</a>.
+  </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e63"/>1.4.1.&#160;Installers</h3></div></div></div><p>
+      Catalys products are now distributed with an installer, automating the process of install, upgrade and uninstall.
+      The installers are platform-specific and support Linux, Windows (32- and 64-bit) and most Unix-based operating
+      systems.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e66"/>1.4.2.&#160;New Features in Catalys Node 2.2</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e68"/>General</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4929: SendingTime can now be expressed with millisecond, microsecond, or nanosecond precision.
+        </li><li class="listitem">
+          NODE-4884: New <code class="code">-version</code> command-line switch for Catalys Node.
+        </li><li class="listitem">
+          NODE-4910: <code class="code">Session.maximumGapQueueSize</code> is no longer unbounded by default.
+        </li><li class="listitem">
+          NODE-3771: New consolidated drop-copy message processor for low impact drop-copy of another Catalys Node's
+          message flow.
+        </li><li class="listitem">
+          NODE-4727: <code class="code">MarketMirrorPopulator</code> now supports message object reuse.
+        </li><li class="listitem">
+          NODE-4745: Added JMX monitoring for multi-connection sessions.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e80"/>High Performance Logging</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4365: Improved performance with many threads logging under intensive load.
+        </li><li class="listitem">
+          NODE-2428: Display jar file details in stack traces.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e85"/>High Availability</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4596: Support for HA replication of a custom service's configuration.
+        </li><li class="listitem">
+          NODE-4674: HA data replication performance improvements. Introduced new multicast data
+          replication option, as well as a new passive site replication feature allowing periodic 
+          pull-based data replication instead of continual push-based data replication. Also added
+          a safety mechanism that will prevent a node from do a resynchronization if it is too
+          far behind.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e90"/>Collections Framework</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4765: Collections can now be created at run-time instead of only at startup.
+        </li><li class="listitem">
+          NODE-4925: High-capacity lists now support set in the middle of the list instead of only at the end.
+        </li><li class="listitem">
+          NODE-4586: High-capacity lists can now share the same indexer thread.
+        </li><li class="listitem">
+          NODE-4817: Maps and high-capacity lists can now use an off-heap cache for fast, garbage-free caching of very
+          large amounts of data.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e97"/>Buffering</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4350: Message buffers now support message object reuse.
+        </li><li class="listitem">
+          NODE-4826: Message buffer size is no longer excessively logged.
+        </li><li class="listitem">
+          NODE-4809: Serialization format changed to be faster and more compact.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e103"/>Solace Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-5030: Provide configurable last resort action for consumed Solace messages which cannot be processed.
+        </li><li class="listitem">
+          NODE-4860: Add option to safeguard against message loss due to windowing.
+        </li><li class="listitem">
+          NODE-4856: Add option to clear CompIDs in consumed Solace messages before firing to FIX.
+        </li><li class="listitem">
+          NODE-4821: Create <code class="code">SolaceEndpoint</code> component for routing Solace messages.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e111"/>Advanced Socket Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4862: New high-capacity message store option.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e115"/>Socket Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4841: Minimizing logging of undeliverable events when no socket client is connected.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e119"/>Scheduling</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4848: New option to execute missed reset tasks on startup.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e123"/>Multi-threading</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4617: More descriptive thread naming.
+        </li><li class="listitem">
+          NODE-4803: Enhanced thread pinning capabilities.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e128"/>Routing</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-2286: <code class="code">Link.ignoreSessionSide</code> attribute removed.
+        </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e133"/>1.4.3.&#160;Public API changes Catalys Node 2.2</h3></div></div></div><p>
+        Catalys Node 2.2 is compatible with Catalys Node 2.1 except that the following XML configuration
+        attributes are no longer necessary and have been removed:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="code">ListenerMessageBuffer.setStoresMessages</code></li><li class="listitem"><code class="code">SourceMessageBuffer.setStoresMessages</code></li><li class="listitem"><code class="code">Link.ignoreSessionSide</code></li></ul></div><p>
+      </p><p>
+        In addition there is currently a known issue causing an incompatibility between the persistence
+        files of message buffers in 2.1 and 2.2. See issue NODE-5046.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e144"/>1.4.4.&#160;Known Issues in Catalys Node 2.2</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-5046: Message buffer persistence from 2.1 is not compatible with 2.2.
+        </li><li class="listitem">
+          NODE-5045: RulesEngine round() function is inconsistent with legacy valueOf() function.
+        </li><li class="listitem">
+          NODE-5038: HA synchronization window warning should only be logged once.
+        </li><li class="listitem">
+          NODE-5037: Unexpected exception while trying to reload config containing rules.
+        </li><li class="listitem">
+          NODE-5033: Spurious OpenHFT thread affinity GC warnings.
+        </li><li class="listitem">
+          NODE-5031: Exception when activating a component that is already active.
+        </li><li class="listitem">
+          NODE-5016: Installer does not accept relative or home directory-related paths.
+        </li><li class="listitem">
+          NODE-4999: Node installer reports incorrect required disk space.
+        </li><li class="listitem">
+          NODE-4978: Uninstall does not remove empty CameronTec directory.
+        </li><li class="listitem">
+          NODE-4977: Uninstall incorrectly reports that it will delete the parent directory of an installation.
+        </li><li class="listitem">
+          NODE-4871: MarketDataProcessor leaves a thread running after deactivation.
+        </li><li class="listitem">
+          NODE-4870: NotifyingMessageBuffer retry thread ignores interrupts.
+        </li><li class="listitem">
+          NODE-4790: .NET client intermittently reports error when disconnecting.
+        </li><li class="listitem">
+          NODE-4713: Catalys server should not log errors and warnings when shutdown.
+        </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e161"/>1.4.5.&#160;New Features in Catalys Node 2.1 Maintenance Releases</h3></div></div></div><p>
+      The following features were added to Catalys Node 2.2 and also back-ported to Catalys Node 2.1 as part of
+      maintenance releases, and have been available for some time.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e164"/>General</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4577: Safety feature: Duplicate instances of the same Catalys Node will no longer run at the same time.
+        </li><li class="listitem">
+          NODE-4379: Improved logging at startup.
+        </li><li class="listitem">
+          NODE-2834: Maven POM file now included in the distribution.
+        </li><li class="listitem">
+          NODE-4694: Support for explicitly specifying SSL protocols
+        </li><li class="listitem">
+          NODE-4351: Reload configuration from XML now disables affected sessions automatically.
+        </li><li class="listitem">
+          NODE-4682: New <code class="code">license_reload</code> command.
+        </li><li class="listitem">
+          NODE-4360: New session configuration attribute <code class="code">maximumAppQueueSize</code>.
+        </li><li class="listitem">
+          NODE-3176: New Multiplexed and non-blocking I/O capability for FIX sessions.
+        </li><li class="listitem">
+          NODE-3174: Move SendingTime generation off critical outbound latency path.
+        </li><li class="listitem">
+          NODE-3172: Add core affinity capability to MessageAssembler thread.
+        </li><li class="listitem">
+          NODE-230: Add ability to control the ordering of tags within an <code class="code">IFIXMessage</code>.
+        </li><li class="listitem">
+          NODE-4558: Removed periodic object creation in <code class="code">SessionManager</code>.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e183"/>High Availability</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4788: Ability to mark certain cluster nodes as not to be used as data sources during synchronization.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e187"/>Collections Framework</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4752: Progress is now logged periodically when scanning very large journals.
+        </li><li class="listitem">
+          NODE-4636: Collection directory uniqueness is now validated at startup.
+        </li><li class="listitem">
+          NODE-4747: Journaling persistent stores unnecessarily copy bytes when reading from journal
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e193"/>Scheduling</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4878: EventLists are now validated so that two tasks will not execute at the same time.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e197"/>Buffering</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4763: Introduced output limit to <code class="code">mb_messages</code> command.
+        </li><li class="listitem">
+          NODE-2212: New <code class="code">mb_remove</code> command for removing messages from buffers.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e204"/>Embedded Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4380: Added ability to manage sessions from the embedded Catalys Node's owning application.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e208"/>IBM MQ Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4432: SSL support.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e212"/>Advanced Socket Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4525: New <code class="code">asa_list</code> command that lists all connected ASA clients and the sessions they are
+          subscribed to.
+        </li><li class="listitem">
+          NODE-4484: New CONNECT message that supports filtering by SessionID.
+        </li><li class="listitem">
+          NODE-4472: Added keepAlive configuration option.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e219"/>Solace Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4446: New Technology Adapter: Solace Adapter.
+        </li><li class="listitem">
+          NODE-4824: Support Solace JCSMP API v7.
+        </li><li class="listitem">
+          NODE-4823: Add support for reply-to topics.
+        </li><li class="listitem">
+          NODE-4822: Add support for dynamic error topics.
+        </li><li class="listitem">
+          NODE-4779: New Solace message transformer that ensures valid tag order, BodyLength and CheckSum.
+        </li><li class="listitem">
+          NODE-4571: Remove restriction on Solace message type.
+        </li><li class="listitem">
+          NODE-4567: DMQ support.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e229"/>.NET Adapter</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4767: Added ability to get session status from .NET application.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e233"/>Throttling</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4864: New inbound message throttling feature based on limiting the speed at which messages are read
+          from the socket rather using message buffering.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e237"/>Routing</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-2272: Any-to-any routing support. No need to define static session groups.
+        </li><li class="listitem">
+          NODE-4813: <code class="code">AutoRoutingResponse</code> can now be placed anywhere in the message processing chain.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e243"/>Rules Engine</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-4608: Added the concept of default rules.
+        </li><li class="listitem">
+          NODE-4619: New action: <code class="code">ActionStripChars</code>.
+        </li><li class="listitem">
+          NODE-4734: New action: <code class="code">ActionFileLookup</code>.
+        </li><li class="listitem">
+          NODE-4589: New action: <code class="code">ActionLog</code>.
+        </li><li class="listitem">
+          NODE-4520: New condition: <code class="code">ConditionFieldsUnique</code>.
+        </li><li class="listitem">
+          NODE-4547: New condition: <code class="code">ConditionOvernightOrder</code> to hold and release outbound messages to FIX
+          session based on a schedule.
+        </li><li class="listitem">
+          NODE-4611: ActionReject can now send application level rejects.
+        </li><li class="listitem">
+          NODE-4622: New function available in expressions: <code class="code">round()</code>.
+        </li><li class="listitem">
+          NODE-4497: Add the ability to pass the message processor object to custom actions.
+        </li><li class="listitem">
+          NODE-4496: Add ability to load rules from the config file and apply them to messages outside the Catalys FIX engine.
+        </li><li class="listitem">
+          NODE-4923: Add verbose output for rules engine tracking.
+        </li><li class="listitem">
+          NODE-2612: Rules Engine now supports message object reuse.
+        </li><li class="listitem">
+          NODE-4661: New option for handling Amend or Cancel messages where the original order cannot be found.
+        </li><li class="listitem">
+          NODE-4877: Reduce garbage creation in rules engine.
+        </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e266"/>1.4.6.&#160;New Features in Catalys MIS 2.2</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e268"/>General</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          MIS-1563: LDAP connection timeout is now configurable.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e272"/>Logs</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          NODE-2858: Introduced a new high-throughput logs streaming stack. Logs can now be transferred 
+          from Catalys Nodes to the MIS at approximately the bandwidth of the network connection.
+        </li><li class="listitem">
+          MIS-1677: New parallel log insertion algorithm increases the speed at which logs can be 
+          inserted into the log events repository.
+        </li><li class="listitem">
+          MIS-1584, MIS-1477: Log cleanup speed and memory usage drastically improved.
+        </li><li class="listitem">
+          MIS-1478: Browser memory usage stabilized when tailing logs for long periods of time.
+        </li><li class="listitem">
+          MIS-1593: Logs tab now provides visual feedback of ongoing searches.
+        </li><li class="listitem">
+          MIS-1598: Logs tab date selection widget is easier to use.
+        </li><li class="listitem">
+          MIS-1663: Logs cleanup configuration simplified.
+        </li><li class="listitem">
+          MIS-1646: New 'find' feature added to logs tab.
+        </li><li class="listitem">
+          MIS-1393: Custom conversation correlators can now define arbitrary custom message types.
+        </li><li class="listitem">
+          MIS-1392: Added ability to name custom tags.
+        </li><li class="listitem">
+          MIS-1699: Log streaming admin page redesigned.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e286"/>Events</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          MIS-1661: New Action: Windows NT Event.
+        </li><li class="listitem">
+          MIS-916: Add Category filter to Log interests.
+        </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e291"/>1.4.7.&#160;Known Issues in Catalys MIS 2.2</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          MIS-1844: Logs streaming does not work on Solaris unless <code class="code">LD_LIBRARY_PATH</code> contains
+          <code class="code">/usr/sfw/lib:/usr/sfw/lib/amd64</code>.
+        </li><li class="listitem">
+          MIS-1837: JMX cascading suffers poor performance over a slow network.
+        </li><li class="listitem">
+          MIS-1828: Logs cleanup is significantly slower when logs are being inserted at a high rate.
+        </li><li class="listitem">
+          MIS-1815: Replicated log files can become corrupt if source log files are modified in unexpected ways while being replicating.
+        </li><li class="listitem">
+          MIS-1812: Text Search - Escape button does not clear out search field.
+        </li><li class="listitem">
+          MIS-1811: Text Search - Search results should wrap around to start.
+        </li><li class="listitem">
+          MIS-1810: Events - Session Report interest taking union of selection when multiple interests configured.
+        </li><li class="listitem">
+          MIS-1805: Logs tab - Buttons are off screen while re-sizing left section panel.
+        </li><li class="listitem">
+          MIS-1796: MIS sometimes incorrectly reports that no logs were deleted during cleanup.
+        </li><li class="listitem">
+          MIS-1795: Admin - log streaming tab has double scroll bars and blank bottom section after exit from full screen mode.
+        </li><li class="listitem">
+          MIS-1790: Abrupt MIS termination can lead to duplicate log entries in the logs repository.
+        </li><li class="listitem">
+          MIS-1775: Events - Email password in mis.conf not encrypted.
+        </li><li class="listitem">
+          MIS-1773: Events - Escalation sequences - Stop-here-on-ack doesn't work correctly.
+        </li><li class="listitem">
+          MIS-1771: Admin - Permissions - Add escalation sequence permission only works if change escalation sequence 
+          permission is assigned.
+        </li><li class="listitem">
+          MIS-1770: Admin - Permissions - Add interest permission only works if change interest permission is assigned.
+        </li><li class="listitem">
+          MIS-1769: Admin - Permissions - Admin Tab is hidden unless incorrect set of permissions is assigned.
+        </li><li class="listitem">
+          MIS-1764: Servers and Sessions - Script info not shown for CameronFIX 8.0 servers.
+        </li><li class="listitem">
+          MIS-1763: Servers and Sessions - Process info not shown for CameronFIX 8.0 servers.
+        </li><li class="listitem">
+          MIS-1757: Config - Tooltips should be displayed for configuration tree icons.
+        </li><li class="listitem">
+          MIS-1756: Config - View changes so far menu item should be disabled when there are no changes.
+        </li><li class="listitem">
+          MIS-1755: Config - Add top-level selector should be disabled for 2.0 nodes.
+        </li><li class="listitem">
+          MIS-1754: Config - Unable to delete compression without multiple reloads.
+        </li><li class="listitem">
+          MIS-1753: Servers and Sessions - Change session sequence number doesn't work for 1.1 Catalys Nodes.
+        </li><li class="listitem">
+          MIS-1752: Events - Escalation Sequences - Event view of an escalation sequence's progress is faulty.
+        </li><li class="listitem">
+          MIS-1749: Events - Interests - Session report interest events are unreadable in dashboard.
+        </li><li class="listitem">
+          MIS-1747: Events - Interests - Log regex interest category field implies that it is a regular expression 
+          but is not.
+        </li><li class="listitem">
+          MIS-1745: Events - Add Interest - Underlined fields do not link to anything.
+        </li><li class="listitem">
+          MIS-1744: Events - Interest template description is not displayed.
+        </li><li class="listitem">
+          MIS-1743: Admin - Disabling a user while they are logged in causes their browser to repeatedly logout and login.
+        </li><li class="listitem">
+          MIS-1731: Uninstalling MIS on Windows does not warn if it cannot remove all directories.
+        </li><li class="listitem">
+          MIS-1709: Dashboard logged user out automatically after executing a log search after tailing logs overnight.
+        </li><li class="listitem">
+          MIS-1705: Multiple errors logged if replicated logs directory is deleted when logs replication and insertion 
+          into logs repository is in progress.
+        </li><li class="listitem">
+          MIS-1693: Logs tab apply button sometimes needs to be pressed twice.
+        </li><li class="listitem">
+          MIS-1640: When log filter end time is earlier than start time, an error comes up on dashboard.
+        </li><li class="listitem">
+          MIS-1610: Too many error message on dashboard if live streaming is on when shutting down MIS server.
+        </li><li class="listitem">
+          MIS-1581: If opening an interest after resizing the dashboard GUI smaller, the custom text fields are not popped out.
+        </li><li class="listitem">
+          MIS-1320: Events - Creation of an interest with incorrect regular expression is allowed by dashboard.
+        </li><li class="listitem">
+          MIS-461: Rules - Error when renaming rulesPack which is referenced before rules engine is reloaded.
+        </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e334"/>1.4.8.&#160;New Features in Catalys MIS 2.1 Maintenance Releases</h3></div></div></div><p>
+      The following features were added to Catalys MIS 2.2 and also back-ported to Catalys MIS 2.1 as part of
+      maintenance releases, and have been available for some time.
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        MIS-1542: Log insertion can now be filtered by message type to exclude high-volume messages that do 
+        not need to be stored.
+      </li><li class="listitem">
+        MIS-1385: Added a calendar for public holidays to the interest schedules.
+      </li><li class="listitem">
+        MIS-1384: Session status column now takes session's schedule into account.
+      </li><li class="listitem">
+        MIS-1350: Open conversation view now retains user's current category selection.
+      </li><li class="listitem">
+        MIS-1301: Improved dashboard responsiveness when monitoring nodes with high latency.
+      </li><li class="listitem">
+        MIS-811: The MIS can now expose the output of scripts via JMX.
+      </li><li class="listitem">
+        MIS-1349: Conversation correlators added for SecurityDefinition conversations.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e345"/>1.4.9.&#160;New Features in Catalys LMA 2.2</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        NODE-2858: Introduced a new high-throughput logs streaming stack. Logs can now be transferred 
+        from Catalys Nodes to the MIS at approximately the bandwidth of the network connection.
+      </li><li class="listitem">
+        LMA-50: Unwrapped LMA distribution.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e350"/>1.4.10.&#160;Known Issues in Catalys LMA 2.2</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          LMA-65: Log4j guest logger support not handling <code class="code">CR/LF</code> properly.
+        </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="common_getting_support"/>1.5.&#160;Getting Support</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e357"/>1.5.1.&#160;Contacting Support</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e359"/>Email</h4></div></div></div><p>
+        Send an email to your regional support team with the details of your issue or question and include
+        log files and configuration files if applicable. This automatically creates a support ticket and alerts
+        the support team.
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          North America and South America:
+          <a href="mailto:supportamericas@itiviti.com" target="_top">supportamericas@itiviti.com</a></li><li class="listitem">
+          Europe, the Middle East and Africa:
+          <a href="mailto:supportemea@itiviti.com" target="_top">supportemea@itiviti.com</a></li><li class="listitem">
+          Asia Pacific:
+          <a href="mailto:supportapac@itiviti.com" target="_top">supportapac@itiviti.com</a></li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e369"/>Online Form</h4></div></div></div><p>
+        <a href="https://support.camerontecgroup.com/hc/en-us/requests/new" target="_top">Submit a request</a> on our
+        support portal. This automatically creates a support ticket and alerts the support team.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e373"/>Phone</h4></div></div></div><p>
+        For high priority issues you can call your regional support team. This does not create a support ticket.
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">North America and South America: <span class="bold"><strong>+1-312-235-5602</strong></span></li><li class="listitem">Europe, the Middle East and Africa: <span class="bold"><strong>+44-20-7942-0969</strong></span></li><li class="listitem">Asia Pacific: <span class="bold"><strong>+61-29002-4273</strong></span></li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e383"/>Support Tickets</h4></div></div></div><p>
+        Emailing support or filling out the online support form automatically creates a support ticket, notifies
+        the support team and sends the customer an automated email with a support ticket number. Any updates
+        made to the ticket will be sent to the customer via email.
+      </p><p>
+        You can track and update all tickets submitted by your organization on the Support Portal by clicking on the
+        <a href="https://support.camerontecgroup.com/hc/en-us/requests/new" target="_top">My activities</a> button
+        on the top of page after logging in.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e388"/>Support Level Agreement</h4></div></div></div><p>
+        During the License Term, as a part of the License Fee, Licensor undertakes to provide the software support
+        set out in your contract, with respect to the Software Product. Such software support will be provided to
+        the Customer through the Service Center during the Service Center&#8217;s normal Business Hours:
+        All Business Days between 8.00 a.m. &#8211; 6.00 p.m. local time for the respective Service Center. The Service
+        Center may choose to refer the calls to any other Licensor certified Service Center, or to the relevant third
+        party Service Center as and when needed, during and outside its Business Hours.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e391"/>1.5.2.&#160;Sending Files to Your Support Team</h3></div></div></div><p>
+      Most support issues require the support team to review certain configuration files or logs from your Catalys
+      environment. These files will vary from product to product.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e394"/>Catalys Node</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Configuration File(s)</strong></span>: One or XML files that contain the configuration
+          for the Node instance. These are located in the
+          <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/&lt;INSTANCE&gt;/conf</em></span> directory if using the installer.
+        </li><li class="listitem"><span class="bold"><strong>Log File(s)</strong></span>: One or more log files containing application and FIX message
+          logging for the Node instance. These are located in the
+          <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/&lt;INSTANCE&gt;/logs</em></span> directory if you used the installer.
+        </li><li class="listitem"><span class="bold"><strong>Log Configuration Files</strong></span>: The
+          <span class="emphasis"><em>HighPerformanceLogger.conf</em></span> and <span class="emphasis"><em>logback.xml</em></span> files for the Node
+          instances. These are located in the <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/&lt;INSTANCE&gt;/conf</em></span>
+          directory if using the installer.
+        </li><li class="listitem"><span class="bold"><strong>License File</strong></span>: <span class="emphasis"><em>camerontec_license.xml</em></span> file located in the
+          root of your CameronTec installation.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e411"/>Catalys LMA</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>LMA Configuration File</strong></span>: <span class="emphasis"><em>lma.conf</em></span> file
+          located in the <span class="emphasis"><em>/conf</em></span> directory of the standard LMA directory layout.
+        </li><li class="listitem"><span class="bold"><strong>LMA Registry File</strong></span>: <span class="emphasis"><em>lma.registry</em></span> file
+          located in the <span class="emphasis"><em>/data</em></span> directory of the standard LMA directory layout.
+        </li><li class="listitem"><span class="bold"><strong>LMA Log File</strong></span>: The application log file for the LMA
+          located in the <span class="emphasis"><em>/logs</em></span> directory of the standard LMA directory layout.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e425"/>Catalys MIS</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>MIS Configuration File</strong></span>: <span class="emphasis"><em>mis.conf</em></span> file
+          located in the <span class="emphasis"><em>/conf</em></span> directory of the standard MIS directory layout.
+        </li><li class="listitem"><span class="bold"><strong>MIS Log File</strong></span>: The application log file for the MIS
+          located in the <span class="emphasis"><em>/logs</em></span> directory of the standard MIS directory layout.
+        </li><li class="listitem"><span class="bold"><strong>License File</strong></span>: <span class="emphasis"><em>camerontec_license.xml</em></span> file.
+        </li></ul></div></div></div></div></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="Local_Management_Agent_Installation"/>Chapter&#160;2.&#160;Installation</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="#Local_Management_Agent_Installation-intro">2.1. Introduction</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-compatibility">2.2. Compatibility</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-installer-steps">2.3. Installation Steps</a></span></dt><dd><dl><dt><span class="section"><a href="#Local_Management_Agent_Installation-directories">2.3.1. Post-Installation LMA Directories</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-upgrading">2.3.2. Upgrading or Installing Additional Features</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-uninstaller">2.3.3. Uninstaller</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-service">2.3.4. Manual Service Installation</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-unwrapped-mode">2.3.5. LMA Unwrapped Mode</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Installation-command-line-options">2.3.6. Command Line Options</a></span></dt></dl></dd><dt><span class="section"><a href="#Local_Management_Agent_Installation-trouble">2.4. Troubleshooting</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_Installation-intro"/>2.1.&#160;Introduction</h2></div></div></div><p>
+			The Catalys LMA application has traditionally been packaged as a zip file which is installed simply by unzipping
+			the package in the desired destination directory. Starting with Catalys v2.2, we provide an automated
+			platform-specific installer. The installer also helps you to:
+		</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Install and start the LMA as a service
+      </li><li class="listitem">
+        Simplify the upgrade process
+      </li></ul></div><p>
+      We continue to provide the zip package for customers who prefer to manually manage their installation process.
+      However, for all other customers, we recommend using the installer, which is covered in the remainder of this
+      section.
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_Installation-compatibility"/>2.2.&#160;Compatibility</h2></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Installation-java-compatibility"/>Java Compatibility</h3></div></div></div><p>Java 8 or later is required to run the LMA 2.2 installer and executables.</p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Installation-mis-compatibility"/>Catalys MIS Compatibility</h3></div></div></div><p>
+		    The LMA interfaces with the Catalys Management Information Server (MIS). The MIS is available from
+		    <a href="https://docs.itiviti.com" target="_top">Docs Portal</a>.
+	    </p><p>
+		    Please consult the
+		    <a href="https://docs.itiviti.com/display/HOME/Management+Components+Compatibility+Matrix" target="_top">compatibility matrix</a>
+		    for supported combinations of CameronFIX, Catalys Node, MIS and LMA.
+	    </p></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_Installation-installer-steps"/>2.3.&#160;Installation Steps</h2></div></div></div><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Download the installer for your platform:
+        <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Linux, Solaris, Mac OSX, and other Unix-based systems</strong></span>:
+            <span class="emphasis"><em>catalys-lma-2.2-installer-r&lt;revision&gt;.sh</em></span><p>
+              After downloading this file, you may need to make it executable if not already. This
+              can be done by running <code class="code">chmod +x <span class="emphasis"><em>&lt;filename&gt;</em></span></code>.
+            </p></li><li class="listitem"><span class="bold"><strong>Windows 64-bit</strong></span>:
+            <span class="emphasis"><em>catalys-lma-2.2-installer-64bit-r&lt;revision&gt;.exe</em></span></li><li class="listitem"><span class="bold"><strong>Windows 32-bit</strong></span>:
+            <span class="emphasis"><em>catalys-lma-2.2-installer-32bit-r&lt;revision&gt;.exe</em></span></li></ul></div><p>
+          The <span class="emphasis"><em>r&lt;revision&gt;</em></span> indicates the latest
+          <a href="#common_releases" title="1.3.&#160;Catalys Releases">maintenance revision number</a>.
+        </p><p>Windows installers require a JRE to be installed that matches the architecture of the installer.</p></li><li class="listitem">
+        Launch the installer.
+	      <div class="note"><h3 class="title">Note</h3><p>
+            When the Windows installer is launched, a User Access Control dialog appears asking if this installer has
+            permission to make changes to the system as an Administrator. If the installer was launched by a user that
+            is not in the Administrators Group role the dialog also prompts for Administrator credentials.  If Yes is
+            clicked (and Administrator credentials are entered if required), the installer will display screens related
+            to Service installation. If Administrator credentials are unavailable or service installation is not
+            needed, click No to  close the dialog and resume installation without elevated privileges, with only the
+            service installation screens being unavailable.
+          </p></div></li><li class="listitem">
+        Select a Destination Directory: This is where the LMA distribution will be installed.
+      </li><li class="listitem">
+        Program Group: On Windows, this allows creation of a Start Menu folder and shortcuts for the LMA executable.
+        On Linux/Solaris, this allows creation of symlinks for the LMA executable.
+      </li><li class="listitem">
+        Install Service: Select this option to have the installer configure the LMA executable as a background service
+        daemon process.   If this option is selected, the final screen of the installer will give the option to attempt
+        to start the service before the installer closes.  Note that the service will install and run as Local System
+        account (on Windows) and as root (on Linux/Solaris).
+        <div class="note"><h3 class="title">Note</h3><p>
+            This screen will only be displayed if the installer was Run As Administrator or was given permission in the
+            UAC dialog to make changes as Adminstrator (on Windows) or as root (on Linux/Solaris).
+          </p></div></li></ol></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Installation-directories"/>2.3.1.&#160;Post-Installation LMA Directories</h3></div></div></div><p>
+        After the installation is complete, you will see the following LMA directories. The default location is
+        <span class="emphasis"><em>&lt;INSTALL_BASE&gt;/CameronTec/catalys-lma-2.2</em></span>.
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>bin</strong></span> - contains the LMA executables, including the service executable and the
+          console executable
+        </li><li class="listitem"><span class="bold"><strong>conf</strong></span> - contains logging configuration and the configuration for the LMA
+          executable
+        </li><li class="listitem"><span class="bold"><strong>data</strong></span> - contains the LMA registry file
+        </li><li class="listitem"><span class="bold"><strong>doc</strong></span> - contains information on our 3rd party libraries and has links to our
+          online documentation
+        </li><li class="listitem"><span class="bold"><strong>lib</strong></span> - contains <span class="emphasis"><em>catalys-lma.jar</em></span></li><li class="listitem"><span class="bold"><strong>scripts</strong></span> - contains scripts executed by the LMA and published as attributes
+          of the <code class="code">LMA.Scripts</code> MBean
+        </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Installation-upgrading"/>2.3.2.&#160;Upgrading or Installing Additional Features</h3></div></div></div><p>
+		    The installer can be used for upgrading the LMA to a newer version, starting at version 2.2 or later. It can
+		    also be rerun to choose additional options that weren't selected on a previous installation. When the installer
+		    starts it should recognize that a previous installation exists.
+		  </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Installation-uninstaller"/>2.3.3.&#160;Uninstaller</h3></div></div></div><p>
+		    To uninstall Catalys LMA, run the <span class="emphasis"><em>uninstall</em></span> executable located in the Catalys LMA home
+        directory. On Windows, this uninstaller can also be invoked from the <span class="emphasis"><em>Programs and Features</em></span>
+        tool by selecting the Catalys LMA entry and clicking "Uninstall/Change".  The uninstaller will delete the
+        Catalys LMA root directory and all files and directories it contains.  If the parent directory
+        (<span class="emphasis"><em>CameronTec</em></span> by default) is empty and was created by the installer, it will be deleted as
+        well. If the LMA was installed as a service by the installer, running the uninstaller will remove this service.
+        If the service was installed manually, it must be removed manually be the user - the uninstaller will not
+        attempt to remove it.
+		  </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Installation-service"/>2.3.4.&#160;Manual Service Installation</h3></div></div></div><p>
+        The Catalys LMA installer provides the option to install and start the LMA as a service.  If this was not done
+        initially, it can be done at a later time by re-running the installer. However, the LMA can also be manually
+        configured to run as a service without using the installer with the following steps.
+      </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="Local_Management_Agent_Installation-steps-windows"/>Installation Steps - Windows</h4></div></div></div><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+            Open a Command Prompt
+				    <div class="note"><h3 class="title">Note</h3><p>
+					      If User Account Control (UAC) is enabled on the system, the Command Prompt must be opened by an
+                Administrator (right click on <code class="code">cmd.exe</code> and select "Run as administrator").
+				      </p></div></li><li class="listitem">
+            Change the directory to the <span class="emphasis"><em>\bin</em></span> directory under the LMA installation directory
+          </li><li class="listitem">Execute the command <code class="code">lma.exe /install</code><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                To install the service with a different name than the default ("lma"), pass in the new name as a second
+                parameter after <code class="code">/install</code>.  For example: <code class="code">lma.exe /install Catalys LMA</code>.
+              </li><li class="listitem">
+                To prevent the automatic start of the service when the computer reboots, use the
+                <code class="code">/install-demand</code> option instead of <code class="code">/install</code>.
+              </li></ul></div></li></ol></div><p>
+          If the service installation is successful, the line "Installed service 'lma'" is output to the
+          console.  If the service was installed under a different name, that name will be output instead of 'lma'.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="Local_Management_Agent_Installation-steps-unix"/>Installation Steps - Unix</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Note that the 'root' user must run this installation.</li><li class="listitem">
+            Create a link in folder <span class="emphasis"><em>/etc/init.d</em></span> to the LMA executable. If symlinks were set up,
+            link should be to the service executable there. If not, link to the service executable in the LMA directory.
+		        <pre class="programlisting">%&gt; ln -fs /usr/local/bin/lma /etc/init.d</pre>
+		        or
+	  	      <pre class="programlisting">%&gt; ln -fs &lt;LMA_HOME&gt;/bin/lma /etc/init.d</pre></li><li class="listitem">Use the installed service to start the LMA:
+			      <pre class="programlisting">%&gt; /etc/init.d/lma start</pre></li><li class="listitem">
+		        Check that the LMA was successfully started by looking at the end of the LMA log file:
+            <pre class="programlisting">%&gt; tail -100 &lt;LMA_HOME&gt;/logs/catalys-lma.log</pre><p>You should see something similar to:</p><pre class="programlisting">******************************************************************************
+  Catalys LMA
+
+    version  : 2.2
+    revision : 37706
+    build    : 20151203232007
+
+    Copyright (c) 1997-2015 CameronTec. All rights reserved.
+******************************************************************************</pre></li><li class="listitem">
+		        Ensure the operating system will start/stop the LMA automatically at the right run level, which involves
+            creating symbolic links in the appropriate rc*.d run-level directories.
+	      	  <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">
+			          On RedHat based systems use the chkconfig command:
+			          <pre class="programlisting">%&gt; chkconfig --add lma</pre></li><li class="listitem">
+			          On Debian and Ubuntu use the following command:
+			          <pre class="programlisting">%&gt; update-rc.d lma defaults</pre></li><li class="listitem">
+                On Solaris, a startup (S) and process kill (K) link must be created for each desired runlevel. A
+                typical configuration is:
+                <pre class="programlisting">ln -s /etc/init.d/lma /etc/rc0.d/K20lma
+ln -s /etc/init.d/lma /etc/rc1.d/K20lma
+ln -s /etc/init.d/lma /etc/rc2.d/S20lma
+ln -s /etc/init.d/lma /etc/rc3.d/S20lma</pre></li></ul></div></li><li class="listitem">
+		        (Optional) Running the LMA as a non-root user
+		        <p>
+			        While the LMA service must be installed by root, it can be configured to run as any user that
+                  has the correct permissions. To enable this, edit the <span class="emphasis"><em>lma</em></span> service executable
+                  script.  Uncomment the line with the "RUNUSER" variable, and set it to the username that you wish to run
+                  the service.  Note that the user you have specified needs to have full access to the LMA
+              installation directory, so you may need to either change the ownership of the directory using the
+              <code class="code">chown</code> command or change the permissions of the directory using the
+              <code class="code">chmod</code> command.
+		        </p></li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Installation-unwrapped-mode"/>2.3.5.&#160;LMA Unwrapped Mode</h3></div></div></div><p>
+		    To run the LMA without the Java Service Wrapper, obtain the unwrapped package from the CameronTec Support Portal
+		    and unzip it. The package name is similar to the installer executable but including the string
+		    <span class="emphasis"><em>package</em></span>. For example: <span class="emphasis"><em>catalys-lma-2.2-package-r&lt;revision&gt;.zip</em></span>.
+        The <span class="emphasis"><em>r&lt;revision&gt;</em></span> indicates the latest
+        <a href="#common_releases" title="1.3.&#160;Catalys Releases">maintenance revision number</a>.
+		  </p><p>
+		    The package structure is similar to the platform-specific one. Run <span class="emphasis"><em>bin/lma.sh</em></span> (on Unix
+		    platforms) or <span class="emphasis"><em>bin/lma.bat</em></span> (Windows) to run the LMA directly as a Java application in a
+		    console window. This program will print log messages to that console window. To stop the LMA when it is being
+		    run in its unwrapped mode, simply press CTRL-C in the console window.
+		  </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Installation-command-line-options"/>2.3.6.&#160;Command Line Options</h3></div></div></div><p>
+        The <span class="emphasis"><em>lma.[exe|sh]</em></span> service executable provides command line options to interact with the
+        service. In Windows, each of these options is preceded by a forward slash (e.g. <code class="code">/start</code> and
+        <code class="code">/stop</code>).
+      </p><div class="note"><h3 class="title">Note</h3><p>
+				  In Windows, if the service was installed with a name other than the default ("lma"), that name must be
+          passed as a second parameter after the option.
+			  </p></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><code class="code">start</code>: starts the LMA service manually, outputting messages to a file in the
+          <span class="emphasis"><em>/logs</em></span> directory of the LMA installation home
+        </li><li class="listitem"><code class="code">stop</code>: stops the LMA service manually
+        </li><li class="listitem"><code class="code">run</code>: starts the LMA service in the foreground, outputting messages to the
+          console, as well as in the <span class="emphasis"><em>/logs</em></span> directory in the LMA installation home. This is
+          intended primarily for debugging the service installation; for extended use of the LMA in a non-service mode,
+          the <span class="emphasis"><em>lmaconsole.[exe|sh]</em></span> executable is recommended.
+        </li><li class="listitem"><code class="code">status</code>: prints out whether the LMA service is running or not running
+        </li><li class="listitem"><code class="code">restart</code>: stops the LMA service manually and starts it again, outputting
+          messages to a file in the <span class="emphasis"><em>/logs</em></span> directory of the LMA installation home
+        </li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_Installation-trouble"/>2.4.&#160;Troubleshooting</h2></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e599"/>Java not installed</h3></div></div></div><pre class="programlisting">java: command not found</pre><p>A Java Runtime Environment (JRE) version 8 or higher must be installed to run the LMA.</p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e603"/>Java version mismatch</h3></div></div></div><pre class="programlisting">Exception in thread "main" java.lang.UnsupportedClassVersionError: \
+  com/camerontec/catalys/server/CatalysServer: Unsupported major.minor version 51.0</pre><p>A Java Runtime Environment (JRE) version 8 or higher must be installed to run the LMA.</p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e607"/>LMA does not start</h3></div></div></div><p>
+        If the LMA service has not started correctly, attempt to run it in the foreground with output in the console.
+        This is achieved by running the <span class="emphasis"><em>lma.[exe|sh]</em></span>  executable with the <code class="code">run</code> option.
+      </p><p>
+        The output on the console should give sufficient information to diagnose and fix the problem.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e613"/>Socket port number clash</h3></div></div></div><p>
+		    The Java Service Wrapper used by the LMA is pre-configured to work with most configurations, however it uses a
+        socket to communicate with the Java JVM which may clash with third party applications installed on your
+        platform. The default port range is [31000, 31999].
+	    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e616"/>Cannot Restart Node Instances</h3></div></div></div><p>
+        If one or more Node instances are provided with the <code class="code">-DJMXManagementService.startupScript</code> property
+        then the LMA can be used to stop and start the Node process (a function which would normally be performed
+        through the MIS Dashboard). If the CameronTec license file is not accessible then the Node will not restart.
+        Ensure that the license file is present in the resources directory of the Node installation.
+      </p></div></div></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="Local_Management_Agent_Configuration"/>Chapter&#160;3.&#160;Configuration</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="#Local_Management_Agent_Configuration-intro">3.1. Introduction</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-config-file">3.2. Configuration File</a></span></dt><dd><dl><dt><span class="section"><a href="#Local_Management_Agent_Configuration-Specifying_custom_pgrep_and_pkill">3.2.1. Specifying custom pgrep
+  and pkill commands</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-Changing_the_default_ports">3.2.2. Changing default ports</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-Specifying_security_settings">3.2.3. Specifying security settings</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-Guest_Streaming">3.2.4. Guest Application Log Streaming</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-logsReplication">3.2.5. Logs Replication</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-Changing_the_default_jmx_request_timeout">3.2.6. Changing default JMX request timeout</a></span></dt></dl></dd><dt><span class="section"><a href="#Local_Management_Agent-logging">3.3. Logging</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-lmaScripts">3.4. LMA Scripts</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl">3.5. SSL</a></span></dt><dd><dl><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl-creating_keystore_lma">3.5.1. Creating keystore in the LMA</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl-export_cert">3.5.2. Export the LMA&#8217;s certificate</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl-creating_keystore_mis">3.5.3. Create a keystore in the MIS</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl-import_lma_cert_into_mis">3.5.4. Import the LMA&#8217;s certificate into the MIS&#8217; keystore</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl-lma_configuration">3.5.5. LMA Configuration</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl-mis_configuration">3.5.6. MIS Configuration</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl-lma_path-to_keystore">3.5.7. Specify LMA path to keystore</a></span></dt><dt><span class="section"><a href="#Local_Management_Agent_Configuration-ssl-mis_path-to_keystore">3.5.8. Specify MIS path to keystore</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_Configuration-intro"/>3.1.&#160;Introduction</h2></div></div></div><p>The LMA normally does not require any configuration. Some of the reasons to modify the default behaviour are:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">To change either the pgrep or pkill command used to
+    search for a given process or to kill a given process
+    respectively</li><li class="listitem">To change the ports used to communicate with the managed
+    applications on one side, and with the MIS on the other side.
+    <span class="bold"><strong>Doing so is not
+    recommended</strong></span>, though, because this would require that you
+    also modify the configuration of all managed applications and
+    of the MIS accordingly.</li><li class="listitem">To specify some security settings for the communication
+    with the MIS</li><li class="listitem">To enable the streaming of logs from a guest
+    application</li><li class="listitem">To modify the default parameters of the logs replication server</li><li class="listitem">To modify the default JMX request timeout</li></ul></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_Configuration-config-file"/>3.2.&#160;Configuration File</h2></div></div></div><p>The LMA's configuration file is <span class="emphasis"><em>conf/lma.conf</em></span>.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-Specifying_custom_pgrep_and_pkill"/>3.2.1.&#160;Specifying custom pgrep
+  and pkill commands</h3></div></div></div><p>The implementation of attribute
+  <span class="emphasis"><em>applicationProcessRunning</em></span> and
+  operation <span class="emphasis"><em>killApplicationProcess()</em></span> in
+  application delegate MBeans requires that the LMA be able to
+  issue the following operating-system commands:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">A <span class="emphasis"><em>pgrep</em></span> command to
+    search for a process with the given PID</li><li class="listitem">A <span class="emphasis"><em>pkill</em></span> command to kill the
+    process with the given PID</li></ul></div><p>The LMA provides default pgrep and pkill command on both Unix and
+  Windows platforms, and you normally should not need to override
+  these commands. Below are the default commands, with %p
+  representing the PID of the process to look for or kill:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">On Unix:
+
+    <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">pgrep command: <code class="code">sh
+        -c [ -d /proc/%p ]</code></li><li class="listitem">pkill command: <code class="code">sh
+        -c kill -9 %p</code></li></ul></div></li><li class="listitem">On Windows:
+
+    <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">pgrep command: <code class="code">cmd /c tasklist /NF /FI "PID eq
+        %p"2&gt;NUL|find "%p"&gt;NUL</code></li><li class="listitem">pkill command: <code class="code">cmd /c taskkill /F /PID
+        %p</code></li></ul></div></li></ul></div><p>If you wish to override these default commands, it is possible to
+  do so by specifying attributes <code class="code">pgrep-command</code> and/or
+  <code class="code">pkill-command</code> in the
+  configuration:</p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE lma-configuration
+  SYSTEM 'http://www.camerontecgroup.com/dtd/management/lma-configuration.dtd'&gt;
+  &lt;lma-configuration pgrep-command="some command with a %p in it"
+                     pkill-command="some other command with a %p in it"/&gt;</pre><p>Note:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">It is possible to specify only one custom command without
+    the other</li><li class="listitem">Custom commands must contain at least one occurrence of the
+    %p placeholder, which will be replaced at runtime by the actual
+    PID of the process to look for/kill.</li><li class="listitem">On Unix, if a custom command does not start with
+    <code class="code">sh -c</code>, then
+    the <code class="code">sh -c</code>
+    prefix will be prepended to it.</li><li class="listitem">On Windows, if a custom command does not start with
+    <code class="code">cmd /c</code>, then the
+    <code class="code">cmd /c</code> prefix will
+    be prepended to it.</li><li class="listitem">The specified custom pgrep command is expected to follow
+    some guidelines:
+
+    <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">The command should not generate any error output</li><li class="listitem">The command should have an exit value of 0 (zero) if
+        the process with the given PID is found.</li><li class="listitem">The command should have an exit value different from 0
+        (zero) if the process with the given PID is not found.</li></ul></div></li><li class="listitem">The specified custom pkill command is expected to follow
+    some guidelines:
+
+    <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">The command should not generate any error output</li><li class="listitem">The command should always have an exit value of 0 (zero).</li></ul></div></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-Changing_the_default_ports"/>3.2.2.&#160;Changing default ports</h3></div></div></div><p>
+      By default, the local communication between the LMA and managed FIX servers is done on port 10001. To change the
+      default port, a new JMX service URL will need to be configured in the <code class="code">internal-jmx-server-url</code>
+      attribute of the <code class="code">lma-configuration</code> element. The format is as follows:
+    </p><pre class="programlisting">&lt;lma-configuration
+    internal-jmx-service-url="service:jmx:jmxmp://localhost:PORT"/&gt;</pre><p>
+      By default, the communication between the LMA and the MIS, as well as the LMA and other Nodes (if running in an
+      HA cluster), is done on port 10002. To change the default port, a new JMX service URL will need to be configured
+      in the <code class="code">external-jmx-server-url</code> attribute of the <code class="code">lma-configuration</code> element. The format
+      is as follows:
+    </p><pre class="programlisting">&lt;lma-configuration
+    external-jmx-service-url="service:jmx:jmxmp://localhost:PORT"/&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-Specifying_security_settings"/>3.2.3.&#160;Specifying security settings</h3></div></div></div><p>You can instruct the LMA to use some encryption in its
+    communication with the MIS. Encryption can be configured in the
+    <span class="emphasis"><em>security</em></span> section of
+    the LMA's configuration file. By default, no encryption is used
+    in the connection with the MA.</p><p><span class="bold"><strong>If some security is configured
+    here, then the MIS should also be configured
+    accordingly.</strong></span></p><p>The example below demonstrates how to configure TLS security:</p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE lma-configuration
+   SYSTEM 'http://www.camerontecgroup.com/dtd/management/lma-configuration.dtd'&gt;
+&lt;lma-configuration&gt;
+  &lt;security&gt;
+    &lt;tls-server /&gt;
+  &lt;/security&gt;
+&lt;/lma-configuration&gt;</pre><p>The following optional attributes can be specified for the
+<span class="emphasis"><em>tls-server</em></span> element:</p><div class="informaltable"><table border="1"><colgroup><col/></colgroup><thead><tr><th>Attributes</th></tr></thead><tbody><tr><td>
+            <code class="code">jmx.remote.tls.need.client.authentication</code>
+
+            <p>
+              A string that is "true" or "false"
+              according to whether the connector server requires client
+              authentication. If true, a client that does not
+              authenticate during
+              the handshake sequence will be refused
+            </p>
+          </td></tr><tr><td>
+            <code class="code">jmx.remote.tls.want.client.authentication</code>
+
+            <p>
+              A string that is "true" or "false"
+              according to whether the connector server requires client
+              authentication if appropriate to the cipher suite
+              negotiated. If true,
+              then if a client negotiates a cipher suite that supports
+              authentication but that client does not authenticate
+              itself, the connection will be refused
+            </p>
+          </td></tr><tr><td>
+            <code class="code">jmx.remote.tls.enabled.protocols</code>
+
+            <p>
+              A string that is a space-separated list of
+              TLS protocols to enable. If the value of this property is
+              not specified, the TLS enabled protocols default to
+              <code class="code">SSLSocket.getEnabledProtocols()</code>.
+            </p>
+          </td></tr><tr><td>
+            <code class="code">jmx.remote.tls.enabled.cipher.suites</code>
+
+            <p>
+              A string that is a space-separated list of
+              TLS cipher suites to enable. If the value of this property
+              is not specified the TLS enabled cipher suites default to
+              <code class="code">SSLSocket.getEnabledCipherSuites()</code>.
+            </p>
+          </td></tr></tbody></table></div><p>
+    The current implementation uses the JDK's default SSL socket
+    factory to obtain SSL sockets. Should you wish to customize the
+    key store, trust store, store type and passwords used by this SSL
+    factory, you can do so by specifying system properties, as
+    described in
+    <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html#CustomizingStores" target="_top">Sun's JSSE reference guide</a>.
+  </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-Guest_Streaming"/>3.2.4.&#160;Guest Application Log Streaming</h3></div></div></div><p>It is possible to configure the LMA to stream logs from a
+  guest (non-CameronTec) application to the Management Information
+  Server, where they can be displayed by the Dashboard. The logs
+  from guest applications can be searched and filtered in the
+  Dashboard in the same way as internal logs. They can also be used
+  as the source of the Log-type interest events in the Dashboard,
+  such as raising an event when there is an error in the log, or
+  when a particular regular expression search matches a guest
+  log.</p><p>Before guest logs are streamed to the Management Information Server,
+    they are firstly rewritten in Catalys High Performance Log format,
+    so that they can thereafter be treated identically to Catalys native
+    logs.</p><p>This configuration is specified using the "guest" element of
+  the LMA configuration, which has the following attributes.</p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Attribute</th><th>Description</th></tr></thead><tbody><tr><td>type</td><td>
+          The type of guest application that this instance belongs
+          to. Applications of the same type are grouped together in
+          the Dashboard. Internally the LMA supports CatalysNode
+          and UniversalServer types. Guest applications of the same
+          type are also grouped. For example, all QuickFIX guest
+          applications.
+
+          <p>Required.</p>
+        </td></tr><tr><td>name</td><td>
+          The name of the guest application. This name appears
+          (with any other guest applications of the same type) on
+          the Dashboard. It can be filtered on or off in the
+          Dashboard log display.
+
+          <p>Required.</p>
+        </td></tr><tr><td>logger.name</td><td>
+          The name of the logger. This name appears beneath the
+          guest application's name in the Dashboard. It can be
+          filtered on or off in the Dashboard log display.
+
+          <p>Required.</p>
+        </td></tr><tr><td>file.scanner</td><td>
+          The fully qualified file scanner class.
+
+          <p>The class: <code class="code">com.camerontec.util.guestlogs.&#173;filenamingscheme.FixedFileScanner</code>
+          is provided for log files with a fixed absolute name.</p>
+
+          <p>The class: <code class="code">com.camerontec.util.guestlogs.&#173;filenamingscheme.DailyDatedFileScanner</code>
+          is provided for log files which are named according to their date.</p>
+
+          <p>
+            Custom file scanners must implement the
+            <a class="javadoc" href="../javadoc/com/camerontec/util/guestlogs/filenamingscheme/IFileScanner.html" target="_top">IFileScanner</a>
+            interface, and must be included in the class path of the LMA.
+          </p>
+
+          <p>Required.</p>
+        </td></tr><tr><td>file.pattern</td><td>
+          The pattern that is used to identify log files associated
+          with the guest application. This string must consist of a
+          fixed absolute directory name; and a file name component
+          that is either fixed (indicating there is only one log
+          file), or contains a pattern that identifies multiple log
+          files.
+
+          <p>For the FixedFileScanner, this attribute is the
+          absolute file name of the log file (e.g.
+          "/log/files/directory/logfile.log").</p>
+
+          <p>For the DailyDatedFileScanner, this attribute is the
+          absolute directory plus a file name with a %d date token
+          (e.g. "/log/files/directory/logfile%d.log).</p>
+
+          <p>For custom file scanners, this pattern can contain
+          other tokens that are interpreted by the file scanner
+          (e.g. "/log/files/directory/logfile%d-%s.log where the %s
+          token might represent a particular session
+          identifier).</p>
+
+          <p>Required.</p>
+        </td></tr><tr><td>line.parser</td><td>
+          The fully qualified line parser class.
+
+          <p>The class: <code class="code">com.camerontec.util.guestlogs.lineparser.&#173;Log4jDefaultLineParser</code>
+          is provided for log files that are in the Log4j
+          default format:</p>
+<pre class="programlisting"><span class="emphasis"><em>Timestamp</em></span> [<span class="emphasis"><em>Thread</em></span>] <span class="emphasis"><em>Level</em></span>  <span class="emphasis"><em>Owner</em></span> - <span class="emphasis"><em>Message</em></span></pre>
+          <p>For example:</p>
+          <pre class="programlisting">2013-06-10 14:19:40,911 [Main] INFO \
+  CameronTec.Session.BUY_SELL.out - &gt; 8=...</pre>
+
+          <p>The class: <code class="code">com.camerontec.util.guestlogs.lineparser.&#173;QuickFIXDefaultLineParser</code>
+          is provided for log files that are in the QuickFIX
+          default format:</p>
+<pre class="programlisting"><span class="emphasis"><em>Date</em></span>, <span class="emphasis"><em>FIX version</em></span>:<span class="emphasis"><em>Session</em></span>, <span class="emphasis"><em>direction</em></span> (<span class="emphasis"><em>Message Contents</em></span>)</pre>
+          <p>For example:</p>
+          <pre class="programlisting">20120731-00:10:12, FIX.4.2:BUY-&gt;SELL, incoming (8=...)</pre>
+
+          <p>
+            Custom classes must implement the
+            <a class="javadoc" href="../javadoc/com/camerontec/util/guestlogs/lineparser/ILineParser.html" target="_top">ILineParser</a>
+            interface, and must be included in the class path of the LMA.
+          </p>
+
+          <p>Required.</p>
+        </td></tr><tr><td>rewritten.log.max.file.length</td><td>The maximum size (in bytes) that a re-written guest log file can reach before roll over occurs.
+              <p>Optional. Defaults to 2147483648 bytes (2GB).</p></td></tr><tr><td>rewritten.log.prune.period</td><td>The period over which to check and prune the high performance logs so that they
+                match their guest log counterparts.
+                <p>Optional. Defaults to 60000(ms).</p>
+            </td></tr></tbody></table></div><p>There can be multiple guest elements contained in the LMA
+  configuration. The combination of the "name" and "logger.name"
+  attributes must be unique.</p><p>For example:</p><pre class="programlisting">&lt;guest
+  type="QuickFIX"
+  name="FIXEngine1"
+  logger.name="SessionA_MessageLog"
+  file.scanner="com.camerontec.util.guestlogs.filenamingscheme.FixedFileScanner"
+  file.pattern="/apps/quickfix/logs/sessionA.log"
+  line.parser="com.camerontec.util.guestlogs.lineparser.QuickFIXDefaultLineParser"
+  /&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-logsReplication"/>3.2.5.&#160;Logs Replication</h3></div></div></div><p>Logs are replicated from the host that is generating the logs to the logs repository on a
+    Management Information Server. The default properties of this replication
+    process can be modified using the <code class="code">logs-replication-server</code> element.</p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE lma-configuration
+   SYSTEM 'http://www.camerontecgroup.com/dtd/management/lma-configuration.dtd'&gt;
+&lt;lma-configuration&gt;
+    &lt;logs-replication-server [logs replication properties]&gt;
+&lt;/lma-configuration&gt;</pre><p>where the properties of this element can include:</p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Attribute</th><th>Description</th></tr></thead><tbody><tr><td>socket.send.buffer.size</td><td>The size of the socket buffer that the LMA uses
+             when sending log files to the MIS.
+              <p>Defaults to 0 (the platform default).</p>
+            </td></tr><tr><td>file.read.block.size</td><td>The amount of data (in bytes) that the LMA reads each time
+              it accesses the log files on disk.
+              <p>Defaults to 1MB or 1048576 bytes.</p>
+            </td></tr><tr><td>thread.pool.size</td><td>The number of client requests that the LMA can process at one time.
+              <p>Defaults to 4.</p>
+            </td></tr><tr><td>use.compression</td><td>Whether data is compressed before sending it to the MIS.
+              <p>Defaults to true.</p>
+            </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-Changing_the_default_jmx_request_timeout"/>3.2.6.&#160;Changing default JMX request timeout</h3></div></div></div><p>
+      By default, the timeout for communication between the LMA and managed FIX servers is set to 2000ms. To change the
+      default timeout, a <code class="code">jmx-request-timeout</code>
+      attribute of the <code class="code">lma-configuration</code> element must be specified. The format is as follows:
+    </p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE lma-configuration
+  SYSTEM 'http://www.camerontecgroup.com/dtd/management/lma-configuration.dtd'&gt;
+  &lt;lma-configuration jmx-request-timeout="10000"/&gt;</pre></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent-logging"/>3.3.&#160;Logging</h2></div></div></div><p>
+      The LMA uses Logback for logging. To change the logging configuration, modify the
+      <span class="emphasis"><em>resources/logback.xml</em></span> file.
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_Configuration-lmaScripts"/>3.4.&#160;LMA Scripts</h2></div></div></div><p>The LMA executes any scripts it finds in its <span class="emphasis"><em>scripts</em></span>
+  directory of the LMA installation, and reports the results of the
+  execution via attributes of the <a href="#Local_Management_Agent_API-JMX_API" title="4.1.&#160;JMX API">"LMA.Scripts"
+  MBean</a>.</p><p>On Unix, a script is any file with the 'x' permission.
+  On Windows, it is any file in this directory, although the
+  .bat extension is recommended.</p><p>The scripts directory is only scanned at LMA startup, so to
+  add new scripts, the LMA must be re-started.</p><p>The LMA.Scripts MBean contains one attribute for each script,
+  where the attribute name is the same as the script name except
+  that dot extensions are replaced with an underscore. For example,
+  the result of the freespace.sh/bat script provided with the
+  distribution is given by the freespace_sh/bat MBean
+  attribute.</p><p>The value of the attribute is the output of the script.</p><p>Each script is executed whenever the attribute is accessed;
+  the results of the script are not cached.</p></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_Configuration-ssl"/>3.5.&#160;SSL</h2></div></div></div><p>
+    This chapter describes how to enable SSL encryption between the LMA and the MIS. Please 
+    follow these steps.  
+    </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-ssl-creating_keystore_lma"/>3.5.1.&#160;Creating keystore in the LMA</h3></div></div></div><p>Create a keystore in <code class="code">%LMA_HOME%\resources</code></p><pre class="programlisting">keytool -keystore keystore -genkey -keyalg RSA</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-ssl-export_cert"/>3.5.2.&#160;Export the LMA&#8217;s certificate</h3></div></div></div><p>Also in <code class="code">%LMA_HOME%\resources</code> run</p><pre class="programlisting">keytool -exportcert -file lma.cert -keystore keystore -storepass password</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-ssl-creating_keystore_mis"/>3.5.3.&#160;Create a keystore in the MIS</h3></div></div></div><p>Create a keystore in <code class="code">%MIS_HOME%\resources</code></p><pre class="programlisting">keytool -keystore keystore -genkey -keyalg RSA &#8211;validity 3650</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-ssl-import_lma_cert_into_mis"/>3.5.4.&#160;Import the LMA&#8217;s certificate into the MIS&#8217; keystore</h3></div></div></div><pre class="programlisting">keytool -importcert -file path\to\lma.cert -keystore keystore 
+        -storepass &lt;password&gt; -keypass &lt;password&gt; -trustcacerts -alias lma</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-ssl-lma_configuration"/>3.5.5.&#160;LMA Configuration</h3></div></div></div><p>Add the following section to the <code class="code">%LMA_HOME%\conf\lma.conf</code> 
+      (inside <code class="code">&lt;lma-configuration&gt; element):</code></p><pre class="programlisting">&lt;security&gt;
+  &lt;tls-server/&gt;
+&lt;/security&gt;
+      </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-ssl-mis_configuration"/>3.5.6.&#160;MIS Configuration</h3></div></div></div><p>Add the following section to the <code class="code">%MIS_HOME%\conf\mis.conf</code> (and adjust hostname):</p><pre class="programlisting">ma/managedHosts = \
+&lt;set&gt;\
+  &lt;value&gt;\
+    &lt;host&gt;localhost&lt;/host&gt;\
+    &lt;security-profile&gt;\
+      &lt;socket-factory&gt;sun.security.ssl.SSLSocketFactoryImpl&lt;/socket-factory&gt;\
+      &lt;protocols&gt;\
+      &lt;/protocols&gt;\
+      &lt;cypher-suites&gt;\
+      &lt;/cypher-suites&gt;\
+      &lt;/security-profile&gt;\
+   &lt;/value&gt;\
+&lt;/se&gt;&gt;
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-ssl-lma_path-to_keystore"/>3.5.7.&#160;Specify LMA path to keystore</h3></div></div></div><p>In the <code class="code">%LMA_HOME%\conf\wrapper.conf</code> add the following additional Java parameters (adjust values)</p><pre class="programlisting">wrapper.java.additional.1=-Djavax.net.ssl.keyStore=%LMA_HOME%\resources\keystore
+wrapper.java.additional.2=-Djavax.net.ssl.keyStorePassword=&lt;password&gt;s</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Local_Management_Agent_Configuration-ssl-mis_path-to_keystore"/>3.5.8.&#160;Specify MIS path to keystore</h3></div></div></div><p>In the <code class="code">%MIS_HOME\conf\mis-wrapper.conf</code> add the following additional Java parameters (adjust values)</p><pre class="programlisting">wrapper.java.additional.1=-Djavax.net.ssl.keyStore=%MIS_HOME%\resources\keystore
+wrapper.java.additional.2=-Djavax.net.ssl.keyStorePassword=&lt;password&gt;
+wrapper.java.additional.3=-Djavax.net.ssl.trustStore=%MIS_HOME%\resources\keystore
+wrapper.java.additional.4=-Djavax.net.ssl.trustStorePassword=&lt;password&gt;</pre></div><p>Now you can restart the LMA and MIS.</p></div></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="Local_Management_Agent_API"/>Chapter&#160;4.&#160;API</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="#Local_Management_Agent_API-JMX_API">4.1. JMX API</a></span></dt><dt><span class="section"><a href="#Javadoc">4.2. JavaDoc</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Local_Management_Agent_API-JMX_API"/>4.1.&#160;JMX API</h2></div></div></div><p>
+      The LMA JMX API uses only open MBeans to avoid introducing any
+      binary dependency between the management console and manageable applications.
+    </p><p>
+      JMX is a self-descriptive management technology. Each MBean
+      exposes its metadata, which fully describes its management API.
+      For more details on JMX, please refer to the
+      <a href="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html" target="_top">JMX Technology Home Page</a>.
+    </p><p>To inspect the LMA JMX API, start the LMA and connect a jconsole to it.</p><p>
+      For example, any <a href="#Local_Management_Agent_Configuration-lmaScripts" title="3.4.&#160;LMA Scripts">scripts</a>
+      added to the <span class="emphasis"><em>scripts</em></span> directory of the LMA installation are
+      published as attributes of the "LMA.Scripts" MBean. The results
+      of these scripts can be used to generate events in the MIS by
+      configuring an interest that inspects the MBean. The freespace
+      script that is provided with the LMA installation is one such
+      application, the results of which can be utilized by configuring
+      a numeric gauge interest in the MIS.
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="Javadoc"/>4.2.&#160;JavaDoc</h2></div></div></div><p>JavaDoc for the LMA can be found <a class="javadocplain" href="../javadoc/index.html" target="_top">here</a>.</p></div></div><div class="appendix"><div class="titlepage"><div><div><h1 class="title"><a name="thid_party_software"/>Appendix&#160;A.&#160;Third-Party Software</h1></div></div></div><p>
+  The Catalys LMA leverages third-party software including commercial software subject to license agreements
+  between CameronTec and third-party firms. In accordance with such license(s), users of the LMA are hereby
+  informed that the use of the third-party libraries embedded in or distributed with the LMA is strictly limited
+  to the functionality covered in the LMA. Users are not allowed to use those libraries for any other usage.
+</p><p>
+  Licenses for bundled software are presented in the following table. Users are invited to review the terms of the
+  licenses.
+</p><div class="informaltable"><table border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Library (GroupID:ArtifactID:Version)</th><th>License(s)</th></tr></thead><tbody><tr><td>cglib:&#173;cglib-nodep:&#173;2.2</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>ch.qos.logback:&#173;logback-classic:&#173;1.2.10</td><td>
+<a href="../licenses/epl-1.0.txt" target="_top">Eclipse Public License v1.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/>
+<a href="../licenses/lgpl-2.1.txt" target="_top">GNU Lesser General Public License, version 2.1</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>ch.qos.logback:&#173;logback-core:&#173;1.2.10</td><td>
+<a href="../licenses/epl-1.0.txt" target="_top">Eclipse Public License v1.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/>
+<a href="../licenses/lgpl-2.1.txt" target="_top">GNU Lesser General Public License, version 2.1</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.google.code.findbugs:&#173;jsr305:&#173;3.0.2</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.google.errorprone:&#173;error_prone_annotations:&#173;2.3.4</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.google.guava:&#173;failureaccess:&#173;1.0.1</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.google.guava:&#173;guava:&#173;30.1-jre</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.google.guava:&#173;listenablefuture:&#173;9999.0-empty-to-avoid-conflict-with-guava</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.google.j2objc:&#173;j2objc-annotations:&#173;1.3</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.intellij:&#173;annotations:&#173;12.0</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.lmax:&#173;disruptor:&#173;3.3.2</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.squareup:&#173;javapoet:&#173;1.5.1</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.thoughtworks.paranamer:&#173;paranamer:&#173;2.3</td><td>
+<a href="../licenses/paranamer.txt" target="_top">Paranamer License (BSD)</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>com.thoughtworks.xstream:&#173;xstream:&#173;1.4.19</td><td>
+<a href="../licenses/xstream.txt" target="_top">XStream License (BSD)</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>commons-cli:&#173;commons-cli:&#173;1.4</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>commons-codec:&#173;commons-codec:&#173;1.14</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>io.github.lukehutch:&#173;fast-classpath-scanner:&#173;1.9.17</td><td>
+<a href="../licenses/mit.txt" target="_top">The MIT License</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>io.github.x-stream:&#173;mxparser:&#173;1.2.2</td><td>XStream License<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>javatar:&#173;javatar:&#173;2.5</td><td>
+<a href="../licenses/javatar.txt" target="_top">Java Tar License (Public Domain)</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>javax.management:&#173;jmxremote_optional:&#173;1_2_2_03-b34.2</td><td>
+<a href="../licenses/sunbinary_optional.txt" target="_top">Sun Microsystems, Inc. Binary Code License Agreement (Java(TM) Optional Package)</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>jaxen:&#173;jaxen:&#173;1.1.4</td><td>
+<a href="../licenses/jaxen.txt" target="_top">Jaxen License</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>joda-time:&#173;joda-time:&#173;2.5</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.java.dev.jna:&#173;jna-platform:&#173;4.1.0</td><td>
+<a href="../licenses/lgpl-2.1.txt" target="_top">GNU Lesser General Public License, version 2.1</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.java.dev.jna:&#173;jna:&#173;4.1.0</td><td>
+<a href="../licenses/lgpl-2.1.txt" target="_top">GNU Lesser General Public License, version 2.1</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.openhft:&#173;affinity:&#173;2.2</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.openhft:&#173;chronicle-algorithms:&#173;1.16.0</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.openhft:&#173;chronicle-bytes:&#173;2.17.4</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.openhft:&#173;chronicle-core:&#173;2.17.0</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.openhft:&#173;chronicle-map:&#173;3.17.0</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.openhft:&#173;chronicle-threads:&#173;2.17.0</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.openhft:&#173;chronicle-values:&#173;2.16.1</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.openhft:&#173;chronicle-wire:&#173;2.17.5</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>net.sf.trove4j:&#173;trove4j:&#173;3.0.3</td><td>
+<a href="../licenses/lgpl-2.1.txt" target="_top">GNU Lesser General Public License, version 2.1</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.apache.commons:&#173;commons-collections4:&#173;4.4</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.checkerframework:&#173;checker-qual:&#173;3.5.0</td><td>
+<a href="../licenses/mit.txt" target="_top">The MIT License</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.codehaus.janino:&#173;commons-compiler:&#173;2.7.4</td><td>
+<a href="../licenses/janino.txt" target="_top">Janino License (BSD)</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.codehaus.janino:&#173;janino:&#173;2.7.4</td><td>
+<a href="../licenses/janino.txt" target="_top">Janino License (BSD)</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.codehaus.jettison:&#173;jettison:&#173;1.3.8</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.jdom:&#173;jdom2:&#173;2.0.6.1</td><td>
+<a href="../licenses/jdom.txt" target="_top">JDOM License</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.kohsuke.jetbrains:&#173;annotations:&#173;9.0</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.ops4j.pax.url:&#173;pax-url-aether:&#173;2.4.5</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.slf4j:&#173;slf4j-api:&#173;1.7.25</td><td>
+<a href="../licenses/mit.txt" target="_top">The MIT License</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.springframework:&#173;spring-aop:&#173;5.3.18</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.springframework:&#173;spring-beans:&#173;5.3.18</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.springframework:&#173;spring-context:&#173;5.3.18</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.springframework:&#173;spring-core:&#173;5.3.18</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.springframework:&#173;spring-expression:&#173;5.3.18</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.springframework:&#173;spring-jcl:&#173;5.3.18</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.xerial.snappy:&#173;snappy-java:&#173;1.1.8.4</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>org.yaml:&#173;snakeyaml:&#173;1.29</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>uk.co.real-logic:&#173;sbe:&#173;1.0.2-RC2</td><td>
+<a href="../licenses/apache-2.0.txt" target="_top">The Apache Software License, Version 2.0</a>
+<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr><tr><td>xmlpull:&#173;xmlpull:&#173;1.1.3.1</td><td>Public Domain<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"/></td></tr></tbody></table></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2022-04-05T14:53:02+02:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2022 CameronTec</div></div></body></html>

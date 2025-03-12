@@ -1,0 +1,45 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 9.3.&nbsp;Hardware Considerations</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch09.html" title="Chapter&nbsp;9.&nbsp;Performance Tuning"><link rel="prev" href="ch09s02.html" title="9.2.&nbsp;Measuring Performance"><link rel="next" href="ch09s04.html" title="9.4.&nbsp;Configuring for Performance"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch09s02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;9.&nbsp;Performance Tuning</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch09s04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="perf_hardware"></a>9.3.&nbsp;Hardware Considerations</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10750"></a>9.3.1.&nbsp;CPUs and Threading</h3></div></div></div><p>
+      The Catalys Node is a multi-threaded application &#8212; it creates a
+      <a href="ch09s04.html#perf_configuration-threading" title="9.4.1.&nbsp;Threading">number of threads</a> per FIX session and several other threads
+      depending on the configured options.  Because of this, it is generally useful to run the Node on a server that
+      has a large number of cores.  This allows the OS to schedule the various threads on separate cores, thus reducing
+      contention.
+    </p><p>
+      Several <a href="ch09s04.html#perf_configuration-threading" title="9.4.1.&nbsp;Threading">configuration options</a> can be used to modify the
+      Node's threading model, which may yield performance improvements in your environment.  It is also possible to
+      <a href="ch09s04.html#perf_configuration-reserving_cpus" title="9.4.1.3.&nbsp;Reserving CPUs">reserve specific cores</a> for use by the Node.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="perf_hardware_memory"></a>9.3.2.&nbsp;Memory</h3></div></div></div><p>
+      The amount of RAM and heap space required by the Node is dependent upon how many FIX sessions are configured and
+      which features are enabled.  For an installation of 5 or fewer FIX sessions with typical message processing
+      features, a heap size of 512MB is generally adequate.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10760"></a>9.3.3.&nbsp;Disk Storage</h3></div></div></div><p>
+      The Node's <a href="ch03s02.html" title="3.2.&nbsp;Logging">logging</a> and
+      <a href="ch05.html#stdfeature_persistence" title="5.1.&nbsp;Session Persistence">persistence</a> features perform a significant amount of disk I/O.
+      A slow storage subsystem can create a performance bottleneck, therefore it is recommended to use the fastest
+      storage option possible.
+    </p><p>
+      The majority of the Node's disk I/O operations are writes.  If possible, your filesystem and storage subsystem
+      can be tuned to favor write performance over read performance.
+    </p><p>
+      Message persistence and log data is likely critical to your operations.  We recommend using a redundant storage
+      subsystem, i.e. RAID, in order to protect against hardware failures.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10767"></a>9.3.4.&nbsp;Network</h3></div></div></div><p>
+      The amount of network capacity required by the Node depends on the message volume you expect to send and receive,
+      and on the capacity of your upstream network.  If the aggregate message volume of one Node instance is extremely
+      high, FIX sessions can be separated across several physical NICs by setting the <code class="code">SocketConnection</code>'s
+      <a class="code" href="config_reference.html#config_ref_SocketConnection_bindAddress">bindAddress</a> attribute (for acceptors)
+      or the <a class="code" href="config_reference.html#config_ref_SocketConnection_localhost">localhost</a> attribute (for
+      initiators).
+    </p><p>
+      When using the Node's <a href="ch06.html#optfeature_high_availability" title="6.1.&nbsp;High Availability">High Availability</a> feature, we recommend
+      having a separate physical network reserved for HA communications.  This allows for segregation of FIX traffic
+      and HA traffic so that neither contends with the other.  For more information see the
+      <a class="code" href="config_reference.html#config_ref_ClusterNode" title="ClusterNode">ClusterNode</a> element and its
+      <a class="code" href="config_reference.html#config_ref_ClusterNode_localHost">localHost</a> attribute.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch09s02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch09.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch09s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">9.2.&nbsp;Measuring Performance&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;9.4.&nbsp;Configuring for Performance</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:42+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,207 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 1.6.&nbsp;FAQs</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch01.html" title="Chapter&nbsp;1.&nbsp;Introduction"><link rel="prev" href="ch01s05.html" title="1.5.&nbsp;Getting Support"><link rel="next" href="ch02.html" title="Chapter&nbsp;2.&nbsp;Installation and Startup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch01s05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;1.&nbsp;Introduction</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch02.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="intro_faq"></a>1.6.&nbsp;FAQs</h2></div></div></div><p>
+    <a href="ch01s06.html#intro_faq-faq1" title="What are the key elements of the FIX protocol?">What are the key elements of the FIX protocol?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq2" title="What is a &#34;session&#34;?">What is a "session"?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq3" title="How does Catalys persist session data?">How does Catalys persist session data?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq4" title="Why doesn't Catalys automatically persist inbound FIX messages?">Why doesn't Catalys automatically persist inbound FIX messages?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq5" title="What validation does Catalys perform on incoming messages?">What validation does Catalys perform on incoming messages?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq6" title="Does my application need to handle FIX session-layer messages (i.e. heartbeats and resend requests)?">Does my application need to handle FIX session-layer messages (i.e. heartbeats and resend requests)?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq7" title="How can I monitor my Catalys Node instances?">How can I monitor my Catalys Node instances?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq8" title="How do I recover if my Catalys application crashes?">How do I recover if my Catalys application crashes?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq9" title="How can I change message sequence numbers on a session?">How can I change message sequence numbers on a session?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq10" title="How can I customize the standard behavior of Catalys?">How can I customize the standard behavior of Catalys?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq11" title="How does Catalys use threads?">How does Catalys use threads?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq12" title="Where can I find sample configurations?">Where can I find sample configurations?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq13" title="Where can I find sample source code?">Where can I find sample source code?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq14" title="How do I work with repeating groups?">How do I work with repeating groups?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq15" title="How can I improve the performance of my Node installation?">How can I improve the performance of my Node installation?</a>
+  </p><p>
+    <a href="ch01s06.html#intro_faq-faq16" title="How do I write a FIX application using the Catalys API?">How do I write a FIX application using the Catalys API?</a>
+  </p><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq1"></a>What are the key elements of the FIX protocol?</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        There are multiple versions of the FIX protocol. Newer
+        versions support additional message types, fields and
+        values as well as deprecate or remove older message types,
+        fields and values. The two parties of a FIX session
+        agree on the FIX version that will be used.
+      </li><li class="listitem">
+        A FIX message consists of three parts: a header, a body and a
+        trailer.
+      </li><li class="listitem">
+        Each part consists of a number of fields of the form tag=value
+        separated by the special delimiter, ASCII "SOH".
+      </li><li class="listitem">
+        Apart from a few exceptions, fields can be in any order.
+      </li><li class="listitem">
+        Fields can be repeated, in which case the values are logically
+        combined in some way.
+      </li><li class="listitem">
+        Fields have a type. For example, integer, float, character, time,
+        date, binary data.
+      </li><li class="listitem">
+        All values except for binary data are encoded as ASCII strings.
+      </li><li class="listitem">
+        Binary data fields must be immediately preceded by a length
+        field which is used to delimit the value. An important example of
+        a binary data field is the "SecureData" field whose value contains
+        one or more encrypted other fields. It is a field of
+        encrypted fields.
+      </li><li class="listitem">
+        A message can be viewed as an unordered collection of fields.
+      </li><li class="listitem">
+        Each message has a type which defines a set of required fields
+        and a set of optional fields.
+      </li><li class="listitem">
+        Each message contains a length and a checksum.
+      </li><li class="listitem">
+        Messages can be grouped into two categories: administrative and
+        application.
+      </li><li class="listitem">
+        Administrative messages are used to support the protocol.
+        Examples of such messages are: Heartbeat, ResendRequest,
+        Logon and Logoff.
+      </li><li class="listitem">
+        Each message has a sequence number which increments in strict
+        sequence, i.e. there should be no gaps. This is the basis of the
+        protocol.
+      </li><li class="listitem">
+        A session is a logical connection (starting with a Logon and
+        ending with a Logoff) comprising a continuous sequence of
+        messages. A session can survive across multiple physical
+        connections.
+      </li><li class="listitem">
+        A connection is a physical communications link between two
+        parties.
+      </li><li class="listitem">
+        Fields can be encrypted.
+      </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq2"></a>What is a "session"?</h3></div></div></div>
+    A FIX session is a socket
+    connection between two parties. One party may be a professional
+    trader and the other party may be a broker. A party is identified
+    by a "CompID" and, optionally, a "SubID" and "LocationID".
+  </div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq3"></a>How does Catalys persist session data?</h3></div></div></div><p>
+      By default, Catalys persists the following data for all FIX
+      sessions: inbound sequence number, outbound sequence number and all outbound messages. There are other features
+      in Catalys that may also persist data, for example:
+      <a href="ch05s05.html" title="5.5.&nbsp;Message Buffering">message buffering</a>,
+      the <a href="ch06s02.html" title="6.2.&nbsp;Catalys Rules Engine">Catalys Rules Engine</a> and custom code that utilizes our
+      <a href="ch08s04.html" title="8.4.&nbsp;Persistent Objects">persistent data objects</a>.
+    </p><p>
+      In most cases it will be required to store the persistence data
+      on disk, in case the application restarts for any reason. The built-in
+      <a href="ch05.html#stdfeature_persistence-journalingPersister" title="5.1.2.&nbsp;JournalingPersister">JournalingPersister</a> provides
+      this functionality.
+    </p><p>
+      Detailed information on the persistence feature can be found
+      in <a href="ch05.html#stdfeature_persistence" title="5.1.&nbsp;Session Persistence">Session Persistence</a>.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq4"></a>Why doesn't Catalys automatically persist inbound FIX messages?</h3></div></div></div><p>
+      Catalys does not because it is unnecessary, inefficient and incorrect for the following reasons:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        The FIX protocol provides a mechanism to
+        re-request messages from your counterparty for recovery purposes.
+      </li><li class="listitem">
+        Persisting inbound messages will add to inbound message latency.
+      </li><li class="listitem">
+        Most importantly, this is not correct. The FIX protocol does not require parties to do so and instead supports
+        a ResendRequest message that requests the replay of message from one party to the other.
+      </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq5"></a>What validation does Catalys perform on incoming messages?</h3></div></div></div>
+    
+    See <a href="ch05s08.html" title="5.8.&nbsp;Inbound Message Validation">Inbound Message Validation</a>.
+  </div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq6"></a>Does my application need to handle FIX session-layer messages (i.e. heartbeats and resend requests)?</h3></div></div></div><p>
+      No. Catalys handles all the low-level FIX protocol messages for you automatically. Your
+      application handles only the application message processing.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq7"></a>How can I monitor my Catalys Node instances?</h3></div></div></div><p>There are different options for monitoring the Catalys Node:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Command Line Interface - the Node exposes a
+        <a href="ch04s02.html#operations_monitoring-command-line" title="4.2.2.&nbsp;Command-Line Interface">command line</a> when running in "console" mode. You can
+        also connect to running node using the
+        <a href="ch04s02.html#operations_monitoring-remote-command-line" title="4.2.3.&nbsp;Remote Command-Line Interface">remote command line interface</a>.
+      </li><li class="listitem">
+        Catalys MIS and Dashboard - the Management Information Server is
+        an application that monitors Catalys Node applications. It provides a web
+        interface called the Dashboard.
+      </li><li class="listitem"><a href="ch04s02.html#operations_monitoring-jmx" title="4.2.5.&nbsp;Monitoring via JMX">JMX API</a></li><li class="listitem">
+        Java API - by extending the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/sessionmanager/SessionStatusListenerBase.html" target="_top">SessionStatusListenerBase</a>
+        base class which exposes a number of event handlers within the Node.
+        See the SampleMonitor template for more details.</li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq8"></a>How do I recover if my Catalys application crashes?</h3></div></div></div><p>Catalys should take care of most of the session recovery for you.</p><p>
+      If your sessions are configured with file-based persistence
+      then there should be no message loss. If after a restart a
+      counterparty sends a ResendRequest, the Node will respond accordingly based
+      on the FIX specification. If the Node detects that a session is missing messages,
+      a ResendRequest will be sent to the FIX counterparty.
+    </p><p>
+      If your sessions cannot reconnect or are having sequence number issues
+      then manual intervention may be required to get the session restarted.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq9"></a>How can I change message sequence numbers on a session?</h3></div></div></div><p>
+      Caution must be taken when changing sequence numbers. There
+      are catastrophic side effects to incorrectly changing sequence numbers.
+    </p><p>
+      Every FIX session has two associated sequence numbers: inbound and
+      outbound. Sequence numbers must be in strict ascending order, and no gaps
+      are allowed. These sequence numbers are the key to the FIX protocol. They
+      are used to ensure that messages are processed in the correct order and that
+      no messages are missing.
+    </p><p>
+      When two parties are communicating on a session, the input
+      sequence number of one is the output sequence number of the
+      other, and vice versa. If one party detects a gap in sequence
+      numbers, it knows that message(s) have gone missing and can
+      re-request them.
+    </p><p>
+      One of the cardinal rules of the FIX protocol is that one
+      party cannot arbitrarily change sequence numbers without
+      informing the other party.
+    </p><p>
+      If there is a sequence number conflict which cannot be resolved
+      and both parties have agreed that no messages can be lost, the safest
+      action is for both parties to disconnect and reset inbound and outbound
+      sequence numbers to 1.
+    </p><p>
+      In rare instances (for example during testing) it may
+      sometimes be convenient to set sequence numbers to some arbitrary
+      value. This should only be done in extraordinary circumstances.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq10"></a>How can I customize the standard behavior of Catalys?</h3></div></div></div><p>
+      There are numerous built-in application and session level settings
+      and dialects that can change the default behavior.
+    </p><p>
+      Alternately you can create an
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/ISessionCustomizer.html" target="_top">ISessionCustomizer</a>
+      and register that object as a session listener. One convenient way of creating an <code class="code">ISessionCustomizer</code>
+      is to subclass
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/session/SessionCustomizerBase.html" target="_top">SessionCustomizerBase</a>
+      and override the methods you want to change.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq11"></a>How does Catalys use threads?</h3></div></div></div><p>See <a href="ch09s04.html#perf_configuration-threading" title="9.4.1.&nbsp;Threading">Threading</a>.</p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq12"></a>Where can I find sample configurations?</h3></div></div></div><p>
+      Templates can be found in the <span class="emphasis"><em>templates/</em></span>
+      subdirectory of your Node installation.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq13"></a>Where can I find sample source code?</h3></div></div></div><p>
+      Source code examples can be found in the <span class="emphasis"><em>templates/src/</em></span>
+      subdirectory of your Node installation.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq14"></a>How do I work with repeating groups?</h3></div></div></div><p>
+      As of Catalys 2.0, the repeating groups API is deprecated. See
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessage.html" target="_top">IFIXMessage</a>
+      for examples on how to add and iterate over repeating groups in a message object.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq15"></a>How can I improve the performance of my Node installation?</h3></div></div></div><p>
+      See <a href="ch09.html" title="Chapter&nbsp;9.&nbsp;Performance Tuning">Performance</a>.
+    </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="intro_faq-faq16"></a>How do I write a FIX application using the Catalys API?</h3></div></div></div><p>
+      See the example in <span class="emphasis"><em>templates/CoreLibsSimple</em></span> and the accompanying
+      <span class="emphasis"><em>SimpleBuySide.java</em></span> and <span class="emphasis"><em>SimpleSellSide.java</em></span> classes located in the
+      <span class="emphasis"><em>templates/src/com/camerontec/catalys/core/test</em></span> subdirectory of your Node installation.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01s05.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch01.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">1.5.&nbsp;Getting Support&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;2.&nbsp;Installation and Startup</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:32+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,389 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; Chapter&nbsp;3.&nbsp;Configuration</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="index.html" title="Catalys Node User Guide"><link rel="prev" href="ch02s06.html" title="2.6.&nbsp;Startup"><link rel="next" href="ch03s02.html" title="3.2.&nbsp;Logging"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch02s06.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;3.&nbsp;Configuration</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch03s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="config"></a>Chapter&nbsp;3.&nbsp;Configuration</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="ch03.html#config_basic">3.1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="ch03.html#config_basic-application">3.1.1. Application Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#config_basic-services">3.1.2. Services Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#config_basic-session">3.1.3. Session Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#config_basic-connection">3.1.4. Connection Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#config_basic-persister">3.1.5. Persister Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#config_basic-session-manager">3.1.6. Session Manager Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#config_basic-properties">3.1.7. Instance and Session Properties Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#config_basic-mp-templates">3.1.8. Message Processing Templates Configuration</a></span></dt><dt><span class="section"><a href="ch03.html#d5e1135">3.1.9. Replacement Parameters</a></span></dt></dl></dd><dt><span class="section"><a href="ch03s02.html">3.2. Logging</a></span></dt><dd><dl><dt><span class="section"><a href="ch03s02.html#config_logging-choosing">3.2.1. Choosing a Logging Implementation</a></span></dt><dt><span class="section"><a href="ch03s02.html#config_logging-hpl-config">3.2.2. HPL Configuration and Operation</a></span></dt><dt><span class="section"><a href="ch03s02.html#config_logging-logback-configuration">3.2.3. Logback Configuration</a></span></dt><dt><span class="section"><a href="ch03s02.html#config_logging-fix-messages">3.2.4. FIX Message Logging</a></span></dt><dt><span class="section"><a href="ch03s02.html#config_logging-logging-api">3.2.5. Logging API</a></span></dt></dl></dd><dt><span class="section"><a href="ch03s03.html">3.3. JMX Configuration API</a></span></dt><dd><dl><dt><span class="section"><a href="ch03s03.html#config_via_jmx-intro">3.3.1. Introduction</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-management">3.3.2. Management Infrastructure</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-configversusruntime">3.3.3. Configuration versus Runtime</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-reload">3.3.4. Reload</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-refresh">3.3.5. Refresh</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-undo">3.3.6. Undo</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-persistence">3.3.7. Persistence</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-mbeans">3.3.8. MBeans</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-exploring">3.3.9. Interactively Exploring the API</a></span></dt><dt><span class="section"><a href="ch03s03.html#config_via_jmx-example">3.3.10. Example</a></span></dt></dl></dd><dt><span class="section"><a href="ch03s04.html">3.4. Encryption of Attributes</a></span></dt><dd><dl><dt><span class="section"><a href="ch03s04.html#config_encryption-encrypt">3.4.1. Encrypt an Attribute</a></span></dt><dt><span class="section"><a href="ch03s04.html#config_encryption-decrypt">3.4.2. Decrypt an Attribute</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="config_basic"></a>3.1.&nbsp;Overview</h2></div></div></div><p>
+    The entire configuration for a Catalys Node instance is contained in an XML file. It has the following
+    overall structure:
+  </p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE Config SYSTEM "CatalysConfig.dtd"&gt;
+&lt;Config&gt;
+  &lt;Application&gt;
+    &lt;Services&gt;
+      &lt;!-- instance-level services --&gt;
+    &lt;/Services&gt;
+    &lt;Sessions&gt;
+      &lt;Session counterpartycompid="CLIENT1" compid="BROKER"&gt;
+        &lt;!--  session-level configuration --&gt;
+      &lt;/Session&gt;
+      &lt;Session counterpartycompid="CLIENT2" compid="BROKER"&gt;
+        &lt;!--  session-level configuration --&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre><p>
+    The following sections cover the XML configuration for the basic features that most Node instances will use.
+    Configuration and information for other <a href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features">standard</a> and
+    <a href="ch06.html" title="Chapter&nbsp;6.&nbsp;Optional Features">optional</a> features are covered in later chapters.
+  </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_basic-application"></a>3.1.1.&nbsp;Application Configuration</h3></div></div></div><p>
+      Only one <code class="code">Application</code> element is allowed per configuration file.  It represents a single Node
+      instance. The value of the <code class="code">id</code> attribute determines how an instance is known to other Catalys
+      applications (specifically the LMA). This attribute is not required and defaults to <code class="code">default</code>.
+    </p><p>
+      The other <code class="code">Application</code> attributes control the behavior of the instance. Most
+      changes to these values require a restart of the instance.
+    </p><p>
+      For a complete list of attributes, see the
+      <a href="config_reference.html#config_ref_Application" title="Application">Application Configuration Reference</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_basic-services"></a>3.1.2.&nbsp;Services Configuration</h3></div></div></div><p>
+      The <code class="code">Services</code> section contains instance-level service configuration. Normally services are objects
+      whose functionality is shared by one or more FIX sessions. They can also provide instance-level functionality
+      unrelated to FIX sessions. Services are named and exist in a global namespace within the Node.  The most
+      frequently used service is the <a href="ch03.html#config_basic-services-jmx" title="JMXManagementService"><code class="code">JMXManagementService</code></a>.
+    </p><p>
+      For information on developing and configuring a custom service, see the
+      <a href="ch08.html#prog_components" title="8.1.&nbsp;Custom Components">Programming Guide</a>.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_basic-services-jmx"></a>JMXManagementService</h4></div></div></div><p>
+        There are a number of built-in services in the Node. The most frequently used one is the
+        <code class="code">JMXManagementService</code>. This service automatically connects the Node to the LMA, which allows for
+        remote management. It can also expose the
+        <a href="ch04s02.html#operations_monitoring-remote-command-line" title="4.2.3.&nbsp;Remote Command-Line Interface">Remote Command Line</a> functionality.
+      </p><p>
+        The <code class="code">JMXManagementService</code> is configured and enabled simply with this configuration:
+        </p><pre class="programlisting">&lt;Services&gt;
+  &lt;JMXManagementService id="JMXManagementService"/&gt;
+&lt;/Services&gt;</pre><p>
+      </p><p>For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_JMXManagementService" title="JMXManagementService">JMXManagementService Configuration Reference</a>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_basic-session"></a>3.1.3.&nbsp;Session Configuration</h3></div></div></div><p>
+      Communication between two parties takes place on a session running a particular version of the
+      FIX protocol over a socket connection.  For the purposes of configuration, each session
+      is defined by a counterPartyCompID/compID pair.  This pair, plus the FIX version, are the minimum
+      required session attributes:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="BROKER" compid="EXCHANGE" fixversion="4.2"&gt;</pre><p>
+      Sessions configured for FIX versions 4.0 to 4.4 require only the <code class="code">fixversion</code> attribute to be set. For
+      versions 5.0 and greater, the <code class="code">transportVersion</code> attribute must also be configured:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="BROKER" compid="EXCHANGE" fixversion="5.0SP1" transportVersion="1.1"&gt;</pre><p>
+      The following is a complete, although simple, session configuration:
+    </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="BROKER" compid="EXCHANGE" fixversion="4.4" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;!-- Server-side session listening on port 5001 --&gt;
+      &lt;SocketConnection id="sc1" listenport="5001" /&gt;
+    &lt;/Connections&gt;
+    &lt;Persister&gt;
+      &lt;!-- Default file-based persister --&gt;
+      &lt;JournalingPersister id="jp1" baseDirectoryName="./data/persist/broker"/&gt;
+    &lt;/Persister&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;!-- Outbound message processing chain --&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;!-- Inbound message processing chain --&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+  &lt;!-- ... Repeated for each session ... --&gt;
+&lt;/Sessions&gt;</pre><p>
+      Each <code class="code">Session</code> can also have its own <a href="ch05s02.html" title="5.2.&nbsp;Scheduling">Scheduling</a>,
+      <a href="apc.html" title="Appendix&nbsp;C.&nbsp;FIX Session Dialects">Dialects</a>, <a href="ch05.html#stdfeature_persistence" title="5.1.&nbsp;Session Persistence">Persistence</a>,
+      <a href="ch03.html#config_basic-session-manager" title="3.1.6.&nbsp;Session Manager Configuration">Session Manager</a> and
+      <a href="ch06s07.html" title="6.7.&nbsp;Data Encryption">Encryption</a> settings. A <code class="code">Session</code> may also contain a
+      <a class="code" href="ch03.html#config_basic-properties" title="3.1.7.&nbsp;Instance and Session Properties Configuration">Properties</a> element which allows you to associate any
+      other information you wish with the session.
+    </p><p>
+      For a complete list of <code class="code">Session</code> attributes, see the
+      <a href="config_reference.html#config_ref_Session" title="Session">Session Configuration Reference</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_basic-connection"></a>3.1.4.&nbsp;Connection Configuration</h3></div></div></div><p>
+      The communication for a FIX session takes place over a socket connection. One party is a "listener", or
+      server, listening on a specific port; the other party is an "initiator", or client, that connects to the server's
+      IP address and TCP port. After the socket connection is established a Logon exchange takes place.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e983"></a>Server-Side Connections</h4></div></div></div><p>
+        Server-side or listening connections listen for a counterparty to connect to them. Multiple FIX sessions
+        on a Node instance can listen on the same port so that only one inbound port needs to be open on a
+        firewall.
+      </p><p>A server-side connection is configured as follows:</p><pre class="programlisting">&lt;Connections&gt;
+  &lt;!-- FIX session listening on port 5001 --&gt;
+  &lt;SocketConnection id="sc1" listenport="5001" /&gt;
+&lt;/Connections&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e988"></a>Client-Side Connections</h4></div></div></div><p>
+        Client-side or initiating connections attempt to establish a socket connection with a counterparty that is
+        listening on a port. There may be one or more socket connections configured on client-side sessions. The
+        Node will attempt all configured connections, in the order they are listed, until successful. This allows
+        you to configure a primary connection and one or more backup connections, should your counterparty provide
+        them.
+      </p><p>
+        The default connection behavior is to attempt to connect to the configured socket connections in the order
+        they are listed in round robin order. Retry attempts are unlimited with a 10-second delay between each. This
+        behavior can be changed in the <a href="ch03.html#config_basic-session-manager" title="3.1.6.&nbsp;Session Manager Configuration">Session Manager</a> configuration.
+      </p><p>Client-side connections are configured as follows:</p><pre class="programlisting">&lt;Connections&gt;
+  &lt;!-- FIX session attempting to connect to counterparty at primary hostname and port --&gt;
+  &lt;SocketConnection id="sc1" hostname="primary.server.com" port="5001" /&gt;
+  &lt;!-- FIX session attempting to connect to counterparty at secondary hostname and port --&gt;
+  &lt;SocketConnection id="sc2" hostname="secondary.server.com" port="5001" /&gt;
+&lt;/Connections&gt;</pre></div><p>
+      <a href="ch06s06.html" title="6.6.&nbsp;SSL Socket Connection">SSL Socket Connections</a> are also supported.
+    </p><p>For a complete list of attributes, see the
+      <a href="config_reference.html#config_ref_SocketConnection" title="SocketConnection">Connection Configuration Reference</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_basic-persister"></a>3.1.5.&nbsp;Persister Configuration</h3></div></div></div><p>See <a href="ch05.html#stdfeature_persistence" title="5.1.&nbsp;Session Persistence">Session Persistence</a> for information on this feature.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_basic-session-manager"></a>3.1.6.&nbsp;Session Manager Configuration</h3></div></div></div><p>
+      The Session Manager oversees several aspects of a Session:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Socket connection and retry behavior.</li><li class="listitem">Dispatching outbound messages through the source message processing chain.</li><li class="listitem">Dispatching inbound messages through the listener message processing chain.</li><li class="listitem">Connections to non-FIX applications via our technology adapters.</li><li class="listitem">References to <a href="ch03.html#config_basic-mp-templates" title="3.1.8.&nbsp;Message Processing Templates Configuration">message processing templates</a>.</li></ul></div><p>
+      The Session Manager is always present even if the session is not connected and each session has
+      exactly one Session Manager.
+    </p><p>
+      For a complete list of attributes, see the
+      <a href="config_reference.html#config_ref_SessionManager" title="SessionManager">SessionManager Configuration Reference</a>.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_basic-session-mp-chain"></a>Message Processing Chain Configuration</h4></div></div></div><p>
+        The message processing chains (source and listener) of a session define the path of processing that each
+        message takes. A message processing chain consists of message processors, technology adapters and selectors.
+        These can be chained together and/or nested in such a way that certain messages follow one path and others
+        follow an alternative, or it can be as simple as a single message processor that handles all messages.
+      </p><div class="important"><h3 class="title">Important</h3><p>
+          There are two independent message processing chains for each FIX session:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Source</strong></span>: The path that outbound FIX messages take from the
+              application to the FIX session.
+            </li><li class="listitem"><span class="bold"><strong>Listener</strong></span>: The path that inbound FIX messages take from the FIX
+              session to the application.
+            </li></ul></div><p>
+         </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_basic-session-mp"></a>Message Processors</h4></div></div></div><p>
+        A message processor can be a source, a listener or both. To reiterate, a source message
+        processor handles outbound FIX messages and a listener message processor handles inbound FIX messages. A
+        message processor can be configured on both sides as well. For instance, an inbound message can trigger an
+        outbound reject message back to the counterparty.
+      </p><p>There are three main groups of message processors:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Technology Adapters</strong></span>: Message processors that pass messages to/from
+          a non-FIX application. We support a number of different adapters out of the box:
+          <a href="ch07s05.html" title="7.5.&nbsp;Solace Adapter">Solace</a>, <a href="ch07s06.html" title="7.6.&nbsp;IBM MQSeries Adapter">IBM MQ Series</a>,
+          <a href="ch07s03.html" title="7.3.&nbsp;Embedded Catalys Node Adapter">Embedded</a>, <a href="ch07s04.html" title="7.4.&nbsp;JMS Adapter">JMS</a>,
+          <a href="ch07s07.html" title="7.7.&nbsp;TIBCO Rendezvous Adapter">Tibco</a>, <a href="ch07s08.html" title="7.8.&nbsp;Microsoft MQ Adapter">MSMQ</a>,
+          <a href="ch07.html#adapter_socket" title="7.1.&nbsp;Socket Adapter">Socket</a> (for Java, C/C++ and .NET clients),
+          <a href="ch07s11.html" title="7.11.&nbsp;RMI Adapter">RMI</a>, <a href="ch07s09.html" title="7.9.&nbsp;JDBC Adapter">JDBC</a> and
+          <a href="ch07s10.html" title="7.10.&nbsp;Flat File Adapter">Flat File</a>.
+          Note that technology adapters need to be the innermost nested message processors in the chain.
+        </li><li class="listitem"><span class="bold"><strong>Built-in Message Processors</strong></span>: Many built-in features of the Node
+          are actually message processors: <a href="ch06s02.html" title="6.2.&nbsp;Catalys Rules Engine">Rules Engine</a>,
+          <a href="ch05s05.html" title="5.5.&nbsp;Message Buffering">Buffering</a>,
+          <a href="ch05s06.html" title="5.6.&nbsp;Message Throttling">Throttling</a> and
+          <a href="ch06s04.html" title="6.4.&nbsp;Scheduled Order Cache">Scheduled Order Cache</a>, for example.
+        </li><li class="listitem"><span class="bold"><strong>Custom Message Processors</strong></span>: The Node allows users
+          to change and customize the standard behavior. The most common customization is in the form of
+          custom message processors. See the
+          <a href="ch08.html#prog_components" title="8.1.&nbsp;Custom Components">Programming Guide</a> for more information.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_basic-session-mp-reference"></a>MessageProcessorReference Configuration</h4></div></div></div><p>
+        Message processors that reside on both the source and listener chain can be defined as separate
+        instances or as a single instance that is referenced from the other chain. The
+        <a class="code" href="config_reference.html#config_ref_MessageProcessorReference" title="MessageProcessorReference">MessageProcessorReference</a> element
+        is used to refer to a previously defined message processor. In the following example, a single instance of the
+        <code class="code">CatalysRulesEngine</code> is defined on both chains. This is useful if inbound and outbound messages must
+        pass through the same set of rules.
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;SourceMessageProcessors&gt;
+    &lt;!-- CatalysRulesEngine initially defined here --&gt;
+    &lt;CatalysRulesEngine id="cre1" rulesPackId="store-and-restore-symbol"/&gt;
+  &lt;/SourceMessageProcessors&gt;
+  &lt;ListenerMessageProcessors&gt;
+    &lt;!-- MessageProcessorReference used to reference cre1 --&gt;
+    &lt;MessageProcessorReference id="ref" refid="cre1"/&gt;
+  &lt;/ListenerMessageProcessors&gt;
+&lt;/SessionManager&gt;</pre><p>A message processor defined in one session may also be referenced from another session:</p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="CLIENT1" compid="BROKER" ...&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors/&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;!-- GenericProcessor initially defined here --&gt;
+        &lt;GenericProcessor id="gp1" class="com.camerontec.catalys.InboundStats"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+  &lt;Session counterpartycompid="CLIENT2" compid="BROKER" ...&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors/&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;!-- MessageProcessorReference used to reference gp1 --&gt;
+        &lt;MessageProcessorReference id="ref" refid="gp1"/&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e1060"></a>Message Processor Nesting</h4></div></div></div><p>
+        If more than one message processor is required in a message processing chain, then the nesting order
+        needs to be correctly configured.
+      </p><p>
+        For the source (outbound) message processing chain, messages will pass from the innermost element to the
+        outermost element:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;SourceMessageProcessors&gt;
+    &lt;!-- Outermost element fires last and throttles outbound messages at 100 / sec --&gt;
+    &lt;SourceMessageThrottle id="sml1" messagesPerInterval="100" directory="./data/throttle"&gt;
+      &lt;!-- Messages are passed to the CatalysRulesEngine from the JMSConsumer for enrichment --&gt;
+      &lt;CatalysRulesEngine id="cre1" rulesPackId="outbound-enrichment-rules"&gt;
+        &lt;!-- Innermost element fires first and consumes message off a JMS queue --&gt;
+        &lt;JmsConsumer id="jms1" type="queue" destination="BUY_OUTBOUND" factory="primaryQCF"/&gt;
+      &lt;/CatalysRulesEngine&gt;
+    &lt;/SourceMessageThrottle&gt;
+  &lt;/SourceMessageProcessors&gt;
+  &lt;ListenerMessageProcessors/&gt;
+&lt;/SessionManager&gt;
+</pre><p>
+        For the listener (inbound) message processing chain, messages will pass from the outermost element to the
+        innermost element:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;ListenerMessageProcessors&gt;
+    &lt;!-- Outermost element fires first --&gt;
+    &lt;GenericProcessor id="gp1" class="com.camerontec.catalys.CustomMP"&gt;
+      &lt;!-- Messages are passed here next - it buffers if the JMSProducer is down --&gt;
+      &lt;SourceMessageBuffer id="smb1" directoryName="./data/buffer/smb1"&gt;
+        &lt;!-- Innermost element fires last and publishes message to a JMS queue --&gt;
+        &lt;JmsProducer type="queue" destination="BUY_INBOUND" factory="primaryQCF" id="jms1"/&gt;
+      &lt;/SourceMessageBuffer&gt;
+    &lt;/GenericProcessor&gt;
+  &lt;/ListenerMessageProcessors&gt;
+  &lt;SourceMessageProcessors/&gt;
+&lt;/SessionManager&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_basic-session-selector"></a>Selectors</h4></div></div></div><p>
+        Selectors are used to control which message processors a message passes through. The most common use case is to
+        control the processing of inbound messages by message type or some other FIX field criteria. Selectors are
+        configured in the listener message processor chain of a session; they are not supported on the source chain.
+        If a message processor is nested beneath a selector, then only messages that have been "selected" will be
+        passed to that message processor. Messages that are not selected will be passed on to any other message
+        processors in the chain.
+      </p><div class="note"><h3 class="title">Note</h3><p>
+          If any message processors are configured in the listener chain, then a message must pass through at least
+          one of them. An exception will occur otherwise.
+        </p></div><p>
+        The Node has two built-in selectors:
+        <a href="config_reference.html#config_ref_SelectByTagValue" title="SelectByTagValue"><code class="code">SelectByTagValue</code></a> and
+        <a href="config_reference.html#config_ref_MsgTypeSelector" title="MsgTypeSelector"><code class="code">MsgTypeSelector</code></a>. The source code for both
+        classes is included in the templates. An example using <code class="code">SelectByTagValue</code>:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;ListenerMessageProcessors&gt;
+    &lt;!-- Select certain messages by msgType and symbol and place on an inbound solace topic --&gt;
+    &lt;SelectByTagValue selection="35=D 55=anyOf(GOOG,IBM)" id="sbtv1"&gt;
+      &lt;SolaceMessageListener id="solaceListener1" destinationTopic="GOOG_IBM_Orders"/&gt;
+    &lt;/SelectByTagValue&gt;
+    &lt;!-- All remaining messages go to default solace topic --&gt;
+    &lt;SolaceMessageListener id="solaceListener2" destinationTopic="topicAllOthers"/&gt;
+  &lt;/ListenerMessageProcessors&gt;
+  &lt;SourceMessageProcessors/&gt;
+&lt;/SessionManager&gt;</pre><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_SelectByTagValue" title="SelectByTagValue"><code class="code">SelectByTagValue</code> Configuration Reference</a>.
+      </p><p>
+        An example using <code class="code">MsgTypeSelector</code>:
+      </p><pre class="programlisting">&lt;SessionManager&gt;
+  &lt;ListenerMessageProcessors&gt;
+    &lt;!-- Select certain messages by msgType place on an inbound solace topic --&gt;
+    &lt;MsgTypeSelector includeMsgTypes="D F G" id="mts1"&gt;
+      &lt;SolaceMessageListener id="solaceListener1" destinationTopic="AllOrderMessages"/&gt;
+    &lt;/MsgTypeSelector&gt;
+    &lt;!-- All remaining messages go to default solace topic --&gt;
+    &lt;SolaceMessageListener id="solaceListener2" destinationTopic="AllOthers"/&gt;
+  &lt;/ListenerMessageProcessors&gt;
+  &lt;SourceMessageProcessors/&gt;
+&lt;/SessionManager&gt;</pre><p>
+        For a complete list of attributes, see the
+         <a href="config_reference.html#config_ref_MsgTypeSelector" title="MsgTypeSelector"><code class="code">MsgTypeSelector</code> Configuration Reference</a>.
+      </p><p>
+        For information on developing your own selector, see the
+        <a href="ch08.html#prog_components" title="8.1.&nbsp;Custom Components">Programming Guide</a>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_basic-properties"></a>3.1.7.&nbsp;Instance and Session Properties Configuration</h3></div></div></div><p>
+      Most configuration elements have named attributes such as <code class="code">compid="BROKER"</code>. However, sometimes it is
+      useful to associate an arbitrary, variable number of attributes with an element. In that case, a
+      <code class="code">Properties</code> element can be helpful.
+    </p><p>
+      For example, the <code class="code">Session</code> element can contain a <code class="code">Properties</code> element which stores
+      arbitrary information about that session (i.e. Counterparty Contact Name and Phone Number). The attributes
+      specified in a <code class="code">Properties</code> element are added to the standard attributes specified in the parent
+      element.
+    </p><p>
+      A <code class="code">Properties</code> element contains a number of <code class="code">Property</code> elements:
+    </p><pre class="programlisting">&lt;Properties id="prop1"&gt;
+  &lt;Property name="..." value="..."/&gt;
+&lt;/Properties&gt;</pre><p><code class="code">Properties</code> elements have the following characteristics:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">A collection of name/value pairs.</li><li class="listitem">
+        Translates directly to a standard Java
+        <a class="code" href="http://docs.oracle.com/javase/7/docs/api/java/util/Properties.html" target="_top">Properties</a> object.
+      </li><li class="listitem">
+        Must be given an <code class="code">id</code> attribute which is unique and can be used to refer to this element from other
+        elements.
+      </li><li class="listitem">
+        Can be present anywhere in the configuration file.
+      </li><li class="listitem">
+        If you are using the MIS/Dashboard to monitor a Node instance and the <code class="code">name</code> of a
+        <code class="code">Property</code> element begins with <code class="code">#</code>, the name/value pair will be present in the Instance
+        and Sessions grid.
+      </li><li class="listitem">
+        If another configuration element contains a <code class="code">Properties</code> element, its values are added to the
+        standard properties of the element. If an attribute of the same name appears in both the standard attributes
+        and in the <code class="code">Properties</code>, the value of the latter is used.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_basic-mp-templates"></a>3.1.8.&nbsp;Message Processing Templates Configuration</h3></div></div></div><p>
+      <a class="code" href="config_reference.html#config_ref_MessageProcessingTemplate" title="MessageProcessingTemplate">MessageProcessingTemplate</a>
+      elements are used to define common chains of message processors which can be reused across multiple sessions.
+      When several FIX sessions in one instance use the exact same message processing chain, message processing
+      templates can ease configuration maintenance and significantly reduce the size of the configuration file.
+    </p><p>
+      First define a <code class="code">MessageProcessingTemplate</code>:
+    </p><pre class="programlisting">&lt;Application&gt;
+  &lt;MessageProcessingTemplate id="mpTemplate1"&gt;
+    &lt;SourceMessageProcessors&gt;
+      &lt;SampleMessageSource interval="${intervalVal}" id="sms_${session}"/&gt;
+    &lt;/SourceMessageProcessors&gt;
+    &lt;ListenerMessageProcessors&gt;
+      &lt;SampleMessageListener name="Received on ${session}" id="sml_${session}" /&gt;
+    &lt;/ListenerMessageProcessors&gt;
+  &lt;/MessageProcessingTemplate&gt;
+  &lt;Sessions&gt;
+    ...
+  &lt;/Sessions&gt;
+&lt;/Application&gt;</pre><p>
+      Note that attribute values can contain parameters using the <code class="code">${parameter_name}</code> syntax. This allows
+      those attributes to be replaced with session-specific values.  The <code class="code">${session}</code> parameter is
+      <a href="ch03.html#config_basic-session-argument" title="Session Replacement Parameter">built-in</a>.
+    </p><p>
+      Then, from each session, use a
+      <a class="code" href="config_reference.html#config_ref_MessageProcessingInstance" title="MessageProcessingInstance">MessageProcessingInstance</a>
+      to apply the template:
+    </p><pre class="programlisting">&lt;Session&gt;
+  &lt;SessionManager&gt;
+    &lt;MessageProcessingInstance refid="mpTemplate1"&gt;
+      &lt;Properties id="properties1"&gt;
+        &lt;Property name="intervalVal" value="10000" /&gt;
+      &lt;/Properties&gt;
+    &lt;/MessageProcessingInstance&gt;
+  &lt;/SessionManager&gt;
+&lt;/Session&gt;</pre><p>
+      See the template located in <span class="emphasis"><em>templates/MessageProcessingTemplates</em></span> for a working example.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1135"></a>3.1.9.&nbsp;Replacement Parameters</h3></div></div></div><p>
+      Catalys supports the use of <span class="emphasis"><em>replacement parameters</em></span> throughout the configuration file. These
+      can be used to dynamically refer to environment variables and system properties.  The replacement parameter
+      <code class="code">${env:envVar}</code> will be replaced with the value of the environment variable <code class="code">envVar</code>.
+      Similarly the replacement parameter <code class="code">${system:sysProp}</code> will be replaced with the value of the system
+      property <code class="code">sysProp</code>.
+    </p><p>
+      Note, that <span class="emphasis"><em>replacement parameters</em></span> can't be used in <code class="code">id</code> attribute and attributes
+      that refer to other elements using their <code class="code">id</code>. 
+    </p><p>
+      The following example illustrates how to configure the persister <code class="code">baseDirectoryName</code> attribute using
+      an environment variable:
+    </p><pre class="programlisting">&lt;Session counterpartycompid="CTRCOMPID" compid="COMPID" fixversion="4.2" heartbeat="60"&gt;
+  &lt;Persister&gt;
+    &lt;JournalingPersister id="jp1" baseDirectoryName="${env:envDir}/persist"/&gt;
+  &lt;/Persister&gt;
+  ...
+&lt;/Session&gt;</pre><p>
+      This will create persistence files whose names start with <span class="emphasis"><em>persist-</em></span> in the directory referenced
+      by the <code class="code">envDir</code> environment variable.
+    </p><div class="note"><h3 class="title">Note</h3><p>
+        Replacement parameters can only be used in values of attributes of type <code class="code">String</code>. Please refer to the
+        respective elements in the <a href="config_reference.html" title="Appendix&nbsp;A.&nbsp;Configuration Reference">Configuration Reference</a> for details on each
+        attribute data type.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="config_basic-session-argument"></a>Session Replacement Parameter</h4></div></div></div><p>
+        A built-in replacement parameter, <code class="code">${session}</code>, can be used in message processing templates and as an
+        attribute value within any <code class="code">Session</code> element. The parameter will be replaced with the session's ID:
+        <code class="code">applicationID~counterpartyCompID~compID</code>. For example:
+      </p><pre class="programlisting">&lt;Session counterpartycompid="CTRCOMPID" compid="COMPID" fixversion="4.2" heartbeat="60"&gt;
+  &lt;Persister&gt;
+    &lt;JournalingPersister id="jp1" baseDirectoryName="./data/persist/${session}"/&gt;
+  &lt;/Persister&gt;
+&lt;/Session&gt;</pre><p>
+        This will create persistence files whose names start with <span class="emphasis"><em>FIX1~CTRCOMPID~COMPID-</em></span> in the
+        <span class="emphasis"><em>data/persist/</em></span> directory.
+      </p></div></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s06.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch03s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">2.6.&nbsp;Startup&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;3.2.&nbsp;Logging</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

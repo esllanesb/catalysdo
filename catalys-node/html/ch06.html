@@ -1,0 +1,810 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; Chapter&nbsp;6.&nbsp;Optional Features</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="index.html" title="Catalys Node User Guide"><link rel="prev" href="ch05s09.html" title="5.9.&nbsp;Message Factories"><link rel="next" href="ch06s02.html" title="6.2.&nbsp;Catalys Rules Engine"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05s09.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;6.&nbsp;Optional Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="optfeature"></a>Chapter&nbsp;6.&nbsp;Optional Features</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="section"><a href="ch06.html#optfeature_high_availability">6.1. High Availability</a></span></dt><dd><dl><dt><span class="section"><a href="ch06.html#optfeature_high_availability-intro">6.1.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06.html#optfeature_high_availability-roles">6.1.2. Role Determination</a></span></dt><dt><span class="section"><a href="ch06.html#optfeature_high_availability-failover">6.1.3. Failover</a></span></dt><dt><span class="section"><a href="ch06.html#optfeature_high_availability-state-persistence">6.1.4. State Persistence</a></span></dt><dt><span class="section"><a href="ch06.html#optfeature_high_availability-Node-single-ip">6.1.5. Single IP Address</a></span></dt><dt><span class="section"><a href="ch06.html#optfeature_high_availability_config">6.1.6. Configuration</a></span></dt><dt><span class="section"><a href="ch06.html#optfeature_high_availability_operation">6.1.7. High Availability Operations</a></span></dt><dt><span class="section"><a href="ch06.html#optfeature_high_availability_comms">6.1.8. High Availability Communications</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s02.html">6.2. Catalys Rules Engine</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s02.html#optfeature_rules_engine-introduction">6.2.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s02.html#optfeature_rules_engine-overview">6.2.2. Configuration</a></span></dt><dt><span class="section"><a href="ch06s02.html#optfeature_rules_engine-expressions">6.2.3. Expression Language</a></span></dt><dt><span class="section"><a href="ch06s02.html#optfeature_rules_engine_conditions">6.2.4. Conditions</a></span></dt><dt><span class="section"><a href="ch06s02.html#optfeature_rules_engine_actions">6.2.5. Actions</a></span></dt><dt><span class="section"><a href="ch06s02.html#optfeature_rules_engine_validation">6.2.6. Message Validation</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s03.html">6.3. File Lookup Service</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s03.html#d5e4866">6.3.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s03.html#d5e4872">6.3.2. Basic Configuration Example</a></span></dt><dt><span class="section"><a href="ch06s03.html#d5e4891">6.3.3. Configuring Multiple Keys and Results</a></span></dt><dt><span class="section"><a href="ch06s03.html#d5e4909">6.3.4. Lookup from a Custom Message Processor</a></span></dt><dt><span class="section"><a href="ch06s03.html#d5e4916">6.3.5. Labels</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s04.html">6.4. Scheduled Order Cache</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s04.html#d5e4935">6.4.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s04.html#d5e4938">6.4.2. Configuration</a></span></dt><dt><span class="section"><a href="ch06s04.html#d5e4968">6.4.3. Behavior of Scheduled Order Cache</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s05.html">6.5. FIXML Transformer</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s05.html#optfeature_fixml-intro">6.5.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s05.html#optfeature_fixml-configuration">6.5.2. Configuration</a></span></dt><dt><span class="section"><a href="ch06s05.html#optfeature_fixml-customizing">6.5.3. Customizing FIXML Definitions - FixmlElementGenerator</a></span></dt><dt><span class="section"><a href="ch06s05.html#optfeature_fixml-template">6.5.4. Templates</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s06.html">6.6. SSL Socket Connection</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s06.html#optfeature_ssl_socket_connection-intro">6.6.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s06.html#d5e5072">6.6.2. Java Keystores and Truststores</a></span></dt><dt><span class="section"><a href="ch06s06.html#d5e5085">6.6.3. SSL Protocols</a></span></dt><dt><span class="section"><a href="ch06s06.html#d5e5099">6.6.4. Configuration</a></span></dt><dt><span class="section"><a href="ch06s06.html#optfeature_ssl_-client_auth">6.6.5. Client Authentication</a></span></dt><dt><span class="section"><a href="ch06s06.html#optfeature_ssl_trouble">6.6.6. Troubleshooting</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s07.html">6.7. Data Encryption</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s07.html#optfeature_data_encryption-intro">6.7.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s07.html#optfeature_data_encryption-configuration">6.7.2. Configuration</a></span></dt><dt><span class="section"><a href="ch06s07.html#d5e5259">6.7.3. Encryption Keys</a></span></dt><dt><span class="section"><a href="ch06s07.html#optfeature_data_encryption-troubleshoooting">6.7.4. Troubleshooting</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s08.html">6.8. Breakout Box</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s08.html#optfeature_breakout_box-intro">6.8.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s08.html#optfeature_breakout_box-concepts">6.8.2. Concepts</a></span></dt><dt><span class="section"><a href="ch06s08.html#optfeature_breakout_box-examples">6.8.3. Examples</a></span></dt><dt><span class="section"><a href="ch06s08.html#optfeature_breakout_box-example_configuration">6.8.4. Configuration</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s09.html">6.9. Market Compliance</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-intro">6.9.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-filters">6.9.2. Compliance Filters</a></span></dt><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-model">6.9.3. Operational Model</a></span></dt><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-configuration">6.9.4. Configuration</a></span></dt><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-rules">6.9.5. Rules File</a></span></dt><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-pricebands">6.9.6. Price Bands for Percentage Filters</a></span></dt><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-pst">6.9.7. Price Step Table File</a></span></dt><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-ext">6.9.8. Extending Filters</a></span></dt><dt><span class="section"><a href="ch06s09.html#optfeature_compliance-absoluteRelative">6.9.9. The <code class="code">absolute</code> Attribute</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s10.html">6.10. Message Compression</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s10.html#optfeature_message_compression-us">6.10.1. FAST Support</a></span></dt><dt><span class="section"><a href="ch06s10.html#optfeature_message_compression-core">6.10.2. FAST and the FIX Libraries</a></span></dt><dt><span class="section"><a href="ch06s10.html#optfeature_message_compression-notes">6.10.3. Additional Notes</a></span></dt></dl></dd><dt><span class="section"><a href="ch06s11.html">6.11. Market Data Services</a></span></dt><dd><dl><dt><span class="section"><a href="ch06s11.html#optfeature_market_data_service-intro">6.11.1. Introduction</a></span></dt><dt><span class="section"><a href="ch06s11.html#optfeature_market_data_service-configuring">6.11.2. Configuring a Market Data Service</a></span></dt><dt><span class="section"><a href="ch06s11.html#optfeature_market_data_service-using">6.11.3. Using a Market Data Service</a></span></dt><dt><span class="section"><a href="ch06s11.html#optfeature_market_data_service-writing">6.11.4. Writing a Market Data Service</a></span></dt><dt><span class="section"><a href="ch06s11.html#optfeature_market_data_service-derived">6.11.5. Writing a Derived Market Data Service</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="optfeature_high_availability"></a>6.1.&nbsp;High Availability</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_high_availability-intro"></a>6.1.1.&nbsp;Introduction</h3></div></div></div><p>
+      Catalys High Availability (HA) is an optional feature that provides operational continuity when an outage occurs
+      in a Catalys Node or its operating environment. In an HA deployment (a <span class="emphasis"><em>cluster</em></span>), two or more
+      Catalys Nodes are configured to operate as a single, logical, Catalys Node.
+    </p><p>Once a steady state is reached in an <code class="code">N</code> Node cluster, at any point in time there is:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        One Node assigned the role of <span class="emphasis"><em>primary</em></span>. Only the primary Node maintains live FIX sessions.
+      </li><li class="listitem"><code class="code">N-1</code> Nodes assigned the role of <span class="emphasis"><em>secondary</em></span>. Secondary Nodes are kept
+        synchronized with the primary Node so that they are available to assume the role of primary should the current
+        primary fail.
+      </li><li class="listitem">
+        One cluster IP address to which FIX counterparties may connect. This is generally achieved via an IP takeover
+        mechanism (the Node provides lifecycle hooks to facilitate this) or managed by a  network device
+        (e.g. load balancer or content switch) capable of detecting which Node is currently primary and directing IP
+        traffic accordingly.
+      </li></ul></div><p>
+      Before continuing on to the more high level aspects of HA as described in the next sections, you may
+      consider skipping to the <a href="ch06.html#optfeature_high_availability_comms" title="6.1.8.&nbsp;High Availability Communications">HA Communications</a> section to
+      gain an understanding of how HA Nodes communicate with each other, why, and the various options available. An
+      understanding of these topics is likely to help in choosing the right parameters for, and setting expectations for
+      the behavior of, your cluster.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_high_availability-roles"></a>6.1.2.&nbsp;Role Determination</h3></div></div></div><p>Each Node assigns itself a role based on the following criteria:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Primary priority: A Node's primary priority is inferred from its ordinal
+        position in the list of all configured <a href="config_reference.html#config_ref_ClusterNode" title="ClusterNode"><code class="code">ClusterNode</code></a>
+        elements in the <a href="config_reference.html#config_ref_HighAvailabilityCluster" title="HighAvailabilityCluster"><code class="code">HighAvailabilityCluster</code></a>
+        element. Those which appear earlier in the configuration have a higher primary priority than those appearing
+        later.
+      </li><li class="listitem">
+        Presence and Broadcasted Roles of Other Nodes: Every Node periodically
+        broadcasts its current role (and therefore declares its presence) to all other Nodes. Each Node is therefore
+        able to build a picture of the state of the entire cluster before determining which role it should assign to
+        itself.
+      </li></ul></div><p>
+      Nodes continue to periodically broadcast their roles to all other Nodes after initial role assignment so that
+      all other Nodes can maintain a consistent picture of the state of the cluster. This serves two other purposes:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Detection of a Node Leaving the Cluster: If a Node's role is not refreshed
+        in a timely manner, the <code class="code">groupAgeThreshold</code>, it is regarded as having left the cluster.
+      </li><li class="listitem">
+        Detection of "Split Brain": This situation can occur when more than one Node
+        declares itself as the Primary Node.  It indicates an erroneous operational state and causes all Nodes in the
+        cluster to participate in the selection of a new primary Node.
+      </li></ol></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_high_availability-failover"></a>6.1.3.&nbsp;Failover</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3482"></a>Automatic Failover</h4></div></div></div><p>
+        Automatic failover is when a secondary Node in the cluster assigns itself the primary role either because the
+        primary Node is no longer declaring its presence (or the broadcasts are not being received). By default this
+        occurs automatically when the current primary can no longer run the tasks required of it, for example due to
+        a hardware or software failure, a network outage, a slow-running Node or other causes. In the case
+        of network failures the decision to failover is far from trivial. Failover needs to occur in a timely fashion
+        as well as for the right reasons (a true failure, rather than a Node itself becoming isolated from the
+        network).
+      </p><p>
+        When a Node configured for automatic failover (the default) detects there is no longer any primary Node
+        in the cluster, it first determines whether it should attempt to become the new primary based on its primary
+        priority (see above). If a Node determines that it is the highest priority primary candidate then it will first
+        run a number of
+        <a href="ch06.html#optfeature_high_availability_config-primary-val-checks" title="PrimaryValidityChecks Element">primary validity checks</a>
+        before assuming the primary role.
+      </p><p>
+        If all primary validity checks pass, then the
+        <a href="ch06.html#optfeature_high_availability_config-becoming-primary-actions" title="BecomingPrimaryActions Element">becoming primary actions</a>
+        are executed. The most common actions are:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Perform a takeover of the cluster's IP address by the local Node</li><li class="listitem">
+          Force upstream devices to update their ARP tables to direct IP packets to the new primary Node.
+        </li></ul></div><div class="note"><h3 class="title">Note</h3><p>
+          The above actions describe the scenario when IP takeover is used to reassign the cluster's IP address
+          to the new primary Node. If another mechanism is being used (e.g. load balancer or content switch) then no
+          becoming primary actions are required.
+        </p></div><p>
+        Once the Node has completed becoming the primary, it begins broadcasting its new role to the rest of the
+        cluster. If the previous primary returns to the cluster at some point later, it will not attempt to regain the
+        primary role despite having a higher primary priority.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3495"></a>Manual Failover</h4></div></div></div><p>
+        Manual failover can be initiated at any cluster Node. Typically,
+        Nodes at remote sites are configured not to failover automatically (since it usually indicates a catastrophic
+        failure at the primary site) and therefore may only assume the primary role via a manual failover.
+      </p><p>
+        Manual failover can also be used to restore a previously failed primary Node to be the current primary once
+        again.
+      </p><p>A manual failover can be performed in the following ways:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          Issuing the
+          <a href="ch06.html#optfeature_high_availability_operation-consoleCommands" title="6.1.7.6.&nbsp;Console Commands"><code class="code">cl_primary</code></a>
+          command via the
+          <a href="ch04s02.html#operations_monitoring-remote-command-line" title="4.2.3.&nbsp;Remote Command-Line Interface">remote command line</a>, command line exposed
+          on the Dashboard or on an Node instance running in console mode.
+        </li><li class="listitem">
+          Clicking the "Make Primary" button on the instance you want to failover to in the Server panel of the
+          Dashboard.
+        </li><li class="listitem">Programmatically from the JMX API.</li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_high_availability-state-persistence"></a>6.1.4.&nbsp;State Persistence</h3></div></div></div><p>
+      To be highly available, the state of the primary Node must be persisted in such a way that no single failure will
+      cause the system to stop processing. The Node uses a replication mechanism that distributes every persistent data
+      update from the primary to each secondary. Depending on the
+      <a href="ch06.html#optfeature_ha-write-quorum" title="Write Quorum">write quorum</a> configuration, each update will be acknowledged by
+      zero or more secondary Nodes before the next data update is processed.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3511"></a>Synchronization</h4></div></div></div><p>
+        When a Node joins the HA cluster, it automatically synchronizes persistent data with the other members. The
+        first phase involves querying the state of the other Nodes to determine if it has the latest data. If it is
+        missing any updates, it transitions to a synchronizing state until it has an exact copy of latest data. While a
+        Node is synchronizing it cannot become the primary.
+      </p><p>
+        Note that state synchronization is bi-directional by default. That is, Nodes already in the cluster also query
+        the joining Node for state updates. For this reason it is critical to ensure that any data which exists on the
+        joining Node is valid because it is possible that it be propagated back to other Nodes in the cluster as
+        missing updates. The most likely reason for this to happen is an operational error whereby the previous day's
+        data is reset at the primary site but not at the DR site. At startup the next day, the DR sees itself as being
+        "ahead" of the other Nodes and (potentially stale) data is propagated back to the other Nodes.
+      </p><p>
+        There are internal checks in the software and also some configuration attributes which help protect against
+        this and other similar unexpected outcomes:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a href="config_reference.html#config_ref_ClusterNode_processReplayRequests"><code class="code">processReplayRequests</code></a></li><li class="listitem"><a href="config_reference.html#config_ref_ClusterNode_synchronizationWindow"><code class="code">synchronizationWindow</code></a></li></ul></div><p>
+        As implied above, data synchronization between Nodes is <span class="emphasis"><em>symmetric</em></span> by default. That is,
+        by default, all Nodes treat all other Nodes as potential sources of missing data and actively try to retrieve
+        any missing data. This is not always the expected behavior, especially for DR Nodes. The
+        <code class="code">processReplayRequests</code> attribute is a way of changing this behavior on a per Node basis. When
+        explicitly set to <code class="code">false</code> (it is <code class="code">true</code> by default), that Node never reports or
+        propagates missing data to any other Nodes in the cluster. In some systems this fits most closely with the
+        notion of a DR Node and for this reason <span class="emphasis"><em>it is strongly recommended</em></span> that this option be
+        enabled for DR Nodes.
+      </p><p>
+        Though not strictly related to data integrity, the <code class="code">synchronizationWindow</code> attribute exists to
+        protect the cluster from inadvertently introducing high synchronization overhead into a running cluster
+        during high throughput. This can happen if, for example, a Node with no persistent data is introduced into the
+        cluster late in the trading day. In this case the joining Node is by definition "behind" other Nodes
+        and requires synchronization of all data. Depending on their size and the current system throughput
+        this can place enough additional overhead on the system to disrupt FIX message traffic. To protect against this
+        it is possible to specify a non-zero <code class="code">synchronizationWindow</code> which represents the maximum number of
+        "missed" updates (per collection) that will be serviced by another Node. That is, if the local Node is too far
+        "behind" (defined by the <code class="code">synchronizationWindow</code>) then it never completes initial synchronization
+        and never joins the cluster.
+      </p><p>
+        The above configuration attributes are useful to help prevent cluster instability or degraded performance due
+        to what would normally be considered operational errors. There are times though when they actually hinder
+        system administration. For example:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          Installing a new Node into a cluster, during off hours, with live data. In this case the
+          <code class="code">synchronizationWindow</code> can actually prevent the cluster's synchronization mechanism from doing
+          all the hard work.
+        </li><li class="listitem">
+          Rebuilding data on a (preferred) primary, during off hours, following a manual failover to the DR
+          during the previous day's off hours. In this case, the DR is likely to have the
+          <code class="code">processReplayRequests</code> attribute set to <code class="code">false</code> and therefore will not service the
+          (preferred) primary Node's request to replay data.
+        </li></ul></div><p>
+        For these reasons it is possible to manually override the configured behavior of the above options, when it is
+        safe to do so, in order to temporarily re-enable bi-directional and large data synchronization. This is achieved
+        via the command line. See the <code class="code">cl_replay_on</code>, <code class="code">cl_replay_off</code>, <code class="code">cl_sync_win</code>
+        and <code class="code">cl_restore_defs</code> commands, from the set of available
+        <a href="ch06.html#optfeature_high_availability_operation-consoleCommands" title="6.1.7.6.&nbsp;Console Commands">cluster console commands</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3546"></a>Cluster Site</h4></div></div></div><p>
+        Each Node in the HA cluster belongs to a logical <span class="emphasis"><em>site</em></span>, which in most cases is defined by a
+        physical location. For enterprise environments, it's common to have a local site and a disaster recovery site.
+        The Nodes in a site share the definition for the number (and source) of acknowledgements that are required
+        before a transaction is said to be replicated. This definition is called a <span class="emphasis"><em>write quorum</em></span>
+        specification.
+      </p><p>
+        From the perspective of each Node, its local site is the site to which it belongs, and all others are
+        considered remote sites.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_ha-write-quorum"></a>Write Quorum</h4></div></div></div><p>
+        The write quorum defines the number of explicit acknowledgements that must be received by the primary for each
+        write request before it processes the next write request for the same data set. Requiring a non-zero write
+        quorum therefore implies an additional latency at least equal to the round trip time for the write request and
+        its acknowledgement. Receipt of an acknowledgement to a particular write request implies only that the
+        request has been received by another Node, not necessarily that it has been processed. In general the higher
+        the effective write quorum the higher the certainty that no write requests are lost (i.e. more concurrent
+        system failures can be tolerated). Refer to the
+        <a href="ch06.html#optfeature_high_availability_operation-quorum" title="6.1.7.2.&nbsp;Write Quorum Settings">Write Quorum Settings</a> section which
+        explains how the effective write quorum is calculated based on the configured settings.
+      </p><p>
+        On the other hand, not using the write quorum means that write request replication is on a
+        "best effort" basis only and it is likely (especially in high throughput systems) that secondary Nodes run
+        "behind" the primary Node. In the context of a FIX session, should a failover occur to a secondary Node which
+        is "behind" the old primary the following types of behavior can be observed:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+          When counterparties reestablish the session with the new primary Node it issues a
+          <code class="code">ResendRequest</code> of previously processed messages (on the old primary) due to the most
+          recently received FIX message sequence numbers not being replicated to the new primary at the point of
+          failover. Most FIX applications should be able to handle this because such resent messages always have the
+          <code class="code">PosDupFlag(43)</code> tag set to <code class="code">Y</code> indicating the resend.
+        </li><li class="listitem">
+          Should counterparties send a <code class="code">ResendRequest</code> to the new primary it is possible the
+          request cannot be serviced due to the most recently sent FIX messages not being replicated to the new primary
+          at the point of failover.
+        </li><li class="listitem">
+          Persistent collections may be out of date due to the most recent write requests not being replicated to the
+          new primary at the point of failover.
+        </li></ul></div><p>
+        So there is a trade-off between performance when not using the write quorum versus the integrity
+        of the data when it is in use. The choice of which is more suitable is likely to be environment specific.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_high_availability-Node-single-ip"></a>6.1.5.&nbsp;Single IP Address</h3></div></div></div><p>
+      It is generally desirable for a clustered FIX service to present a single IP address to initiating counterparties
+      to simplify their connection strategy. As mentioned earlier, there are two main methods of achieving this:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        Use of a single virtual IP address (VIP) together with the use of gratuitous ARP (GARP) requests to force
+        synchronization of upstream ARP tables.
+      </li><li class="listitem">
+        Use of an upstream network device (e.g. content switch or load balancer) - generally itself in a
+        redundant configuration - to determine which of the available Nodes is currently the primary and direct IP
+        traffic accordingly.
+      </li></ol></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3572"></a>IP takeover and Gratuitous ARP</h4></div></div></div><p>
+        The first method listed above is implemented using operating system level scripts which are triggered by the HA
+        software at various phases of its role determination lifecycle. Working example scripts of this method on major
+        operating systems are included in the Node distribution under
+        <span class="emphasis"><em>templates/HighAvailability/FailoverScripts</em></span>.
+      </p><p>
+        In the following example, Node 1 starts out in the primary role with Node 2 in a secondary role. It is
+        configured with two IP addresses: the <span class="emphasis"><em>local</em></span> address (192.168.10.50) and the
+        <span class="emphasis"><em>cluster</em></span> address (192.168.10.100), also known as the virtual IP (VIP). The counterparties
+        communicate with this FIX provider via the VIP.
+      </p><div class="mediaobject"><img src="../resources/ha-cluster-vip-1.png"></div><p>
+        Upon failure of the Node 1, Node 2 will takeover the primary role and assume ownership of the VIP. The
+        <code class="code">vip-up.sh</code> (UNIX) or <code class="code">vip-up.bat</code> (Windows) script on Node 2 is executed and sends a GARP
+        request to force synchronization of upstream ARP tables. After this, all message traffic routed to the VIP
+        will be sent to Node 2. As a result of the failover, the counterparty will experience a socket disconnection
+        followed by a reconnection and FIX Logon exchange.
+      </p><div class="mediaobject"><img src="../resources/ha-cluster-vip-2.png"></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3588"></a>Upstream Network Device</h4></div></div></div><p>
+        When an intelligent network device exists, often a load balancer, it is possible for it to determine which of
+        the available Nodes is the current primary and route message traffic accordingly. This is made possible by a
+        fundamental property of the Node lifecycle that guarantees that only components on a primary Node reach their
+        active states. Identical components on the secondary Nodes remain inactive. Similarly, all active components on
+        a primary are deactivated if a manual failover to another Node is initiated.
+      </p><p>
+        In the following example, Node 1 starts out in the primary role with Node 2 in a secondary role. The
+        counterparties communicate with this FIX provider via the IP of the network device. The network device routes
+        traffic to the Node in the primary role. The network device periodically checks the status of the primary. Some
+        ways to accomplish this are: 1. Pinging a port that the primary Node activates. 2. Checking that the primary's
+        process is running. 3. Custom implementation.
+      </p><p>
+        Upon failure of the Node 1, Node 2 will takeover the primary role and assume ownership of the VIP. The
+        <code class="code">vip-up.sh</code> (UNIX) or <code class="code">vip-up.bat</code> (Windows) script on Node 2 is executed and sends a GARP
+        request to force synchronization of upstream ARP tables. After this, all message traffic is routed to the VIP
+        will be sent to Node 2. As a result of the failover, the counterparty will experience a socket disconnection
+        followed by a reconnection and FIX Logon exchange.
+      </p><p>To take advantage of this property, a typical solution is to:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Code a simple
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/util/service/IService.html" target="_top">IService</a>
+          implementation that is also a
+          <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/component/ComponentHelper.html" target="_top">ComponentHelper</a>
+          which only listens (and potentially responds to requests) on a well known port, but ONLY when it is active
+        </li><li class="listitem">Configure the service as a <code class="code">GenericService</code></li></ul></div><p>
+        In this scenario the network device may locate the current primary by simply determining the Node on which the
+        service is active. Further, it can repeat the process periodically in order to detect failure of the current
+        primary.
+      </p></div><p>
+      This, or a similar, technique may be used to have the Node inter-operate with existing clustering environments or
+      third-party clustering implementations.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_high_availability_config"></a>6.1.6.&nbsp;Configuration</h3></div></div></div><p>
+    It is highly recommended that all Nodes in an HA cluster have identical configurations. When a cluster member
+    starts up, it compares its configuration with the other members and will abort if a mismatch is detected. If the
+    <code class="code">allowConfigMismatch</code> attribute on the <code class="code">HighAvailabilityCluster</code> element is set to
+    <code class="code">true</code>, then differences in the non-HA sections of the configuration will be allowed. This option should
+    only be used during testing or in other rare circumstances.
+  </p><div class="note"><h3 class="title">Note</h3><p>
+      Due to significant differences in operating systems, 
+      Catalys Node doesn't support clusters which members are running on machines with different operating systems.
+      In particular, setup in which some part of the cluster runs on Windows and other part on other OS is not allowed. 
+    </p></div><p>
+    If the configuration of a primary Node is modified at runtime (either via Dashboard, JMX or by reloading its
+    modified XML configuration file), then the secondary Nodes automatically synchronize their configuration with that
+    of the primary. If any secondary Node is down while runtime changes are made to the primary, then these changes
+    need to be made manually on the secondary before starting it.
+  </p><div class="note"><h3 class="title">Note</h3><p>
+      The only type of persister that can be used by FIX sessions in an HA cluster is the
+      <code class="code">JournalingPersister</code>. See
+      <a href="ch05.html#stdfeature_persistence" title="5.1.&nbsp;Session Persistence">Session Persistence</a> for configuration details.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="d5e3617"></a>6.1.6.1.&nbsp;Configuration Example and Element Definitions</h4></div></div></div><p>
+      The following example shows an HA configuration with two Nodes at a primary site and one at a disaster recovery
+      site. This configuration is targeted for a Unix platform &#8212; the specified shell scripts perform the ping
+      test and manage the VIP. Sample scripts for Unix and Windows are included in the
+      <span class="emphasis"><em>templates/HighAvailability/FailoverScripts</em></span> directory of the Node distribution.
+    </p><pre class="programlisting">&lt;Config&gt;
+  &lt;Application id="BROKERFIX1"&gt;
+    &lt;HighAvailabilityCluster id="BROKERFIX1_CLUSTER"&gt;
+      &lt;ClusterSite id="PRIMARY"&gt;
+        &lt;ClusterNode id="HUB1" dataVersionId="10" host="192.168.10.50" port="9001"/&gt;
+        &lt;ClusterNode id="HUB2" dataVersionId="20" host="192.168.10.51" port="9002"/&gt;
+        &lt;WriteQuorumSpecification
+          writeQuorumAtLocalSite="1"
+          writeQuorumAtRemoteSites="0"
+          writeQuorumAtAllSites="0"/&gt;
+      &lt;/ClusterSite&gt;
+      &lt;ClusterSite id="DR"&gt;
+        &lt;ClusterNode id="HUB3" dataVersionId="30" host="192.168.11.1" port="9003"/&gt;
+          &lt;WriteQuorumSpecification
+            writeQuorumAtLocalSite="0"
+            writeQuorumAtRemoteSites="0"
+            writeQuorumAtAllSites="0"/&gt;
+      &lt;/ClusterSite&gt;
+      &lt;PrimaryValidityChecks&gt;
+        &lt;PrimaryValidityCheckScript id="pingtest" command="/home/cameron/pingtest.sh"/&gt;
+      &lt;/PrimaryValidityChecks&gt;
+      &lt;BecomingPrimaryActions&gt;
+        &lt;BecomingPrimaryScript id="master" command="/home/cameron/vip-up.sh"/&gt;
+      &lt;/BecomingPrimaryActions&gt;
+      &lt;RelinquishingPrimaryActions&gt;
+        &lt;RelinquishingPrimaryScript id="slave" command="/home/cameron/vip-down.sh"/&gt;
+      &lt;/RelinquishingPrimaryActions&gt;
+    &lt;/HighAvailabilityCluster&gt;
+    &lt;Sessions&gt;
+      ...
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;
+</pre><p>Each of the configuration elements is explained in detail below.</p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3623"></a>HighAvailabilityCluster Element</h5></div></div></div><p>
+          All HA-related configuration is contained under this element. There can only be one of these present per Node
+          instance. You configure the overall settings for your HA cluster on this element. For a complete list of
+          attributes, see the
+          <a href="config_reference.html#config_ref_HighAvailabilityCluster" title="HighAvailabilityCluster">HighAvailabilityCluster Configuration Reference</a>.
+        </p><div class="important"><h3 class="title">Important</h3><p>
+            If you are required to handle large messages in your HA cluster, you must increase the
+            <code class="code">maxClusterMessageSize</code> attribute on the the <code class="code">HighAvailabilityCluster</code> element
+            greater than the size of the largest message. If you attempt to handle a message larger than this value, then
+            you will see <code class="code">DistributedByteArrayStore</code> warnings in your log file and the data will not be
+            replicated.
+          </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3632"></a>ClusterSite Element</h5></div></div></div><p>
+        This element defines a group of Nodes that reside in the same logical site, which usually corresponds to a
+        physical location, e.g. "Data Center #1". For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_ClusterSite" title="ClusterSite">ClusterSite Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3636"></a>ClusterNode Element</h5></div></div></div><p>
+        Each Node in an HA cluster is defined by a <code class="code">ClusterNode</code> element. The <code class="code">host</code>
+        and <code class="code">port</code> attributes represent the network address that other cluster members use to communicate
+        with this Node (these are not necessarily the same IP addresses used for FIX traffic). Automatic failover
+        and other network binding options can also be configured. For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_ClusterNode" title="ClusterNode">ClusterNode Configuration Reference</a>.
+      </p><div class="note"><h3 class="title">Note</h3><p>
+          The <code class="code">dataVersionId</code> attribute is required and must be a unique integer value for each
+          <code class="code">ClusterNode</code> element. The value cannot be modified in between FIX session resets.
+        </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_high_availability_config-writeQuorum"></a>WriteQuorumSpecification Element</h5></div></div></div><p>
+        Write quorum defines the number of acknowledgments the primary Node must receive in order for a persistence
+        update to be considered replicated. There are 3 different write quorum settings for each
+        <code class="code">ClusterSite</code> element: local site, remote site and all sites.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_WriteQuorumSpecification" title="WriteQuorumSpecification">WriteQuorumSpecification Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_high_availability_config-primary-val-checks"></a>PrimaryValidityChecks Element</h5></div></div></div><p>
+        The <code class="code">PrimaryValidityChecks</code> element, which has no attributes, contains a list of one or more checks
+        that a Node executes before it can declare itself the primary Node of a cluster. If any of the checks fail,
+        then it will not declare itself primary.
+      </p><div class="important"><h3 class="title">Important</h3><p>
+          The minimum recommended check is to ping one or several devices on the network, e.g. the default router
+          and/or a device on the other side of the default router. Pinging one of the other members in the cluster is
+          <span class="bold"><strong>not</strong></span> recommended, since this may give a false indication of the Node's
+          network status. Checks are implemented as shell scripts or batch files and are referenced via the
+          <code class="code">PrimaryValidityCheckScript</code>.
+        </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3661"></a>PrimaryValidityCheckScript Element</h5></div></div></div><p>
+        The <code class="code">PrimaryValidityCheckScript</code> element refers to a shell script or batch file that is executed
+        before the Node attempts to become primary. The script must return 0 if successful. If any of the configured
+        scripts return a non-zero value, then the Node will not declare itself as the primary in the cluster.
+        At least one check must be configured.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_PrimaryValidityCheckScript" title="PrimaryValidityCheckScript">PrimaryValidityCheckScript Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_ha_config-ping"></a>Ping Primary Validity Check Element</h5></div></div></div><p>
+        One of the primary validity checks that can be configured is a ping command. This command
+        pings one or more IP addresses to make sure that the Node is still connected to the
+        network. If the server fails to successfully ping any of the addresses it will not declare
+        itself primary.
+      </p><p>
+        The <code class="code">Ping</code> element can contain one or more <code class="code">Destination</code> elements which contain
+        a single <code class="code">host</code> attribute whose value is the IP or host of the server to ping. For a complete list
+        of attributes, see the
+        <a href="config_reference.html#config_ref_Ping" title="Ping">Ping Configuration Reference</a>.
+      </p><pre class="programlisting">&lt;PrimaryValidityChecks&gt;
+  &lt;Ping id="ping"&gt;
+    &lt;Destination host="192.168.100.1" /&gt;
+  &lt;/Ping&gt;
+&lt;/PrimaryValidityChecks&gt;</pre><p>
+        There are some <a href="ch06.html#optfeature_high_availability_operation-pingLimitations" title="6.1.7.5.&nbsp;Limitations of the Built-In Ping Validity Check">limitations</a>
+        to consider when using the <code class="code">Ping</code> check.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_high_availability_config-becoming-primary-actions"></a>BecomingPrimaryActions Element</h5></div></div></div><p>
+        Once a Node has successfully passed all of its primary validity checks, it has the option of executing a series
+        of actions. Most commonly this is used to take control of the cluster's virtual IP address.
+      </p><p>This element has no attributes.</p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3683"></a>BecomingPrimaryScript Element</h5></div></div></div><p>
+        The <code class="code">BecomingPrimaryScript</code> element refers to a shell script or batch file that is executed
+        when the Node becomes primary. The script must return 0 if successful. If any of the configured
+        scripts return a non-zero value, then the Node will not declare itself as the primary.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_BecomingPrimaryScript" title="BecomingPrimaryScript">BecomingPrimaryScript Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_high_availability_config-relinquishing-primary-actions"></a>RelinquishingPrimaryActions Element</h5></div></div></div><p>
+        When a Node is changing its role from primary to secondary, in addition to the relinquishing actions the node
+        will perform, it has the option of executing a series of custom actions. Most commonly this is used to
+        relinquish control of the cluster's virtual IP address.
+      </p><p>
+        For configurations and operating systems where IP takeover cannot occur without the IP address being
+        explicitly relinquished, the LMA may need to run the Relinquishing Primary Actions. For more details, see
+        <a href="ch06.html#optfeature_high_availability_config-lmaPiggyBack" title="Using the LMA to Relinquish Primary Actions">Using the LMA to Relinquish Primary Actions</a>.
+      </p><p>
+        In the scenario where the host on which the Node is running goes down and comes up again, the Node's
+        Relinquishing Primary Actions script will not run. This will mean that the IP address of the cluster is not
+        explicitly relinquished, and in some cases on some operating systems, the cluster IP address cannot be
+        acquired by the new primary.
+      </p><p>
+        In some cases it may be necessary to run the Relinquishing Primary Actions at system startup. This ensures that
+        the network remains in a consistent state in the situation where the hardware on which the host is running goes
+        down and comes back up again. On Unix this can be achieved using an <span class="emphasis"><em>init.d</em></span> entry, and on
+        Windows by using a service.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3697"></a>RelinquishingPrimaryScript Element</h5></div></div></div><p>
+        The <code class="code">RelinquishingPrimaryScript</code> element refers to a shell script or batch file that is executed
+        when the Node transitions from primary to secondary. The script must return 0 if successful. If any of the
+        configured scripts return a non-zero value, the Node will proceed with relinquishing its role as primary but
+        will subsequently shut down.
+      </p><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_RelinquishingPrimaryScript" title="RelinquishingPrimaryScript">RelinquishingPrimaryScript Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="optfeature_high_availability_config-lmaPiggyBack"></a>Using the LMA to Relinquish Primary Actions</h5></div></div></div><p>
+        In the scenario where a Node has become unresponsive but is still running, its Relinquishing Primary Actions
+        script may not run. This may mean that the IP address of the cluster is not relinquished, and in some cases on
+        some operating systems, the virtual IP of the cannot be acquired by the new primary.
+      </p><p>
+        In this case the LMA can be used to run the Relinquishing Primary Actions script on the old primary host, as
+        well as kill the unresponsive application.
+      </p><p>
+        To do this, configure a custom <code class="code">pgrep</code> command on the LMA, which includes both finding the primary
+        application and relinquishing the IP address. That is, append the commands that relinquish the IP address to
+        the standard <code class="code">pgrep</code> command.
+      </p><p>
+        To configure a custom <code class="code">pgrep</code> command, refer to "Specifying Custom pgrep and pkill Commands" in the
+        Configuration chapter of the LMA documentation.
+      </p></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_high_availability_operation"></a>6.1.7.&nbsp;High Availability Operations</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_operation-startup"></a>6.1.7.1.&nbsp;Starting an HA Node</h4></div></div></div><p>
+      When starting up a Node that is part of an HA cluster, there is an additional required application argument,
+      <code class="code">-clusterNode</code>, which identifies the Node in the cluster that is being started. The value of the
+      argument must match the <code class="code">id</code> attribute of one of the <code class="code">ClusterNode</code> elements.
+    </p><pre class="programlisting">java -cp "../lib/catalys-node.jar:../resources" com.camerontec.catalys.server.CatalysServer \
+     -xmlconfig config.xml -clusterNode HUB1</pre></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_operation-quorum"></a>6.1.7.2.&nbsp;Write Quorum Settings</h4></div></div></div><p>
+      The number of configured acknowledgements must be strictly less than the number of Nodes in the cluster
+      (or less than or equal to the number of secondary Nodes in the cluster, since there is a maximum of one
+      acknowledgement per secondary Node). The number of configured acknowledgements is the sum of all of the
+      writeQuorums. That is:
+
+      <code class="code">writeQuorumAtLocalSite</code> + <code class="code">writeQuorumAtRemoteSites</code> + <code class="code">writeQuorumAtAllSites</code>
+      &lt; N (where N is the number of Nodes in the cluster).
+    </p><p>
+      The number of required acknowledgements depends on how many secondary Nodes are actually up and running
+      in the cluster. The maximum number of required acknowledgements is equal to the number of secondary Nodes
+      present. If some of the secondary Nodes are not running then they cannot count towards the quorum, and their
+      contribution is thus removed from their quorum specification (whether they are local or remote).
+    </p><p>
+      The <code class="code">writeQuorumAtAllSites</code> value allows the acknowledgement to come from either the local or remote
+      site(s).
+    </p><p>In general, the following guidelines can be used:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        If there is no requirement for acknowledgements, set all three write quorum attributes to <code class="code">0</code>.
+      </li><li class="listitem">
+        To require acknowledgements from all secondary Nodes, set <code class="code">writeQuorumAtLocalSite</code> to one less than
+        the number of local Nodes, <code class="code">writeQuorumAtRemoteSites</code> to the number of remote Nodes, and
+        <code class="code">writeQuorumAtAllSites</code> to <code class="code">0</code>.
+      </li><li class="listitem">
+        To require any one Node to acknowledge, set <code class="code">writeQuorumAtLocalSite</code> and
+        <code class="code">writeQuorumAtRemoteSites</code> to <code class="code">0</code>, and set <code class="code">writeQuorumAtAllSites</code> to
+        <code class="code">1</code>.
+      </li></ul></div><p>
+      When there are two Nodes in the same <code class="code">ClusterSite</code>:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        If there is no requirement for acknowledgements, set all three write quorum attributes to <code class="code">0</code>.
+      </li><li class="listitem">
+        Otherwise, set either <code class="code">writeQuorumAtLocalSite</code> or <code class="code">writeQuorumAtAllSites</code> to
+        <code class="code">1</code>.
+      </li></ul></div><p>
+      When there are two Nodes in one <code class="code">ClusterSite</code> and one Node in another <code class="code">ClusterSite</code>:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        If there is no requirement for acknowledgements, set all three write quorum attributes to <code class="code">0</code>.
+      </li><li class="listitem">
+        If data safety is more important than performance, set <code class="code">writeQuorumAtLocalSite</code> and
+        <code class="code">writeQuorumAtRemoteSites</code> to <code class="code">0</code> and <code class="code">writeQuorumAtAllSites</code> to
+        <code class="code">1</code>. If the local secondary goes down, the primary will wait for acks from the remote Node.
+      </li><li class="listitem">
+        If performance is more important than data safety, set <code class="code">writeQuorumAtLocalSite</code> to <code class="code">1</code>
+        and <code class="code">writeQuorumAtRemoteSites</code> and <code class="code">writeQuorumAtAllSites</code> to <code class="code">0</code>. If the
+        local secondary goes down, the primary will not wait for acks from the remote Node
+      </li><li class="listitem">
+        If there is a requirement for two acknowledgements and there are two secondary Nodes available, set
+        the three write quorum attributes such that the values add up to 2.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability-sequenceNumbers"></a>6.1.7.3.&nbsp;Sequence Numbers on Primary and Secondary Nodes</h4></div></div></div><p>The manner in which sequence numbers are reported differs on primary and secondary Nodes.</p><p>
+      On the primary, the next expected sequence number is reported, whereas on secondary Nodes, the last processed
+      sequence number is reported.
+    </p><p>
+      Consequently the reported sequence number on secondary Nodes can lag behind the reported sequence number on the 
+      primary. The amount by which it lags is determined by the number of messages yet to be processed. The lag is most 
+      commonly one.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_operation-timeouts"></a>6.1.7.4.&nbsp;Consequences of Timeout of Checks and Actions</h4></div></div></div><p>
+      If any of the timeouts (<code class="code">primaryValidityChecksTimeout</code>, <code class="code">becomingPrimaryActionsTimeout</code>
+      or <code class="code">relinquishing&shy;PrimaryActionsTimeout</code>) are exceeded, then the checks or actions that were
+      being executed (<code class="code">Primary&shy;ValidityChecks</code>, <code class="code">Becoming&shy;PrimaryActions</code>,
+      <code class="code">Relinquishing&shy;PrimaryActions</code>) are interrupted.
+    </p><p>
+      For actions that consist of running external commands, once the timeout is reached, the external process is
+      forcibly killed and is assumed to have returned with an exit value of -1.
+    </p><p>
+      Actions implemented in Java are executed in a dedicated thread. Once the timeout is reached, this thread is
+      interrupted (through a call to <code class="code">Thread.interrupt()</code>). It is therefore important that the action's
+      implementation handles <code class="code">InterruptedException</code> properly (i.e. stops executing as soon as an
+      <code class="code">InterruptedException</code> is caught). If an action's implementation ignores such interruptions (typically
+      by catching and swallowing), the action's executing thread will keep running forever, which will effectively
+      prevent the server from being able to change its role again later (because action threads are obtained from a
+      thread pool of size one).
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_operation-pingLimitations"></a>6.1.7.5.&nbsp;Limitations of the Built-In Ping Validity Check</h4></div></div></div><p>
+      The <a class="code" href="ch06.html#optfeature_ha_config-ping" title="Ping Primary Validity Check Element">Ping</a> validity check is implemented using Java's
+      <a class="code" href="http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable(int)" target="_top">InetAddress.isReachable()</a>
+      method which has a number of limitations due to Java's lack of built-in support for raw sockets (ICMP is layered
+      on top of IP, whereas Java only provides TCP or UDP sockets).
+    </p><p>
+      For that reason, this implementation does its best effort to make use of the platform's built-in
+      <code class="code">ping</code> command/library, if one is available, and if sufficient privileges can be obtained for that.
+    </p><p>
+      If such a library is not available, the implementation resorts to sending a message to the TCP Echo service
+      (port 7) on the specified host and seeing if a response comes back. This is very different from actual ICMP-based
+      ping because the Echo service typically only runs on Unix workstations and servers, not on routers or switches.
+    </p><p>The situation varies with the platform the JVM is running on:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        On Unix, the implementation tries to execute the system's <code class="code">ping</code> command, which will only succeed if
+        the JVM is run as root (because <code class="code">ping</code> requires root privileges). If the JVM is not run as root,
+        then a request is sent to the TCP Echo service.
+      </li><li class="listitem">
+        On Windows, the implementation does not make use of the platform's ping DLL and therefore always sends a
+        request to the TCP Echo service.
+      </li></ul></div><p>
+      In practice, it means that if the destination host of the <code class="code">Ping</code> validity check does not have a
+      TCP Echo service running, the check will always fail unless the JVM is running as root on a Unix system.
+    </p><p>For all those cases where the built-in HA ping cannot be used, there are two alternatives:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Use a <a class="code" href="ch06.html#optfeature_high_availability_config-primary-val-checks" title="PrimaryValidityChecks Element">PrimaryValidityCheckScript</a>
+        element instead, and write a shell script or batch file that makes use of the system's <code class="code">ping</code> command.
+      </li><li class="listitem">
+        Write a custom implementation in Java and specify it as a
+        <a class="code" href="config_reference.html#config_ref_GenericPrimaryValidityCheck" title="GenericPrimaryValidityCheck">GenericPrimaryValidityCheck</a> in the
+        configuration.
+      </li></ul></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_operation-consoleCommands"></a>6.1.7.6.&nbsp;Console Commands</h4></div></div></div><p>
+      The following HA commands can be issued from the
+      <a href="ch04s02.html#operations_monitoring-command-line" title="4.2.2.&nbsp;Command-Line Interface">Command Line</a>.
+    </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody><tr><td>cl_list</td><td>List all the Nodes in the HA cluster and their current state.</td></tr><tr><td>cl_primary</td><td>
+              Force the current Node to become the primary in the HA cluster. This will first force the current
+              primary to release the primary lock.
+            </td></tr><tr><td>cl_shutdown &lt;true|false&gt;</td><td>
+              This command with <code class="code">true</code>, only shuts down the local Node, with <code class="code">false</code> it shuts
+              down all Nodes in the HA cluster. Defaults to <code class="code">false</code>.
+            </td></tr><tr><td>cl_replay_on</td><td>
+              Force the current Node to process replay requests from other Nodes, regardless of configuration.
+              This command can be used on a disaster recovery (DR) Node after manually failing over to that DR Node,
+              and some processing happened. A DR Node is typically configured not to process replay requests from
+              other Nodes by default, which means that attempting to bring any other Node online will fail because it
+              cannot synchronize. This command provides a way to temporarily override the DR's replay response
+              processing state to allow other Nodes to be brought back online in a controlled manner.
+
+              <p>
+                This command must be used with care, since it will cause data on other cluster Nodes to be replaced 
+                by that of the local Node.
+              </p>
+              
+              <p>
+                Note that the replay request processing override state is not persisted and not replicated to other
+                Nodes. If the Node is restarted its configured state will be re-instated.
+              </p>
+            </td></tr><tr><td>cl_replay_off</td><td>
+              <p>
+                Prevent the current Node from processing replay requests from other Nodes, regardless of configuration.
+                This command is typically used on a disaster recovery (DR) site to restore the default behaviour after
+                using the <code class="code">cl_replay_on</code> command to allow other Nodes to be brought back online.
+              </p>
+
+              <p>
+                Note that the replay request processing override state is not persisted and not replicated to other
+                Nodes. If the Node is restarted its configured state will be re-instated.
+              </p>
+            </td></tr><tr><td>cl_sync_win &lt;window size&gt;</td><td>
+              <p>
+                Set the synchronization window on this Node to the specified size. A size of 0 means an unlimited size,
+                which implies there is no limit placed on the size of the synchronization data set.
+              </p>
+
+              <p>
+                Note that the new synchronization window size is not persisted and not replicated to other
+                Nodes. If the Node is restarted its configured state and window size will be re-instated.
+              </p>
+            </td></tr><tr><td>cl_restore_defs</td><td>
+              <p>
+                Restores the default (i.e. configured) values for the replay processing state and the synchronization
+                window. After making manual changes, it is recommended to use this command to restore the defaults.
+                A Node restart has the same effect.
+              </p>
+            </td></tr></tbody></table></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_operation-lma"></a>6.1.7.7.&nbsp;Using the Local Management Agent (LMA)</h4></div></div></div><p>
+      In High Availability configurations, the LMA is utilized to ensure a greater level of reliability.
+    </p><p>
+      During failover, the Node that is the new primary candidate confirms that the previous primary is not running.
+      If it is running, but has become unresponsive, the process is killed by the LMA. This is referred to as
+      <span class="emphasis"><em>LMA-kill</em></span>.
+    </p><p>
+      In addition, if the <code class="code">becomePrimaryWithoutLMAConfirmation</code> attribute of the
+      <code class="code">HighAvailabilityCluster</code> element is set to <code class="code">false</code> but the LMA cannot be contacted or
+      cannot kill the application, then the failover will not succeed. This guards against the split-brain scenario
+      (more than one Node becoming primary) in an unreliable network.
+    </p><div class="note"><h3 class="title">Note</h3><p>To utilize the LMA-kill feature, the LMA must be at version 2.0 or later.</p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3871"></a>Application ID Attribute</h5></div></div></div><p>
+         In order for the LMA-kill feature to work, all applications in a cluster need to have the same ID.
+         At startup, the local application ID is compared with those of remote cluster Nodes and a
+         warning is given if any difference is found. This is necessary because secondary Nodes must be able to
+         construct the JMX object name of the application MBean exposed by the primary LMA (the MBean on which the
+         <code class="code">kill</code> operation will be invoked). This MBean's name contains the application ID.
+       </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3875"></a>PID Registration</h5></div></div></div><p>
+        An additional requirement for this feature to work is that each server must register its PID (process ID) with
+        the LMA. This is done by default if the server is running on Unix, or on Windows with an Oracle JVM. If the
+        operating system is Windows and the JVM is not Oracle, a custom command to retrieve the PID is always
+        required.
+      </p><p>
+        This is configured using <code class="code">getPIDCommand</code> attribute of the <code class="code">JMXManagementService</code>.
+      </p><p>
+        The recommended implementation of the <code class="code">getPIDCommand</code> is a small utility called
+        <span class="emphasis"><em>getpids.exe</em></span> that is
+        <a href="http://www.scheibli.com/projects/getpids/" target="_top">freely available for download</a>.
+        This utility is not included in the Node distribution.
+      </p><p>
+        Below is a configuration extract that shows how to pass a custom command that makes use of this utility to the
+        <code class="code">JMXManagementService</code>. It is assumed that <span class="emphasis"><em>getpids.exe</em></span> is in the
+        <code class="code">%Path%</code>.
+      </p><pre class="programlisting">&lt;Services&gt;
+  &lt;GenericService
+    class="com.camerontec.catalys.server.management.JMXManagementService"
+    id="JMXManagementService"&gt;
+    &lt;Properties id="JMXManagementServiceProperties"&gt;
+      &lt;Property
+        name="getPIDCommand"
+        value="for /F &amp;quot;usebackq tokens=2&amp;quot; %p in (`getpids.exe`); do @echo %p" /&gt;
+    &lt;/Properties&gt;
+  &lt;/GenericService&gt;
+&lt;/Services&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e3890"></a>Custom LMA Commands</h5></div></div></div><p>
+        It is also possible to alter the LMA's configuration in order to specify custom commands for locating and
+        killing processes. For most scenarios this is not recommended, but one situation where this might be necessary
+        is described in
+        <a href="ch06.html#optfeature_high_availability_config-lmaPiggyBack" title="Using the LMA to Relinquish Primary Actions">Using the LMA to Relinquish Primary Actions</a>.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_operation-known-issues"></a>6.1.7.8.&nbsp;Known Issues</h4></div></div></div><p>
+      A secondary Node trying to synchronize when the primary is under a very heavy load can potentially run out of
+      memory. When synchronizing against the rest of the cluster, the Node buffers replicated writes coming from the
+      primary in an in-memory queue. Once synchronization is done, the contents of that queue are replayed.
+    </p><p>
+      Although data synchronization was designed to be very fast, there are cases where it can take a long time to 
+      complete. For example, adding a new Node with empty persistence to a cluster that has already processed a
+      lot of data will result in a long synchronization. This should be avoided in general, because doing this will
+      likely impact the performance of the cluster. There are however some situations where it may be desirable to
+      do it.
+    </p><p>
+      Because the in-memory queue of replicated writes is not bounded, it will keep growing for the entire duration of 
+      the synchronization. Depending on the kind of traffic that the primary is processing when that happens, it is 
+      possible that this queue causes the late-joining cluster Node to run out of memory.
+    </p><p>
+      Should this happen, the recommended approach is to stop the late-joining cluster Node and to only attempt to 
+      bring it on-line when the primary is under a more reasonable load.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="optfeature_high_availability_comms"></a>6.1.8.&nbsp;High Availability Communications</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_comms-intro"></a>6.1.8.1.&nbsp;Introduction</h4></div></div></div><p>
+      The High Availability (HA) communications subsystem is at the base of the HA stack and therefore forms the basis
+      on which the remainder of the solution is built. In order to configure the cluster for your particular environment
+      it is important to understand how the communications subsystem operates. This section is designed to provide the
+      required understanding and guidance towards the configuration appropriate for your environment and cluster
+      characteristics.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_comms-context"></a>6.1.8.2.&nbsp;Context</h4></div></div></div><p>The internal HA services layered on top of the communications system are:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Group Membership Protocol: The group membership protocol allows each Node to
+        broadcast its presence and its current role. The protocol is implemented as a periodic broadcast of local state
+        (here the term <span class="emphasis"><em>broadcast</em></span> simply means that each Node sends its role state to all other
+        Nodes - no particular underlying transport is implied). The periodicity is low so that bandwidth requirements
+        are minimal.
+      </li><li class="listitem">
+        HA Control Operations: There are many operations which occur at startup, on
+        demand and when certain error conditions are detected. Such operations are typically point to point and once
+        the system is in steady state do not occur very often. Bandwidth requirements are low.
+      </li><li class="listitem">
+        Data Replication: Data written to any distributed collection (i.e. any
+        collection obtained via the
+        <a class="javadoc" href="../javadoc/com/camerontec/catalys/server/collection/CollectionRegistryService.html" target="_top">CollectionRegistryService</a>
+        when running in HA mode) is both persisted to the local disk and replicated to other cluster Nodes. The
+        frequency of updates is directly proportional to the total number of collection updates, which can be very high
+        in a loaded system. Therefore, the bandwidth requirements of this service can be very high. In addition,
+        observed application latency depends on data replication and acknowledgement (if required) latency so it is
+        important that this is minimized.
+      </li><li class="listitem">
+        Data Synchronization: Whenever a Node joins the cluster or a distributed
+        collection is detectably out of sync with the master Node, data synchronization occurs. A dedicated
+        (distributed) state machine exists per collection to control this and in particular determine the most
+        efficient means of synchronization. The goal is always that synchronization time is proportional to the outage
+        time (i.e. the number of missed writes) rather than the size of the collection itself. When the underlying
+        network is solid, this does not happen very often. When it does happen, however, it is potentially disruptive
+        to the running cluster especially if it is under high load and the Node being synchronized as a long way out of
+        date. Traffic of this type therefore typically occurs in bursts.
+      </li></ul></div><p>There are therefore two primary classes of traffic with quite different characteristics:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">Control traffic: low bandwidth, low periodic or demand based</li><li class="listitem">Data traffic: high bandwidth, high frequency</li></ol></div><p>
+    </p><p>
+      The HA communications subsystem is therefore designed to take these different types of traffic into consideration
+      while at the same time being scalable to a reasonable number of cluster Nodes.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_comms-discovery"></a>6.1.8.3.&nbsp;Discovery</h4></div></div></div><p>
+      Before the communications subsystem is ready to support HA services it must first establish communications
+      channels with all other cluster Nodes. When a particular cluster Node starts up it has access to the HA
+      configuration and therefore knows which other Nodes it should be able to find. It cannot, however, make any
+      assumptions about which other HA Nodes are actually running. The first step in the discovery process, therefore,
+      is for each cluster Node to initiate a TCP connection with every other configured cluster Node. In the normal
+      case there are two TCP connections between each cluster Node (i.e. one initiated by each Node). We know there
+      are two primary classes of traffic to support, so both TCP connections are retained and each assigned to a
+      designated traffic class. This process is known as channel role assignment and a simple, deterministic,
+      handshake occurs in order to facilitate it. Once this has occurred the cluster Nodes regard both channels as being
+      available for use by higher level services.
+    </p><p>
+      All messages thereafter are sent on the appropriate channel for their traffic class. The mapping of which messages
+      are sent over which channel is the domain of the communications subsystem itself. The rule is very simple though:
+      only data writes and synchronization requests and responses are sent over the data channel. Everything else is
+      sent over the control channel. It should never be the case that a control message suffers process delay due to
+      high data throughput because this has a potentially destabilizing effect on the cluster itself.
+    </p><p>
+      Using two TCP connections to carry all HA communications traffic is the default situation. As is discussed
+      in the <a href="ch06.html#optfeature_high_availability_comms-multicast" title="6.1.8.5.&nbsp;Multicast-based Data Replication">Multicast-based Data Replication</a>
+      section below, it is also possible to enable multicast for data synchronization. Whether this is the best option
+      depends a lot on the number of Nodes in the cluster, whether datagrams propagate to all Nodes, the path MTU and
+      the quality of the underlying network.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_comms-stacks"></a>6.1.8.4.&nbsp;Stacks</h4></div></div></div><p>
+      The HA communications subsystem consists of two, logically distinct, asynchronous, bi-directional stacks:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">Control</li><li class="listitem">Data</li></ol></div><p>The outbound path of each stack has the following (simplified view of) components:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Higher layer threads (of which there could be many) sending messages. Serialization occurs on the sender's
+        thread.
+      </li><li class="listitem">A buffer for storing serialized outbound messages.</li><li class="listitem">
+        A single buffer consumer thread for writing serialized message to the appropriate channels. Depending on which
+        transports are enabled, multiple writes may be required for a single message (e.g. writing data messages to
+        multiple slave Nodes via TCP).
+      </li></ul></div><p>The inbound path of each stack has the following (simplified view of) components:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        A single thread which handles all channel reads for a particular channel role. That is, reading from all
+        control or data channels associated with all other Nodes. Note that this thread, when required, is also
+        responsible for sending write request acknowledgement messages.
+      </li><li class="listitem">A buffer for storing serialized inbound messages.</li><li class="listitem">
+        A single buffer consumer thread for notifying channel subscribers (which are normally higher layer services)
+        of inbound messages. Each subscriber is responsible for deserializing its own messages.
+      </li></ul></div><p>
+      With the design implied above, it is clear that the threading model is fixed regardless of the number
+      of Nodes in the cluster. Specifically, we have:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Two writer threads (one for each of Control and Data stacks)</li><li class="listitem">Two reader threads (one for each of Control and Data stacks)</li><li class="listitem">Two notifier threads (one for each of Control and Data stacks)</li></ul></div><p>
+      In addition there is another slow periodic controller thread which is responsible for channel health monitoring
+      and recovery. Therefore we have seven threads in total performing all HA communications subsystem work, however,
+      not all threads are equal. In particular, observed application performance is likely to be maximized when:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        The data writer buffer is sufficiently large so that higher layer writer threads are never blocked awaiting free
+        space.
+      </li><li class="listitem">
+        The data writer thread is configured with an appropriate buffer wait strategy for the expected throughput. A
+        blocking strategy may be acceptable if there is always expected to be some load on the system, however, to
+        try to guard against context switch latency after quiet periods a busy/spin strategy is more appropriate.
+        If a busy/spin buffer wait strategy is used, the data writer thread should also be bound to an isolated CPU
+        core.
+      </li><li class="listitem">
+        The data reader thread is configured with an appropriate I/O multiplexing strategy. Again, a blocking strategy
+        may be acceptable if there is always expected to be some load on the system, however, to try to guard against
+        context switch latency after quiet periods, a busy/spin strategy is more appropriate. If a busy/spin I/O
+        multiplexing strategy is used, the data reader thread should also be bound to an isolated CPU core.
+      </li><li class="listitem">
+        The data notification buffer is sufficiently large so that the data reader thread is never forced to wait for
+        a free slot. Note that in steady state the data notification buffer need only be as large as the data write
+        buffer, however, to also cope with bursts associated with (unexpected) data synchronization it is recommended
+        to allocate a much larger data notification buffer. The default is two orders of magnitude larger.
+      </li></ul></div><p>
+      Obviously data serialization costs are also extremely relevant to observed application performance,
+      however, they are not considered to be part of the communications subsystem so not directly relevant to
+      this section.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="optfeature_high_availability_comms-multicast"></a>6.1.8.5.&nbsp;Multicast-based Data Replication</h4></div></div></div><p>
+      Where the environment permits it is possible to configure the system to perform data replication over multicast.
+      In order to do this it is necessary to configure both the
+      <a href="config_reference.html#config_ref_HighAvailabilityCluster_multicastAddress"><code class="code">multicastAddress</code></a> and
+      <a href="config_reference.html#config_ref_HighAvailabilityCluster_multicastPort"><code class="code">multicastPort</code></a> on the
+      <a href="config_reference.html#config_ref_HighAvailabilityCluster" title="HighAvailabilityCluster"><code class="code">HighAvailabilityCluster</code></a> element.
+    </p><p>
+      There are a number of additional considerations which become important in this case:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">Do datagram packets propagate to all cluster Nodes or only Nodes in the main site?</li><li class="listitem">
+        If datagram packets <span class="bold"><strong>do not</strong></span> propagate to Nodes outside the main site, then how many such
+        Nodes exist?
+      </li><li class="listitem">
+        Is the <a href="config_reference.html#config_ref_WriteQuorumSpecification" title="WriteQuorumSpecification">write quorum specification</a> in the main site
+        being used (i.e. are any of them non-zero)?
+      </li><li class="listitem">
+        What is the path MTU between the primary Node and all other Nodes which can receive datagram packets?
+      </li></ol></div><p>
+      If the network permits datagrams to Nodes outside the primary site it may be necessary to configure the
+      <a href="config_reference.html#config_ref_HighAvailabilityCluster_multicastTimeToLive"><code class="code">multicastTimeToLive</code></a>
+      attribute such that the packet does not expire before they reach the desired Nodes.
+    </p><p>
+      It is still possible to use multicast based replication if datagram packets do not propagate to non-primary site
+      Nodes by enabling
+      <a href="config_reference.html#config_ref_HighAvailabilityCluster_passiveSiteReplication">passive site replication</a>.
+      In this mode all Nodes outside the primary site periodically request synchronization from the lowest priority Node
+      in the primary site. This places a lot of additional load on that Node and so the effectiveness of this approach
+      depends on how many such Nodes exist. Ultimately, if there are many Nodes outside the primary site which do not
+      receive datagram packets and the system sustains high throughput, multicast may not be the best option.
+    </p><p>
+      Explicit data write request acknowledgements are still sent (and expected to be sent) whenever the effective
+      write quorum is non-zero. Acknowledgements to write requests received over multicast are sent to the originator
+      over unicast. Network load is still reduced, however, in general multicast works best when write acknowledgements
+      are disabled.
+    </p><p>
+      Neither fragmentation nor packet loss nor any other issues inherently associated with datagram based traffic are
+      handled explicitly. Rather the following trade-offs are in place:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        In order to avoid packet fragmentation and associated issues, the system is configured in advance with the
+        maximum allowed MTU. Whenever the length of a data write request exceeds this it is sent over TCP instead of
+        multicast. Fortunately, modern hardware typically supports path MTUs which make typical data packets (e.g.
+        FIX messages) less likely to be fragmented. It is recommended to measure the path MTU and configure the
+        <a href="config_reference.html#config_ref_HighAvailabilityCluster_maxDatagramSize"><code class="code">maxDatagramSize</code></a>
+        accordingly.
+      </li><li class="listitem">
+        Any transport based on UDP is subject to packet loss. Apart from the quality of the network, the most important
+        parameter which can be used to minimize packet loss is the receiver's
+        <a href="config_reference.html#config_ref_HighAvailabilityCluster_udpReceiveBufferSize"><code class="code">udpReceiveBufferSize</code></a>.
+        This should be configured to be as large as the host OS permits. Note that it may be necessary to tune the host
+        OS to allow large buffers. The system will not start unless the OS actually allocates a buffer of the requested
+        size.
+      </li><li class="listitem">
+        Although the HA communications subsystem itself does not support retries for lost datagrams, this is handled
+        at a higher layer by each distributed collection's state machine. That is, a single lost packet at the level of
+        the communications subsystem only affects a single collection and not all subsequent packets. The state machine
+        then takes steps to achieve distributed collection synchronization via the most efficient means. Another
+        advantage of this approach is that the same detection and correction scheme is used regardless of the underlying
+        transport.
+      </li></ul></div></div></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s09.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.9.&nbsp;Message Factories&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.2.&nbsp;Catalys Rules Engine</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:37+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

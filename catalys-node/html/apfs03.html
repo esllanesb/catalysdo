@@ -1,0 +1,32 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; F.3.&nbsp;Session Management MBeans</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="apf.html" title="Appendix&nbsp;F.&nbsp;JMX MBean Reference"><link rel="prev" href="apfs02.html" title="F.2.&nbsp;Server Management MBeans"><link rel="next" href="apg.html" title="Appendix&nbsp;G.&nbsp;Third-Party Software"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="apfs02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Appendix&nbsp;F.&nbsp;JMX MBean Reference</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="apg.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="d5e34671"></a>F.3.&nbsp;Session Management MBeans</h2></div></div></div><p>
+      Session information accounts for some of the most relevant monitoring information provided by the JMX API. From
+      an operational perspective, session monitoring focuses on the following data:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Connectivity operational data</li><li class="listitem">FIX protocol operational data</li><li class="listitem">Session configuration data and properties</li></ul></div><p>Session MBeans are available at:</p><pre class="programlisting">com.camerontec:name="&lt;sessionName&gt;",
+Host="localhost",
+type="Host.CatalysServer.Session",
+CatalysServer="&lt;serverName&gt;"</pre><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34680"></a>Connectivity Management</h3></div></div></div><p>
+       The first aspect of session monitoring relates to the physical and logical connectivity, so as to answer
+       the following questions:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Is the session connected? (i.e. Transport-level handshake is present)</li><li class="listitem">Is the session blocked? (i.e. Support has enforced a suspension on this session</li><li class="listitem">Is the session in schedule? (i.e. Is it expected to be running at this time?)</li></ul></div><p>
+        The <code class="code">active</code>, <code class="code">status</code>, <code class="code">blocked</code> and <code class="code">inSchedule</code> attributes can
+        provide this information.
+      </p><p>
+        A number of operations are also exposed, including <code class="code">reset</code>, <code class="code">block</code> and
+        <code class="code">unblock</code>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34696"></a>FIX Protocol Management</h3></div></div></div><p>
+        The <code class="code">inMsgSeqNum</code>, <code class="code">outMsgSeqNum</code> and <code class="code">lastResetTime</code> provide
+        pertinent details about the state of the FIX protocol.
+      </p><p>
+        The <code class="code">reset</code> and <code class="code">changeSequenceNumbers</code> operations can use used to manually
+        adjust the FIX protocol state as necessary.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a name="d5e34705"></a>Custom Properties</h3></div></div></div><p>
+        Like the application-level custom properties described earlier, a session can also be configured with such
+        properties. These can be nested as <code class="code">Properties</code> under the <code class="code">Session</code> element, and
+        are available via the session MBean as the <code class="code">userDefinedProperties</code> attribute.
+      </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="apfs02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="apf.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="apg.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">F.2.&nbsp;Server Management MBeans&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Appendix&nbsp;G.&nbsp;Third-Party Software</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:52+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

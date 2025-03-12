@@ -1,0 +1,204 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 5.3.&nbsp;FIX Routing</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch05.html" title="Chapter&nbsp;5.&nbsp;Standard Features"><link rel="prev" href="ch05s02.html" title="5.2.&nbsp;Scheduling"><link rel="next" href="ch05s04.html" title="5.4.&nbsp;FIX Drop Copy"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch05s02.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;5.&nbsp;Standard Features</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05s04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="stdfeature_routing"></a>5.3.&nbsp;FIX Routing</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_routing-introduction"></a>5.3.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Node can be configured as a FIX message router. In this setup, the Node receives FIX messages on one or more
+      sessions and sends them out a different session. There are a number of routing configuration options and
+      several methods by which to make routing decisions and apply them to a given message.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_routing-config-options"></a>5.3.2.&nbsp;Routing Modes</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2854"></a>Session-Group Routing</h4></div></div></div><p>
+        This is the most common routing mode.  Sessions are placed in two separate groups, and messages arriving on a
+        session in one group can only be routed to a session in the other group and vice versa.
+      </p><div class="mediaobject"><img src="../resources/SessionGroupRouting.png"></div><p>
+        This is a typical setup for brokers. They place client sessions in one group
+        and exchange and execution venue sessions in the other group. Client sessions
+        receive order messages (orders, replaces, cancels, etc.) which route to
+        exchanges. Exchange sessions receive trade messages (acknowledgements,
+        fills, rejects, etc) which then route back to the client sessions.
+      </p><p>
+        Another common use case for this setup is to consolidate and normalize inbound
+        messages from many sessions into one outbound session.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2862"></a>Routing Hub</h4></div></div></div><p>
+        The Node can also be configured as a routing hub, where sessions are not placed into separate groups. Rather,
+        a message from one session can be routed to any other session including itself. This is a more flexible
+        configuration.
+      </p></div><div class="mediaobject"><img src="../resources/RoutingHub.png"></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_routing-methods"></a>5.3.3.&nbsp;Making Routing Decisions</h3></div></div></div><p>
+      Regardless of which routing mode is chosen, something must decide which target session each inbound
+      message is routed to. This can be handled by the Node itself or delegated to user-provided rules and/or custom
+      components.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2871"></a>Rules Engine</h4></div></div></div><p>
+        The <a href="ch06s02.html" title="6.2.&nbsp;Catalys Rules Engine">Catalys Rules Engine</a> has built-in support for FIX routing.
+        Routing rules of varying complexity can be created to meet your requirements by taking advantage of the
+        built-in conditions and expression language. Primary and backup routing destinations are also supported when
+        using Rules Engine routing.
+      </p><p>
+        The Rules Engine supports "sticky" routing and "auto route back" for certain messaging groups: Orders,
+        IOIs, Quotes, etc.
+      </p><p>
+        See the <a href="ch06s02.html#optfeature_rules_engine_actions-action-route-to" title="ActionRouteTo">FIX Routing Action</a>
+        in the Rules Engine for more details.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2878"></a>Custom Message Processor</h4></div></div></div><p>
+        A custom message processor can make routing decisions by using whatever logic the developer chooses &#8212; it
+        can be based on message content, data lookup, time of day or any other functionality that is supported in
+        a message processor. Once the target session is determined, routing occurs simply by setting the compID values
+        on the inbound message to match the compID values of the target session.
+      </p><p>
+        When routing in this manner, if no matching target session is found, a Reject message is generated and sent back
+        to the session from which the message originated.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2882"></a>DeliverTo Fields</h4></div></div></div><p>
+        DeliverTo routing support is built into the FIX specification (see the Session Protocol section of the FIX
+        specification matching your version). It is based on these FIX fields: DeliverToCompID (tag 128), and optionally
+        DeliverToSubID (129) and DeliverToLocationID (145). If the DeliverTo party is defined in the FIX message, then
+        it is used as the routing target. The Node will find a matching outbound session based on those FIX fields.
+      </p><p>
+        If no target session match is found, a Reject message is generated and sent back to the session from which the
+        message originated.
+      </p><p>
+        When a matching session is found, the following FIX fields are shifted based on this logic:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Target fields are copied from original DeliverTo fields</li><li class="listitem">DeliverTo fields are removed</li><li class="listitem">Sender fields are copied from original Target fields</li><li class="listitem">OnBehalfOf fields are copied from original Sender fields</li></ul></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e2892"></a>5.3.4.&nbsp;Routing Side</h3></div></div></div><p>
+      When Session-Group Routing is used, the Node requires that the <code class="code">side</code> attribute be set on all
+      <code class="code">Session</code> elements that are configured in a <code class="code">SessionGroup</code>. This helps determine which
+      direction a message is heading while routing from one session to another. The <code class="code">side</code> attribute can be
+      set to either <code class="code">buy</code> or <code class="code">sell</code>.
+    </p><p>
+      Each <code class="code">Session</code> configured in one <code class="code">SessionGroup</code> should set its <code class="code">side</code> attribute
+      to <code class="code">buy</code>, and each <code class="code">Session</code> configured in the other <code class="code">SessionGroup</code> should set
+      its <code class="code">side</code> attribute to <code class="code">sell</code>. Not setting these properly can cause FIX routing errors.
+    </p><div class="note"><h3 class="title">Note</h3><p>
+        The values <code class="code">buy</code> and <code class="code">sell</code> are simply labels used to help with the Node's routing logic.
+        They are not related to the messages that are allowed inbound or outbound on a FIX session.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_routing-networks"></a>5.3.5.&nbsp;Routing Networks</h3></div></div></div><p>
+      Since FIX 4.3, there are a set of repeating group fields that support multi-hop FIX routing networks.
+      This can be used to track each hub a message has passed through. These fields are: NoHops (627),
+      HopCompID (628), HopSendingTime (629), and HopRefID (630).
+    </p><p>
+      If the <code class="code">Link</code> attribute <code class="code">useHopFields</code> is set to <code class="code">true</code>, the Node will set these
+      fields accordingly.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_routing-other-issues"></a>5.3.6.&nbsp;Handling Routing Issues</h3></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2923"></a>Rejects and RejectMapper</h4></div></div></div><p>
+        If a routed message gets rejected, there are two ways to handle it: a) It can be logged and
+        dropped, or b) A Reject can be sent back to the originating session. If a Reject is sent to the
+        originator, the RefSeqNum field (45) in the Reject message must be set so that it references the
+        correct message at the originator. The Node has a built-in <code class="code">RejectMapper</code> for this purpose.
+      </p><p>
+        A <code class="code">RejectMapper</code> message processor should be configured on the source and listener side of a session
+        as follows:
+      </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="BROKER" compid="EXCHANGE"
+           fixversion="4.4" heartbeat="60" side="sell"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection id="sc1" listenport="5001" /&gt;
+    &lt;/Connections&gt;
+    &lt;Persister&gt;
+      &lt;JournalingPersister id="jp1" baseDirectoryName="./data/persist/broker"/&gt;
+    &lt;/Persister&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;!-- Initial declaration of RejectMapper on source side --&gt;
+        &lt;RejectMapper id="rm_broker" directoryName="./data/rm/rm_broker" /&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;!-- MessageProcessorReference to RejectMapper on listener side --&gt;
+        &lt;MessageProcessorReference id="rm_broker_ref" refid="rm_broker" /&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;</pre><p>
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_RejectMapper" title="RejectMapper">RejectMapper Configuration Reference</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2932"></a>Buffering</h4></div></div></div><p>
+        Some planning must be put into the handling of messages when the target session is temporarily unavailable.
+        Most often the two options are to: a) Send a Reject back to the originator, or b)
+        <a href="ch05s05.html" title="5.5.&nbsp;Message Buffering">Buffer messages</a> temporarily until the destination comes back up.
+      </p><div class="caution"><h3 class="title">Caution</h3><p>
+          If buffering is configured to temporarily hold messages until the destination comes back up, you
+          must consider the types of messages that may get buffered. While it may be okay to buffer post-trade
+          message types it may be very dangerous to buffer time sensitive order messages.
+        </p></div><p>
+        Another type of message buffering/caching feature that is available in the Node is the
+        <a href="ch06s04.html" title="6.4.&nbsp;Scheduled Order Cache">Scheduled Order Cache</a>. This will intentionally cache order
+        messages for a destination FIX session that is scheduled to be down and will release the messages based on a
+        schedule. This feature has some support for replacing and cancelling orders held in the cache.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="stdfeature_routing-configuration"></a>5.3.7.&nbsp;FIX Routing Configuration</h3></div></div></div><p>
+      The primary configuration element used in FIX routing is the <code class="code">Link</code>, whose structure is shown here:
+    </p><pre class="programlisting">&lt;Link id="routing_table"&gt;
+  &lt;SessionGroup&gt;
+    &lt;SessionReference id="ref1" counterpartycompid="CLIENT1" compid="ROUTER"/&gt;
+    ...
+  &lt;/SessionGroup&gt;
+  &lt;SessionGroup&gt;
+    &lt;SessionReference id="ref2" counterpartycompid="EXCH1" compid="ROUTER"/&gt;
+    ...
+  &lt;/SessionGroup&gt;
+&lt;/Link&gt;</pre><p>
+      Only one <code class="code">Link</code> is defined per instance.  It optionally contains two <code class="code">SessionGroup</code>
+      elements, which contain one or more <code class="code">SessionReference</code> elements that reference each applicable
+      <code class="code">Session</code>.
+    </p><p>
+      For a complete list of attributes for these elements, see the
+      <a href="config_reference.html#config_ref_Link" title="Link">Link Configuration Reference</a> and
+      <a href="config_reference.html#config_ref_SessionReference" title="SessionReference">SessionReference Configuration Reference</a>.
+    </p><div class="note"><h3 class="title">Note</h3><p>
+        If either the Rules Engine or a custom message processor is used for routing, the
+        <code class="code">useDeliverToRouting</code> attribute of the <code class="code">Link</code> must be set to <code class="code">false</code>.
+        Otherwise there can be contention between the DeliverTo routing fields and the Rules Engine or message
+        processor routing logic.
+      </p></div><p>
+      As explained <a href="ch05s03.html#stdfeature_routing-config-options" title="5.3.2.&nbsp;Routing Modes">earlier</a>, the router can be configured
+      to operate in one of two routing modes:
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2960"></a>Session-Group Routing Configuration</h4></div></div></div><p>
+        The <code class="code">Link</code> element must contain two <code class="code">SessionGroup</code> elements which define the two sets of
+        sessions participating in routing. The <code class="code">side</code> attribute on each <code class="code">Session</code> must also be
+        correctly set.
+      </p><pre class="programlisting">&lt;Application id="router"&gt;
+  &lt;Link id="routing_table"&gt;
+    &lt;SessionGroup&gt;
+      &lt;SessionReference id="sessionref1" counterpartycompid="CLIENT1" compid="BROKER_ABC"/&gt;
+      &lt;SessionReference id="sessionref2" counterpartycompid="CLIENT2" compid="BROKER_ABC"/&gt;
+    &lt;/SessionGroup&gt;
+    &lt;SessionGroup&gt;
+      &lt;SessionReference id="sessionref3" counterpartycompid="EXCH1" compid="BROKER_ABC"/&gt;
+      &lt;SessionReference id="sessionref4" counterpartycompid="EXCH2" compid="BROKER_ABC"/&gt;
+    &lt;/SessionGroup&gt;
+  &lt;/Link&gt;
+  &lt;Sessions&gt;
+    &lt;!-- Remember to set each Session's 'side' attribute correctly --&gt;
+    &lt;Session counterpartycompid="CLIENT1" compid="BROKER_ABC" side="buy" fixversion="4.2"&gt;
+      ...
+    &lt;/Session&gt;
+    &lt;Session counterpartycompid="CLIENT2" compid="BROKER_ABC" side="buy" fixversion="4.4"&gt;
+      ...
+    &lt;/Session&gt;
+    &lt;Session counterpartycompid="EXCH1" compid="BROKER_ABC" side="sell" fixversion="4.2"&gt;
+      ...
+    &lt;/Session&gt;
+    &lt;Session counterpartycompid="EXCH2" compid="BROKER_ABC" side="sell" fixversion="4.4"&gt;
+      ...
+    &lt;/Session&gt;
+ &lt;/Sessions&gt;
+&lt;/Application&gt;</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e2968"></a>Routing Hub Configuration</h4></div></div></div><p>
+        The <code class="code">anyToAny</code> and <code class="code">ignoreSessionSide</code> attributes of the <code class="code">Link</code> must both be
+        set to <code class="code">true</code>. No <code class="code">SessionGroup</code> elements are required, nor is it necessary to set
+        the <code class="code">side</code> attribute for each <code class="code">Session</code>.
+      </p><pre class="programlisting">&lt;Application id="router"&gt;
+  &lt;!-- Link element defined at Application level, the 'anyToAny' and
+      'ignoreSessionSide' attributes must be set to 'true' in this
+      setup and SessionGroup elements aren't required --&gt;
+  &lt;Link id="routing_hub" anyToAny="true" ignoreSessionSide="true"/&gt;
+  &lt;Sessions&gt;
+    &lt;!-- Session's 'side' attribute not required to be set in this config --&gt;
+    &lt;Session counterpartycompid="CLIENT1" compid="BROKER_ABC" fixversion="4.2"&gt;
+      ...
+    &lt;/Session&gt;
+    &lt;Session counterpartycompid="CLIENT2" compid="BROKER_ABC" fixversion="4.4"&gt;
+      ...
+    &lt;/Session&gt;
+    &lt;Session counterpartycompid="EXCH1" compid="BROKER_ABC" fixversion="4.2"&gt;
+      ...
+    &lt;/Session&gt;
+    &lt;Session counterpartycompid="EXCH2" compid="BROKER_ABC" fixversion="4.4"&gt;
+      ...
+    &lt;/Session&gt;
+  &lt;/Sessions&gt;
+&lt;/Application&gt;</pre></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s02.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch05.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.2.&nbsp;Scheduling&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;5.4.&nbsp;FIX Drop Copy</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:34+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

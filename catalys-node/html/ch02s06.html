@@ -1,0 +1,170 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 2.6.&nbsp;Startup</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch02.html" title="Chapter&nbsp;2.&nbsp;Installation and Startup"><link rel="prev" href="ch02s05.html" title="2.5.&nbsp;Migrating a Previous Installation"><link rel="next" href="ch03.html" title="Chapter&nbsp;3.&nbsp;Configuration"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch02s05.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;2.&nbsp;Installation and Startup</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="install_startup"></a>2.6.&nbsp;Startup</h2></div></div></div><p>
+    To start an instance of the Node, an XML configuration file, a valid license and a startup script are necessary.
+  </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e838"></a>2.6.1.&nbsp;XML Configuration File</h3></div></div></div><p>
+      The entire configuration for a Node instance is contained in an XML file. The following shows the XML for the
+      example Node instance:
+    </p><pre class="programlisting">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE Config SYSTEM "CatalysConfig.dtd"&gt;
+&lt;Config&gt;
+  &lt;Application id="example"&gt;
+    &lt;Services&gt;
+      &lt;!-- Service that connects to the LMA &amp; MIS/Dashboard for monitoring and exposes
+           the remote command line interface via JMX, the host:port combination must
+           be unique for each instance --&gt;
+      &lt;JMXManagementService
+        id="JMXManagementService"
+        jmxServiceURL="service:jmx:jmxmp://localhost:1500"
+        alwaysKeepJMXConnectorServerRunning="true" /&gt;
+    &lt;/Services&gt;
+    &lt;Sessions&gt;
+      &lt;!-- Client/buy-side/initiator FIX session --&gt;
+      &lt;Session counterpartycompid="BROKER" compid="BUY1" fixversion="4.4" heartbeat="60"&gt;
+        &lt;Persister&gt;
+          &lt;!-- File based persistence --&gt;
+          &lt;JournalingPersister id="jp1" baseDirectoryName="../data/persistence/broker"/&gt;
+        &lt;/Persister&gt;
+        &lt;Connections&gt;
+          &lt;!-- Session configured as a initiator on the session --&gt;
+          &lt;SocketConnection id="sc1" hostname="localhost" port="2002"/&gt;
+        &lt;/Connections&gt;
+        &lt;SessionManager&gt;
+          &lt;SourceMessageProcessors&gt;
+            &lt;!-- Built-in utility that sends an outbound test
+                 NewOrderSingle message every 15 seconds --&gt;
+            &lt;SampleMessageSource id="sms1" checkBeforeSend="true" interval="15000" /&gt;
+          &lt;/SourceMessageProcessors&gt;
+          &lt;ListenerMessageProcessors&gt;
+          &lt;/ListenerMessageProcessors&gt;
+        &lt;/SessionManager&gt;
+      &lt;/Session&gt;
+    &lt;/Sessions&gt;
+  &lt;/Application&gt;
+&lt;/Config&gt;</pre><p>
+      The Node's configuration is comprehensively covered in the <a href="ch03.html#config_basic" title="3.1.&nbsp;Overview">following chapter</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e844"></a>2.6.2.&nbsp;Startup Script</h3></div></div></div><p>
+      The Node's startup script is a Unix shell script or a Windows batch file. It typically contains the following
+      key elements:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Java classpath including <span class="emphasis"><em>catalys-node.jar</em></span> (typically in the <span class="emphasis"><em>lib</em></span>
+        directory of the installation) and the directory containing the license file and logging configuration.
+      </li><li class="listitem">
+        Java command referencing the startup class for the Node:<br xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times"><code class="code">com.camerontec.catalys.server.CatalysServer</code></li><li class="listitem">
+        Application arguments, including the requisite <code class="code">-xmlconfig &lt;config-file&gt;</code> argument.
+        For a complete list, please see the
+        <a href="apb.html" title="Appendix&nbsp;B.&nbsp;CatalysServer Startup Arguments">CatalysServer Startup Arguments</a> appendix.
+      </li></ul></div><p>A very simple startup script with these elements would look like:</p><pre class="programlisting">java -cp "../lib/catalys-node.jar:../resources" com.camerontec.catalys.server.CatalysServer \
+     -xmlconfig config_example.xml</pre><p>The Unix-based startup script included with the example Node instance is here:</p><pre class="programlisting">#!/bin/sh
+
+# if your path doesn't contain a JVM add it here
+# export PATH=/path/to/jdk/bin:$PATH
+
+# since the paths below are relative we need to make sure we are located
+# in the /scripts directory
+cd `dirname $0`
+
+# change these values if using a different Node location
+license_home=/Applications/CameronTec
+node_home=/Applications/CameronTec/catalys-node-2.2
+
+# change these values if using a different instance dir layout or config file
+instance_home=..
+instance_config=${instance_home}/conf/config_example.xml
+
+# set up the classpath
+cp=${instance_home}/conf
+cp=${cp}:${node_home}/lib/catalys-node.jar
+cp=${cp}:${node_home}/ext/*
+cp=${cp}:${node_home}/resources
+cp=${cp}:${license_home}
+
+java -Xmx256M -classpath "$cp" \
+     -DJMXManagementService.startupScript="$(cd $(dirname $0);pwd)/$(basename $0)" \
+     com.camerontec.catalys.server.CatalysServer -xmlconfig ${instance_config}
+</pre><div class="note"><h3 class="title">Note</h3><p>
+        If a Node instance or the license file is moved to a different directory, you will need to update the
+        <code class="code">license_home</code>, <code class="code">node_home</code> and <code class="code">instance_home</code> script variables.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e865"></a>2.6.3.&nbsp;Starting the Example Node Instance</h3></div></div></div><p>
+      If you select the "Node Instance" option from the installer, files for an example Node instance will be included
+      in the location you choose.
+    </p><p>
+      The <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/example/conf/config_example.xml</em></span>
+      configuration file defines an instance of the Node called "example" and contains one FIX session with the minimum
+      required configuration elements. The FIX session initiates a FIX connection on port 2002 of the localhost and
+      sends a Logon message after establishing a successful connection. After the Logon exchange, it will send a
+      NewOrderSingle message every 15 seconds.
+    </p><p>
+      To start the example instance call the
+      <span class="emphasis"><em>&lt;CATALYS_NODE_INSTANCES&gt;/example/bin/start-example.[bat|sh]</em></span> script.
+    </p><p>
+      You will see logging on the console of the example as well as log files in the <span class="emphasis"><em>log</em></span>
+      directory of the installation.
+    </p><p>
+      If you are experiencing problems please use the next section for solving common startup issues. If you are still
+      having problems, then contact our <a href="ch01s05.html" title="1.5.&nbsp;Getting Support">Support Team</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e876"></a>2.6.4.&nbsp;Troubleshooting</h3></div></div></div><p>
+      Below are commonly encountered startup issues and their resolutions.
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Java not installed
+        <pre class="programlisting">java: command not found</pre><p>
+          A Java Runtime Environment (JRE) version 8 or higher must be installed to run the Node.
+        </p></li><li class="listitem">
+        Java version mismatch
+        <pre class="programlisting">Exception in thread "main" java.lang.UnsupportedClassVersionError: \
+  com/camerontec/catalys/server/CatalysServer: Unsupported major.minor version 51.0</pre><p>
+          A Java Runtime Environment (JRE) version 8 or higher must be installed to run the Node.
+        </p></li><li class="listitem"><code class="code">CatalysServer</code> not on classpath
+        <pre class="programlisting">Error: Could not find or load main class com.camerontec.catalys.server.CatalysServer</pre><p>
+          If you are using the installed startup script, check that the <code class="code">node_home</code> script variable is
+          set correctly.
+        </p><p>
+          If you are using your own startup script, check that the path to the <span class="emphasis"><em>catalys-node.jar</em></span> is
+          set correctly on the classpath.
+        </p></li><li class="listitem">
+        License not found
+        <pre class="programlisting">License Error: Could not find 'camerontec_license.xml' in classpath</pre><p>
+          If you are using the installed startup script, check that the <code class="code">license_home</code> script variable is
+          set correctly.
+        </p><p>
+          If you are using your own startup script, check that the directory containing
+          <span class="emphasis"><em>camerontec_license.xml</em></span> is set correctly on the classpath.
+        </p><p>More information on licensing is located <a href="ch02s03.html" title="2.3.&nbsp;License Management">here</a>.
+        </p></li><li class="listitem">
+        License version mismatch
+        <pre class="programlisting">License Error: Product "Catalys-Node-2.2" is not present in the license</pre><p>
+          You are attempting to run a version of the Node that does not match the version in your
+          license. Please contact your account manager for an updated license.
+        </p></li><li class="listitem">
+        Duplicate instance detected
+        <pre class="programlisting">ERROR [main] com.camerontec.catalys.server.CatalysServer -  \
+      There is already an application listening on /127.0.0.1:12277 ...
+</pre><p>
+          This likely indicates that you have started the same Node instance twice. Measures are in
+          place to prevent this as it could cause critical data to be overwritten. Please refer to
+          the <a class="code" href="config_reference.html#config_ref_Application_instanceDetectionPort">instanceDetectionPort</a>
+          attribute on the <code class="code">Application</code> element for more details.
+        </p></li><li class="listitem">
+        Unlicensed features
+        <pre class="programlisting">License Error: Feature 'Socket Adapter' is not enabled in the license</pre><p>
+          You are attempting to use a feature of the Node that you are not licensed for. Please
+          contact your account manager if you would like to evaluate this feature.
+        </p></li><li class="listitem">
+        Missing write permissions
+        <pre class="programlisting">ERROR in ch.qos.logback.core.rolling.RollingFileAppender[SERVERLOG] - \
+      openFile(catalys.log,true) call failed. \
+      java.io.FileNotFoundException: catalys.log (Permission denied)</pre><p>
+          The user account running the Node does not have write permissions to the
+          <span class="emphasis"><em>log</em></span> and/or <span class="emphasis"><em>data</em></span> directories. Please grant write
+          permissions to this user account.
+        </p></li><li class="listitem">
+        TCP port in use
+        <pre class="programlisting">ERROR [ServerConnectionManager-5001] CameronTec.ServerConnectionManager.5001 ... \
+      java.net.BindException: Address already in use</pre><p>
+          The port configured for the FIX session's SocketConnection <code class="code">listenport</code> is
+          already in use by another application on the server. Choose an alternate port.
+        </p></li></ul></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s05.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">2.5.&nbsp;Migrating a Previous Installation&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;3.&nbsp;Configuration</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:32+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

@@ -1,0 +1,73 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 7.4.&nbsp;JMS Adapter</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch07.html" title="Chapter&nbsp;7.&nbsp;Technology Adapters"><link rel="prev" href="ch07s03.html" title="7.3.&nbsp;Embedded Catalys Node Adapter"><link rel="next" href="ch07s05.html" title="7.5.&nbsp;Solace Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch07s03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;7.&nbsp;Technology Adapters</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_jms"></a>7.4.&nbsp;JMS Adapter</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jms-introduction"></a>7.4.1.&nbsp;Introduction</h3></div></div></div><p>
+      The JMS adapter enables the Node to work with any JMS compliant messaging product (such as FioranoMQ,
+      JBoss, SonicMQ, SwiftMQ, Websphere MQ, Sonic MQ, Oracle WebLogic and OpenJMS). Together with the Node, FIX
+      messages can be sent and received to and from any application connected over JMS.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jms-installProvider"></a>7.4.2.&nbsp;JMS Provider Installation</h3></div></div></div><p>
+      The JMS provider's software must be installed according to their instructions. These instructions will normally
+      involve additional jar files to the classpath. Typically, the provider's JMS server will need to be started, and
+      the required JMS queues and topics added.
+    </p><p>
+      By default, the JMS adapter uses Java's standard naming interface (JNDI) to link up with a particular provider's
+      implementation of JMS. With the Node JMS adapter, the JNDI information is specified in a properties file called
+      <span class="emphasis"><em>jndi.properties</em></span>. This directory where this file resides should be on the classpath.
+    </p><p>
+      For example, if the current directory (".") is in the classpath, then the <span class="emphasis"><em>jndi.properties</em></span>
+      file can be located in the same directory where the Node is started.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jms-configuration"></a>7.4.3.&nbsp;Configuration</h3></div></div></div><p>There are two JMS message processors:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>JmsProducer</strong></span>: Listens for inbound FIX messages received on a session and
+        writes to JMS queue. For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_JmsProducer" title="JmsProducer">JmsProducer Configuration Reference</a>.
+      </li><li class="listitem"><span class="bold"><strong>JmsConsumer</strong></span>: Reads messages from a JMS queue and sends them out a session.
+        For a complete list of attributes, see the
+        <a href="config_reference.html#config_ref_JmsConsumer" title="JmsConsumer">JmsConsumer Configuration Reference</a>.
+      </li></ul></div><p>
+      The configuration example below shows a JMS adapter configured on a session. The <code class="code">JmsConsumer</code> takes
+      messages off a queue or topic and sends them out a FIX session. The <code class="code">JmsProducer</code> takes inbound FIX
+      messages and places them on a queue or topic. The adapter in the example is using <code class="code">primaryQCF</code> as the
+      name of the queue connection factory. This is the default factory name provided by FioranoMQ.
+    </p><pre class="programlisting">&lt;Sessions&gt;
+  &lt;Session counterpartycompid="EXCHANGEA" compid="FIRM1" fixversion="4.2" heartbeat="60"&gt;
+    &lt;Connections&gt;
+      &lt;SocketConnection hostname="192.168.10.100" port="2000" /&gt;
+    &lt;/Connections&gt;
+    &lt;SessionManager&gt;
+      &lt;SourceMessageProcessors&gt;
+        &lt;JmsConsumer type="queue" destination="EXCH_OUTBOUND" factory="primaryQCF" /&gt;
+      &lt;/SourceMessageProcessors&gt;
+      &lt;ListenerMessageProcessors&gt;
+        &lt;JmsProducer type="queue" destination="BUY_INBOUND" factory="primaryQCF" /&gt;
+      &lt;/ListenerMessageProcessors&gt;
+    &lt;/SessionManager&gt;
+  &lt;/Session&gt;
+&lt;/Sessions&gt;
+</pre><p>
+      By default, the <code class="code">JmsProducer</code> uses <code class="code">DefaultJMSTransformer</code> as the message transformer,
+      which puts JMS messages of type <code class="code">javax.jms.ObjectMessage</code> on the queue. To place JMS messages of other
+      types (bytes, object, text) on the queue, an additional <code class="code">Properties</code> element must be configured to
+      set the <code class="code">object.format</code> attribute of the transformer. The following formats are supported:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">bytes: Put JMS message of type <code class="code">javax.jms.BytesMessage</code> on the queue</li><li class="listitem">object: Put JMS message of type <code class="code">javax.jms.ObjectMessage</code> on the queue</li><li class="listitem">text: Put JMS message of type <code class="code">javax.jms.TextMessage</code> on the queue</li></ul></div><p>In this example we set the format to <code class="code">text</code>:</p><pre class="programlisting">&lt;JmsProducer type="queue" destination="BUY_INBOUND" factory="primaryQCF"&gt;
+  &lt;Properties id="myProducerProperties"&gt;
+    &lt;Property name="object.format" value="text"/&gt;
+  &lt;/Properties&gt;
+&lt;/JmsProducer&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adapter_jms-template"></a>7.4.4.&nbsp;Templates</h3></div></div></div><p>
+      There are two templates packaged inside the Node that demonstrate the functionality of the JMS Adapter:
+      <span class="emphasis"><em>templates/JMSAdapter/ActiveMQ/topic</em></span> and
+      <span class="emphasis"><em>templates/JMSAdapter/ActiveMQ/queue</em></span>. One interacts with JMS queues and the other with JMS
+      topics.
+    </p><p>The <span class="emphasis"><em>ReadMe.txt</em></span> will guide you through the templates. Some things to note:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Place the .jar files for your JMS library in the <span class="emphasis"><em>/ext</em></span> directory of your install.
+      </li><li class="listitem">
+        There is a <span class="emphasis"><em>jndi.properties</em></span> file in each template. The directory where it resides is
+        required to be on the classpath.
+      </li><li class="listitem"><span class="emphasis"><em>readJMS.[sh|bat]</em></span> starts up a client application that receives JMS messages
+        over a topic or queue. The connection factory and queue/topic names are passed as application parameters.
+      </li><li class="listitem"><span class="emphasis"><em>writeJMS.[sh|bat]</em></span> starts up a client application that places JMS messages
+        on a topic or queue. The connection factory and queue/topic names are passed as application parameters.
+      </li><li class="listitem">
+        The source code for the classes the readJMS and writeJMS call is available in
+        <span class="emphasis"><em>templates/src/com/camerontec/catalys/server/adapter/jms/test/jndi/</em></span></li></ul></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch07s03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch07.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.3.&nbsp;Embedded Catalys Node Adapter&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.5.&nbsp;Solace Adapter</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:39+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

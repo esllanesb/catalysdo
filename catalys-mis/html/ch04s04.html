@@ -1,0 +1,118 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys MIS User Guide &#151; 4.4.&nbsp;Logs Browsing</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys MIS User Guide"><link rel="up" href="ch04.html" title="Chapter&nbsp;4.&nbsp;Dashboard Web Interface"><link rel="prev" href="ch04s03.html" title="4.3.&nbsp;Events"><link rel="next" href="ch04s05.html" title="4.5.&nbsp;Configuration"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch04s03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;4.&nbsp;Dashboard Web Interface</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch04s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="dashboard_logs"></a>4.4.&nbsp;Logs Browsing</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="dashboard_logs-intro"></a>4.4.1.&nbsp;Introduction</h3></div></div></div><p>The Logs Tab displays logs for all managed applications which are streaming their logs.</p><p>
+      To stream logs for a particular application or all applications running on a particular host, select
+      <a href="ch04s07.html#dashboard_admin-logsStreaming" title="4.7.5.&nbsp;Logs Streaming">Logs Streaming</a> on the Admin Tab.
+    </p><p>
+      Logs for a particular instance can also be viewed using the
+      <a href="ch04s02.html#dashboard_servers_and_sessions-tail-log-file">Tail Logs</a> button from the Server
+      administration panel from the Servers and Session tab.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="dashboard_logs-logDisplay"></a>4.4.2.&nbsp;Logs Display Panel</h3></div></div></div><p>The log entries are shown on the main logs display panel.</p><p>The following log panel columns are supported:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Timestamp</li><li class="listitem">Thread that logged the message</li><li class="listitem">Log level</li><li class="listitem">Logger</li><li class="listitem">Category</li><li class="listitem">Direction of message (FIX only)</li><li class="listitem">Message type (FIX only)</li><li class="listitem">Summary of message (FIX only)</li><li class="listitem">ContextId for message correlation (FIX only)</li><li class="listitem">Marker (FIX only)</li><li class="listitem">Message</li></ul></div><p>The color of the log line denotes the log level of the entry: ERROR - red; WARN - yellow; others - white.</p><p>
+      Double-clicking on an individual log line will bring up the
+      <a href="ch04s04.html#dashboard_logs-infoView" title="4.4.3.&nbsp;Log Info View">log info panel</a> for that entry.
+    </p><p>
+      The logs can be displayed in historical mode or live mode. When a filter is first applied, the logs are displayed
+      in historical mode, beginning at the oldest entry. When the tail mode is selected (by pressing the "Tail" button),
+      the log entries are updated in real-time, showing the most recent entries.
+    </p><div class="mediaobject"><img src="../resources/logs_grid.png"></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-defaultFilter"></a>Default Filter</h4></div></div></div><p>
+        By default, there is no filtering applied. All log events from all applications at all times and levels are
+        shown. This default filter can be edited and saved, or a
+        <a href="ch04s04.html#dashboard_logs-filters" title="4.4.5.&nbsp;Filters">new specific filter</a> can be added.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-liveLogs"></a>Tail Logs</h4></div></div></div><p>By default, the logs are shown as a static snapshot. To view live logs, press the 'Tail' button.</p><div class="mediaobject"><img src="../resources/logs_tail_off.png"></div><p>
+        When in tail mode, the logs panel automatically scrolls to the most recent log events and existing filters
+        still take affect.
+      </p><p>To view (and filter) a static snapshot of the logs, press the 'Stop Tailing' button.</p><div class="mediaobject"><img src="../resources/logs_tail_on.png"></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="dashboard_logs-infoView"></a>4.4.3.&nbsp;Log Info View</h3></div></div></div><p>
+      To view more detailed information about a log event, double click on its entry in the logs display panel.
+    </p><div class="mediaobject"><img src="../resources/logs_log_display_panel.png"></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-conversation"></a>Conversation View</h4></div></div></div><p>
+        A logs conversation is a collection of logs that are related to each other. For example, all of the FIX
+        messages relating to the same order: the original order, with its fills and other executions, and any
+        cancellations or replacements.
+      </p><p>
+        Clicking on the 'Conversation' button brings up a new Conversation Tab, showing these related log entries.
+      </p><div class="mediaobject"><img src="../resources/logs_conversation.png"></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-expandFIX"></a>Expand FIX</h4></div></div></div><p>
+        If the log entry is a FIX message then clicking on the 'Expand FIX' button expands all of the FIX fields and
+        values in the log message to their symbolic values as well as their numeric values.
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="dashboard_correlators"></a>4.4.4.&nbsp;Correlators</h3></div></div></div><p>
+      Conversations will always use the ContextId for message correlation. However, correlators will be used
+      in addition to the ContextId to further define how a collection of logs relate to each other creating a specific
+      conversation. The correlators that are used by the conversation depends on the message type of the message
+      from which the conversation query was executed and the default message types of the correlators. For example,
+      if the conversation query was executed from a New Order Single (35=D), the Order Conversation Correlator would
+      be used; however, if the conversation  was started from an Execution Report (35=8), the conversation
+      correlators used would be: Quote, Order, Program  Trading, Order Mass Handling, Cross Orders, MultiLeg Orders,
+      Allocation and Trade Capture. By clicking the 'Filters' button on a conversation tab the 'Filters' dialog will
+      pop up containing all the correlators available and the ones used  will be enabled.
+    </p><div class="mediaobject"><img src="../resources/correlator_filters.png"></div><p>
+      The checkboxes next to the correlators will enable/disable that specific correlator for the conversation.
+    </p><p>
+      The following table provides details of each correlator the MIS comes with by default:
+    </p><div class="informaltable"><table border="1"><colgroup><col><col><col><col><col></colgroup><thead><tr><th>Correlator Name</th><th>Correlator Group</th><th>Default Message Types</th><th>Included Message Types</th><th>Correlation Tags (TagFrom:TagTo)</th></tr></thead><tbody><tr><td>Advertisement</td><td>PreTrade</td><td>7</td><td>7</td><td>AdvId:AdvId, AdvRefID:AdvId</td></tr><tr><td>Indication of Interest</td><td>PreTrade</td><td>6</td><td>t,6,AC,s,AB,D,AJ</td><td>IOIID:IOIID, IOIRefID:IOIID</td></tr><tr><td>Email</td><td>PreTrade</td><td>C</td><td>C</td><td>EmailThreadID:EmailThreadID</td></tr><tr><td>News</td><td>PreTrade</td><td>B</td><td>B</td><td>NewsID:NewsID</td></tr><tr><td>Quote</td><td>PreTrade</td><td>S,i,b,Z,R,AG,AI,a,AJ,AH,8</td><td>S,i,s,D,b,Z,R,AG,AI,a,AJ,AB,AH,8,BN</td><td>QuoteReqID:QuoteReqID, QuoteID:QuoteID, QuoteMsgID:QuoteMsgID, QuoteRespID:QuoteRespID,
+              RFQReqID:RFQReqID, ExecID:ExecID</td></tr><tr><td>Market Data</td><td>PreTrade</td><td>e,f,x,y,Y,V,W,X</td><td>e,f,x,y,Y,V,W,X</td><td>SecurityReqID:SecurityReqID, SecurityStatusReqID:SecurityStatusReqID, MDReqID:MDReqID</td></tr><tr><td>Security Definition</td><td>PreTrade</td><td>AA,z,BR,d,c,BP,y,x,BK,f,e,v,w</td><td>AA,z,BR,d,c,BP,y,x,BK,f,e,v,w</td><td>SecurityReportID:SecurityReportID, SecurityReqID:SecurityReqID, SecurityListID:SecurityListID,
+              SecurityListRefID:SecurityListID, SecurityStatusReqID:SecurityStatusReqID</td></tr><tr><td>Order</td><td>Trade</td><td>8,9,D,E,F,G,H,Q,j,3,BN</td><td>8,9,D,E,F,G,H,Q,j,3,BN</td><td>ClOrdID:ClOrdID, OrigClOrdID:ClOrdID, OrderID:OrderID, SecondaryOrderID:OrderID, ExecID:ExecID,
+              SecondaryExecID:ExecID, ExecRefID:ExecID, TradeID:TradeID, OrigTradeID:TradeID</td></tr><tr><td>Program Trading</td><td>Trade</td><td>k,l,K,L,M,m,N,E,8,BN,Q</td><td>k,l,K,L,M,m,N,E,8,BN,Q</td><td>BidID:BidID, ClientBidID:ClientBidID, ListID:ListID, ClOrdID:ClOrdID, ExecID:ExecID, ExecRefID:ExecID</td></tr><tr><td>Order Mass Handling</td><td>Trade</td><td>BZ,CA,r,q,AF,8,BN,Q</td><td>BZ,CA,r,q,AF,8,BN,Q</td><td>MassStatusReqID:MassStatusReqID, MassActionReportID:MassActionReportID, ClOrdID:ClOrdID,
+              ExecID:ExecID, ExecRefID:ExecID</td></tr><tr><td>Cross Orders</td><td>Trade</td><td>t,u,s,8,BN,Q</td><td>t,u,s,8,BN,Q</td><td>CrossID:CrossID, OrigCrossID:CrossID, HostCrossID:HostCrossID, OrderID:OrderID, ExecID:ExecID,
+            ExecRefID:ExecID</td></tr><tr><td>Multileg Orders</td><td>Trade</td><td>AB,AC,8,BN,Q</td><td>AB,AC,8,BN,Q</td><td>ClOrdID:ClOrdID, OrigClOrdID:ClOrdID, OrderID:OrderID, ClOrdLinkID:ClOrdLinkID, ExecID:ExecID,
+              ExecRefID:ExecID</td></tr><tr><td>Allocation</td><td>PostTrade</td><td>J,P,BM,AS,AT,8,BN,Q</td><td>J,P,BM,AS,AT,D,E,8,Q,BN</td><td>AllocID:AllocID, AllocLinkID:AllocID, RefAllocID:AllocID, AllocReportID:AllocReportID,
+              AllocReportRefID:AllocReportID, OrderID:OrderID, ClOrdID:ClOrdID</td></tr><tr><td>Settlement Instruction</td><td>PostTrade</td><td>AV,T,BQ</td><td>AV,T,BQ</td><td>SettlInstReqID:SettlInstReqID, SettlInstMsgID:SettlInstMsgID, SettlInstID:SettlInstID,
+              SettlInstRefID:SettlInstID</td></tr><tr><td>Registration Instruction</td><td>PostTrade</td><td>o,p</td><td>o,p</td><td>RegistID:RegistID, RegistRefID:RegistID, ClOrdID:ClOrdID</td></tr><tr><td>Trade Capture</td><td>PostTrade</td><td>AE,AR,AD,AQ,8,BN,Q</td><td>AE,AR,AD,AQ,8,BN,Q</td><td>TradeID:TradeID, TradeReportID:TradeReportID, TradeRequestID:TradeRequestID, OrigTradeID:TradeID,
+              ExecID:ExecID</td></tr><tr><td>Confirmation</td><td>PostTrade</td><td>AK,AU,BH</td><td>AK,AU,BH</td><td>ConfirmID:ConfirmID, ConfirmReqID:ConfirmReqID, ConfirmRefID:ConfirmRefID, ConfirmRefID:ConfirmID</td></tr><tr><td>Position Maintenance</td><td>PostTrade</td><td>BL,AW,BO,AM,AL,AP,AN,AO</td><td>BL,AW,BO,AM,AL,AP,AN,AO</td><td>PosMaintRptID:PosMaintRptID, PosMaintRptRefID:PosMaintRptID, AsgnRptID:AsgnRptID, PosReqID:PosReqID,
+              ContIntRptID:ContIntRptID, OrigPosReqRefID:PosReqID</td></tr><tr><td>Collateral Management</td><td>PostTrade</td><td>AY,BB,BG,BA,AX,AZ</td><td>AY,BB,BG,BA,AX,AZ</td><td>CollAsgnID:CollAsgnID, CollAsgnRefID:CollAsgnRefID, CollAsgnRefID:CollAsgnID, CollReqID:CollReqID,
+            CollInquiryID:CollInquiryID, CollRptID:CollRptID, CollRespID:CollRespID</td></tr><tr><td>Network</td><td>Infrastructure</td><td>BC,BD</td><td>BC,BD</td><td>NetworkRequestID:NetworkRequestID, NetworkResponseID:NetworkResponseID,
+              LastNetworkResponseID:NetworkResponseID, LastNetworkResponseID:LastNetworkResponseID</td></tr><tr><td>User Management</td><td>Infrastructure</td><td>CB,BE,BF</td><td>CB,BE,BF</td><td>UserRequestID:UserRequestID, Username:Username</td></tr><tr><td>Application</td><td>Infrastructure</td><td>BY,BW,BX</td><td>BY,BW,BX</td><td>ApplReportID:ApplReportID, ApplReqID:ApplReqID, ApplResponseID:ApplResponseID</td></tr><tr><td>Session</td><td>Infrastructure</td><td>0,1,2,3,4,5,A</td><td>0,1,2,3,4,5,A</td><td>SenderCompID:SenderCompID, TargetCompID:TargetCompID, SenderCompID:TargetCompID,
+              TargetCompID:SenderCompID, TestReqID:TestReqID</td></tr></tbody></table></div><p>
+      To create a custom correlator please refer to the
+      <a href="ch03.html#mis_configuration-custom-correlators-configuration" title="3.1.2.7.&nbsp;Custom Correlators Configuration">Custom Correlators Configuration</a>
+      section.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="dashboard_logs-filters"></a>4.4.5.&nbsp;Filters</h3></div></div></div><p>
+      Use the filter panel on the left hand side of the screen to limit the set of log entries shown in the logs
+      panel.
+    </p><div class="mediaobject"><img src="../resources/logs_filters.png"></div><p>Filters are saved to disk on a per-user basis.</p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-newFilter"></a>New Filters</h4></div></div></div><p>Update the default filter by editing it and applying the changes.</p><p>
+        Alternatively, add a new filter by clicking on the 'New Filter' tab, and supply a name for the filter.
+      </p><p>Right clicking on a Filter Tab will allow it to be renamed.</p><div class="mediaobject"><img src="../resources/logs_add_filter.png"></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-textSearch"></a>Text Search</h4></div></div></div><p>Enter a text string to search for in the entry field of the log event.</p><p>
+        The MIS search system tokenizes the log entries and the search field based on the following delimiters:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">the 'space' character</li><li class="listitem">the 'equals' character: =</li><li class="listitem">the 'less than' character: &lt;</li><li class="listitem">the 'greater than' character: &gt;</li><li class="listitem">the 'start of header' character: &lt;SOH&gt;</li><li class="listitem">the 'vertical bar' character: |</li></ul></div><p>
+        This means that each log entry is broken down into single word tokens, where the single words are separated
+        by any of the above delimiters.
+      </p><p>
+        The delimiter characters are not treated as literal strings, either in the log entry or in the search field.
+      </p><p>Word and phrase searches are permitted; a phrase search matches consecutive tokens.</p><p>
+        Wildcard characters ('*' and '?') are permitted only in word searches and they must not be positioned at the
+        start of the word.
+      </p><p>
+        Multiple word and multiple phrase searches are permitted. By default any of the terms are matches; operators
+        are available to refine this.
+      </p><div class="simplesect"><div class="titlepage"><div><div><h2 class="title"><a name="d5e3551"></a>Single Whole Word</h2></div></div></div><p>
+          To search for a single whole word, enter the word by itself, or surrounded by one of the delimiters.
+        </p><div class="mediaobject"><img src="../resources/logs_text_filter.png"></div></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title"><a name="d5e3557"></a>Single Partial Word</h2></div></div></div><p>To search for a single partial word, use wildcard characters, e.g. GOOG* matches 'GOOG' and 'GOOGLE'
+          (and any other words beginning with 'GOOG').
+        </p><p>
+          For a single character wildcard, use the '?' character, e.g. log?n matches 'logon' and 'login'.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title"><a name="d5e3561"></a>Exact Phrase</h2></div></div></div><p>To search for an exact phrase enter the phrase surrounded by quotes, e.g. "logged on"</p><p>
+          Note that a phrase search also matches separate tokens which are consecutive, e.g. "55 GOOG" matches FIX
+          log entries where the value of the symbol field is 'GOOG'.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title"><a name="d5e3565"></a>Multiple words</h2></div></div></div><p>
+          Multiple unquoted words match entries in which any of the words appear e.g. GOOG IBM matches log entries
+          containing the word GOOG or the word IBM.
+        </p><p>
+          To find entries which contain all of the words of a multiple word search, use the AND operator between the
+          words, e.g. GOOG AND IBM.
+        </p><p>
+          To find entries definitely containing one word and possibly containing others, use the '+' operator, e.g.
+          +GOOG IBM.
+        </p><p>To find entries which do not contain a word, use the '-' operator, e.g. GOOG -MoneyPenny.</p></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title"><a name="d5e3571"></a>Multiple phrases</h2></div></div></div><p>
+          The above operators also apply to phrases. Like words, two phrases without an operator will match either
+          phrase. Use the operators to refine the search, e.g. "11=GOOG" -"56=MoneyPenny" matches all those entries
+          whose Symbol field is equal to 'GOOG' but whose TargetCompID does not equal 'MoneyPenny'.
+        </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-logLevelFilter"></a>Log Level Filter</h4></div></div></div><p>Check one or more log levels to filter on.</p><div class="mediaobject"><img src="../resources/logs_level_filter.png"></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-dateSearch"></a>Dates Filter</h4></div></div></div><p>You can filter dates by a preset set of selections for a different set of previous days.</p><div class="mediaobject"><img src="../resources/logs_dates_filter.png"></div><p>Or you can filter with a date range using the Selected Dates drop down value.</p><div class="mediaobject"><img src="../resources/logs_date_range_filter.png"></div><div class="note"><h3 class="title">Note</h3><p>
+          Entering a Start Date without a Start Time will search from 00:00, and entering an End Date without an End
+          Time will search up to 00:00 on the following day.
+        </p></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="dashboard_logs-categorySearch"></a>Category Search</h4></div></div></div><p>
+        The category is the source of the event. This field of the filter is presented as a tree of selections, from
+        'All', to a specific application, right down to a specific session.
+      </p><div class="mediaobject"><img src="../resources/logs_category_filter.png"></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="dashboard_logs-search"></a>4.4.6.&nbsp;Free Text Search</h3></div></div></div><p>You can search all filtered results by entering a value in the text field in the upper left hand
+      corner of the log results grid. 'Next' and 'Prev' buttons allow you to move from one matching entry to the next.
+    </p><div class="mediaobject"><img src="../resources/logs_find_text.png"></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch04s03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch04.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch04s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">4.3.&nbsp;Events&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;4.5.&nbsp;Configuration</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:53:34+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

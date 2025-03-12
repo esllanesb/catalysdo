@@ -1,0 +1,195 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 9.4.&nbsp;Configuring for Performance</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch09.html" title="Chapter&nbsp;9.&nbsp;Performance Tuning"><link rel="prev" href="ch09s03.html" title="9.3.&nbsp;Hardware Considerations"><link rel="next" href="ch09s05.html" title="9.5.&nbsp;JVM Tuning"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch09s03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;9.&nbsp;Performance Tuning</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch09s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="perf_configuration"></a>9.4.&nbsp;Configuring for Performance</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="perf_configuration-threading"></a>9.4.1.&nbsp;Threading</h3></div></div></div><p>
+      The Node's threading model can be tuned to cope with different scalability and performance requirements. By
+      default, each session creates four threads used for FIX message processing:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>MessageAssembler</strong></span>: Reads incoming message bytes from the session's underlying
+        connection and assembles those bytes into <code class="code">IFIXMessage</code> objects.
+      </li><li class="listitem"><span class="bold"><strong>Protocol</strong></span>: Manages the low-level FIX protocol and adds incoming messages to the
+        application queue.
+      </li><li class="listitem"><span class="bold"><strong>SessionManager</strong></span>: Retrieves incoming messages from the application queue and
+        passes them through each message processor.
+      </li><li class="listitem"><span class="bold"><strong>Heartbeat</strong></span>: Sends out heartbeats at regular intervals.
+      </li></ul></div><p>
+      The first three threads process messages concurrently and relay messages via queues. This approach helps
+      insulate each session from the performance characteristics of the other sessions. It also separates the
+      reading of FIX messages from the processing of FIX messages, meaning that these things are less likely to
+      interfere with each other.
+    </p><p>
+      If the queue between the protocol and user thread exceeds 2000 unprocessed messages, built-in throttling will
+      be enabled. The protocol thread will sleep 10ms before placing additional messages on the unprocessed message
+      queue. This will be disabled once the queue has less than 2000 messages. When throttling is enabled, the highest
+      rate that inbound messages can be processed is 100/sec. The maximum number of queued messages and throttling
+      rate are not configurable.
+    </p><p>
+      Unfortunately there is overhead involved in passing messages between threads, as well as in context switches
+      caused by making blocking system calls and by operating system thread preemption. The following features can
+      minimize this overhead and can be used to achieve significant improvements in latency, throughput and
+      jitter:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+        Instead of using multiple threads per session to process incoming messages, a session's MessageAssembler
+        thread can process each message entirely, eliminating the need for intermediate queuing.
+        See <a href="ch09s04.html#perf_configuration-unqueued_mode" title="9.4.1.1.&nbsp;Unqueued Mode">Unqueued Mode</a>.
+      </li><li class="listitem">
+        Instead of creating a separate MessageAssembler thread for each session, a single thread that uses
+        multiplexed, non-blocking I/O can read messages for all sessions.
+        See <a href="ch09s04.html#perf_configuration-multiplexing_mode" title="9.4.1.2.&nbsp;Multiplexing Mode">Multiplexing Mode</a>.
+      </li><li class="listitem">
+        CPUs can be reserved for exclusive use by certain critical threads. This reduces overhead caused by thread
+        preemption and CPU contention. See
+        <a href="ch09s04.html#perf_configuration-reserving_cpus" title="9.4.1.3.&nbsp;Reserving CPUs">Reserving CPUs</a>.
+      </li></ul></div><p>These three features are designed to work together and can be safely combined.</p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="perf_configuration-unqueued_mode"></a>9.4.1.1.&nbsp;Unqueued Mode</h4></div></div></div><p>
+        Unqueued mode is an alternate threading model which can decrease the per-message latency in the Node.
+        This can prove useful if the observed latency is due to FIX session-layer processing, i.e. before FIX
+        messages reach the application layer (message processors). It may also prove valuable even when the
+        performance of the Node is deemed satisfactory. To enable:
+      </p><pre class="programlisting">&lt;Application unqueuedMode="true" ...&gt;</pre><p>
+        When operating in unqueued mode, the tasks usually performed by the Protocol and SessionManager
+        threads are consolidated into the MessageAssembler thread, eliminating the intermediate queuing of messages.
+        Messages are read from the underlying connection and delivered to messages processors in a single thread.
+        By avoiding thread context switches and queuing overhead, overall processing is generally faster.
+        Note that in some circumstances the Node may need to temporarily switch back to queued mode if FIX messages
+        arrive out of sequence.
+      </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="perf_configuration-multiplexing_mode"></a>9.4.1.2.&nbsp;Multiplexing Mode</h4></div></div></div><p>
+        Multiplexing mode is an application-wide configuration option that controls the way the Node reads FIX messages
+        from network sockets. To enable:
+      </p><pre class="programlisting">&lt;Application multiplexingMode="select|spin" ...&gt;</pre><p>
+        Instead of using blocking single-thread-per-socket I/O, the Node will use multiplexed I/O to read from
+        all FIX session sockets in a single thread.
+      </p><p>
+        Multiplexing mode can operate in two ways: <span class="emphasis"><em>select</em></span> or <span class="emphasis"><em>spin</em></span>. In select
+        mode the reading thread can block if there is nothing to read on any socket. In spin mode the reading thread
+        will never block (while reading) and will continually check for new data to read from the sockets.
+      </p><div class="caution"><h3 class="title">Caution</h3><p>
+          Enabling spin mode may result in constant 100% CPU utilization. Therefore we recommend reserving a CPU as
+          explained in the following section.
+        </p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="perf_configuration-reserving_cpus"></a>9.4.1.3.&nbsp;Reserving CPUs</h4></div></div></div><p>
+        Some operating systems provide the ability to reserve one or more CPUs for exclusive use by a given application
+        or thread. The Node can be configured to <span class="emphasis"><em>pin</em></span> threads to reserved CPUs, which may improve
+        message delivery performance by reducing overhead from thread preemption and CPU contention by other
+        processes. This often results in lower, more consistent message latency.
+      </p><p>
+        Only certain threads in the Node are "pinnable", as not all threads would realize a performance benefit. The
+        following threads can be pinned:
+      </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><tbody><tr><td>MessageAssembler</td><td>One thread is created per session, only when not using multiplexing mode.</td></tr><tr><td>FIX-Reader</td><td>
+                Created when using <a href="ch09s04.html#perf_configuration-multiplexing_mode" title="9.4.1.2.&nbsp;Multiplexing Mode">multiplexing mode</a> as an
+                alternative to MessageAssembler.
+              </td></tr><tr><td>HA-Messaging-Reader-Data</td><td rowspan="2" valign="middle">
+                Created only when High Availability is configured. Requires the
+                <a class="code" href="config_reference.html#config_ref_HighAvailabilityCluster_minimizeContextSwitchLatency">minimizeContextSwitchLatency</a>
+                attribute of <code class="code">HighAvailabilityCluster</code> to be enabled.
+                <a href="ch06.html#optfeature_high_availability_comms-stacks" title="6.1.8.4.&nbsp;Stacks">More details</a>.
+              </td></tr><tr><td>HA-Messaging-Writer-Data</td></tr></tbody></table></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e10843"></a>Isolating CPUs on Linux</h5></div></div></div><p>
+          To isolate CPUs on Linux, the <code class="code">isolcpus</code> kernel boot parameter must be configured. For
+          example:
+        </p><pre class="programlisting">kernel /vmlinuz-2.6.18-194.el5 ro root=LABEL=/ isolcpus=2,4,6</pre><p>
+          Each integer corresponds to a CPU ID listed in <span class="emphasis"><em>/proc/cpuinfo</em></span> that you would like to
+          isolate. CPU 0 is usually reserved for the OS and should not be isolated.
+        </p><p>IRQ balance must also be disabled:</p><pre class="programlisting">chkconfig irqbalance off</pre><p>
+          The system must then be rebooted.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e10853"></a>Configuring Reserved CPUs in the Node</h5></div></div></div><p>
+          Once a number of CPUs have been identified and isolated at the OS level, the Node must be configured with a
+          set of reservable CPUs.  There are two ways to configure this:  via a CPU pool, or by mapping CPUs
+          to specific threads.
+        </p><div class="important"><h3 class="title">Important</h3><p>Please note the following configuration restrictions:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+              CPU 0 is usually reserved for the OS and should not be reserved. Configuring the Node to use it will
+              result in a configuration error.
+            </li><li class="listitem">
+              When configuring a CPU pool and using
+              <a href="ch09s04.html#perf_configuration-multiplexing_mode" title="9.4.1.2.&nbsp;Multiplexing Mode">multiplexing mode</a>, only one reserved CPU is
+              needed for inbound message reading, regardless of the number of sessions.
+            </li><li class="listitem">
+              Mapping CPUs to specific threads is only supported when using multiplexing mode. Otherwise a pool of CPUs
+              must be configured.
+            </li></ul></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><span class="bold"><strong>Reserving a pool of CPUs</strong></span>:
+
+            <p>
+              When a pinnable thread starts, it will attempt to acquire one of the CPUs in the pool. If none are
+              available, the thread will run unpinned.
+            </p><pre class="programlisting">&lt;Application reservedCores="2,4,6" ...&gt;</pre><p>A range of CPU IDs can also be specified:</p><pre class="programlisting">&lt;Application reservedCores="2,4,6,8-10,13" ...&gt;</pre></li><li class="listitem"><span class="bold"><strong>Mapping CPUs to specific threads</strong></span>:
+
+            <p>
+              With this option, a list of thread-to-CPU mappings can be configured.  By putting a given thread on a
+              specific CPU, you may realize performance benefits depending on the hardware configuration (e.g. putting
+              related threads in the same NUMA zone).
+            </p><pre class="programlisting">&lt;Application&gt;
+  &lt;Threading&gt;
+    &lt;Affinity&gt;
+      &lt;ReservedCore thread="FIX-Reader" cpu="2"/&gt;
+      &lt;ReservedCore thread="HA-Messaging-Reader-Data" cpu="4"/&gt;
+      &lt;ReservedCore thread="HA-Messaging-Writer-Data" cpu="6"/&gt;
+    &lt;/Affinity&gt;
+  &lt;/Threading&gt;
+  &lt;HighAvailabilityCluster id="cluster" minimizeContextSwitchLatency="true"&gt;
+    ...
+  &lt;/HighAvailabilityCluster&gt;
+  &lt;Sessions&gt;
+    ...
+  &lt;/Sessions&gt;
+&lt;/Application&gt;</pre></li></ul></div></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="perf_configuration-logging"></a>9.4.2.&nbsp;Logging</h3></div></div></div><p>
+      The Node can be configured to use our asynchronous, highly efficient binary logging subsystem. See the
+      <a href="ch03s02.html" title="3.2.&nbsp;Logging">Logging</a> documentation for more information.
+    </p><p>
+      In addition, some users may wish to disable the logging of sent and received FIX messages. See the
+      <a href="config_reference.html#config_ref_Application_printMessages"><code class="code">printMessages</code></a>
+      and
+      <a href="config_reference.html#config_ref_Application_printAdminMessagesOnly"><code class="code">printAdminMessagesOnly</code></a>
+      configuration attributes.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="perf_configuration-validation"></a>9.4.3.&nbsp;Message Validation</h3></div></div></div><p>
+      The Node performs a number of validation operations on each FIX message received. In order to reduce
+      processing times these can be disabled using
+      <a href="config_reference.html#config_ref_Session_trustedMode"><code class="code">trustedMode</code></a>. For example:
+    </p><pre class="programlisting">&lt;Session trustedMode="true" ...&gt;</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="perf_configuration-persistence"></a>9.4.4.&nbsp;Persistence</h3></div></div></div><p>
+      Persistence of FIX session state is an expensive operation. If disk-based persistence is not necessary in your
+      environment, a memory-based persister can be used instead. For more information see
+      <a href="ch05.html#stdfeature_persistence" title="5.1.&nbsp;Session Persistence">Session Persistence</a>.
+    </p><p>
+      If disk-based persistence is necessary then the performance of the <code class="code">JournalingPersister</code> can be
+      improved by configuring the
+      <a href="apds02.html#persistent_collections_properties-useWriteBuffering">useWriteBuffering</a>
+      option. This option batches multiple writes to disk into a single operation, improving performance but reducing
+      reliability. Recent transactions are not guaranteed to have been persisted if the engine goes down.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="perf_configuration-message-impl"></a>9.4.5.&nbsp;Choosing an IFIXMessage Implementation</h3></div></div></div><p>
+      <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/IFIXMessage.html" target="_top">IFIXMessage</a>
+      is the Node's internal representation of a FIX message.  We offer several implementations of this interface,
+      each with characteristics that are suited to different types of message processing.  There is also good support
+      for creating your own customized implementations.
+    </p><p>
+      The following table lists the available implementations and their characteristics:
+    </p><div class="informaltable"><table border="1"><colgroup><col><col><col></colgroup><thead><tr><th>Implementation</th><th>Characteristics</th><th>Recommended Usage</th></tr></thead><tbody><tr><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/FIXMessageAsIndexedByteArray.html" target="_top">FIXMessageAs&shy;IndexedByteArray</a>
+            </td><td>
+              Can be populated directly from a <code class="code">byte</code> array, without the creation of new objects.
+            </td><td>
+              Inbound FIX messages and general purpose. The default implementation for inbound FIX messages.
+            </td></tr><tr><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/FIXMessageAsArray.html" target="_top">FIXMessageAsArray</a>
+            </td><td>
+              Adding unordered fields is efficient, as are iterating, clearing and retrieving fields by array index.
+              Removing fields, adding fields in a specific order, and field lookup by tag require traversal of the
+              array and are therefore less efficient.
+            </td><td>
+              Outbound FIX messages and inbound FAST messages. The default implementation for outbound FIX messages.
+            </td></tr><tr><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/FIXMessageAsList.html" target="_top">FIXMessageAsList</a>
+            </td><td>
+              Implemented as an <code class="code">ArrayList</code> and inherits all of the performance characteristics thereof.
+              Retrieval of field by tag number requires list traversal.
+            </td><td>When the use of <code class="code">List</code>-like operations are necessary.</td></tr><tr><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/FIXMessageAsIndexedList.html" target="_top">FIXMessageAsIndexedList</a>
+            </td><td>
+              Implemented as a <code class="code">LinkedList</code> with an index by tag number to entries in the list. Retrieval of
+              fields by tag is very efficient, but field removal requires a scan of the list to update the index.
+            </td><td>
+              When efficient tag retrieval is necessary.
+            </td></tr><tr><td>
+              <a class="javadoc" href="../javadoc/com/camerontec/catalys/core/message/OrderedFIXMessage.html" target="_top">OrderedFIXMessage</a>
+            </td><td>Enforces field ordering on each message. The ordering is taken from the FAST templates.</td><td>Outbound FAST messages.</td></tr></tbody></table></div><p>
+      To configure a message factory other than the default, use a <code class="code">ConfigurableMessageClassMessageFactory</code>
+      element and set the <code class="code">className</code> attribute to the class of the factory you would like to use. See the
+      example in the <a href="ch05s09.html" title="5.9.&nbsp;Message Factories">Message Factory</a> section.
+    </p></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch09s03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch09.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch09s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">9.3.&nbsp;Hardware Considerations&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;9.5.&nbsp;JVM Tuning</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:42+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

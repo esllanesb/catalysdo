@@ -1,0 +1,224 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys Node User Guide &#151; 8.4.&nbsp;Persistent Objects</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys Node User Guide"><link rel="up" href="ch08.html" title="Chapter&nbsp;8.&nbsp;Programming Guide"><link rel="prev" href="ch08s03.html" title="8.3.&nbsp;Tasks"><link rel="next" href="ch08s05.html" title="8.5.&nbsp;Message Factories"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch08s03.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;8.&nbsp;Programming Guide</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch08s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="prog_persistent_objects"></a>8.4.&nbsp;Persistent Objects</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_persistent_objects-intro"></a>8.4.1.&nbsp;Introduction</h3></div></div></div><p>
+      This section is designed to give developers an understanding on how to use Catalys Node persistent objects.
+      The Node provides built-in support for <a href="ch05.html#stdfeature_persistence" title="5.1.&nbsp;Session Persistence">FIX session persistence</a>, so
+      that sessions can recover from application re-starts. However, Node persistence is not just limited to session
+      persistence. The Node provides mechanisms to allow persistence of any piece of data. This is achieved via the
+      Node Collections framework.
+    </p><p>
+      Collections are groups of objects which are persisted to disk. Depending on how these objects need to be
+      retrieved, they can be persisted as an indexed list collection or as a map collection. In addition there is a
+      "high capacity" version of the list collection which gives better performance for high volumes of data.
+    </p><p>
+      Each persistent collection is associated with one directory on disk. In that directory are the persistence file(s)
+      for that collection.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_persistent_objects-collectionRegistry"></a>8.4.2.&nbsp;Collection Registry</h3></div></div></div><p>
+      Persistent collections are managed through the Collection Registry, which is a Catalys Node Service, identified
+      by the name <code class="code">CollectionRegistry</code>.
+    </p><p>
+      The Collection Registry service implements the
+      <a class="javadoc" href="../javadoc/com/camerontec/util/collection/ICollectionRegistry.html" target="_top">ICollectionRegistry</a>
+      interface. This interface provides the methods necessary to access registered collections.
+    </p><p>
+      A custom implementation of this interface can be used as long as it is registered as a service with the name:
+      <code class="code">CustomCollectionRegistry</code>. If such a service is registered, the default service will delegate to this
+      custom one, falling back to its own methods if the appropriate custom ones are not provided.
+    </p><p>The collection registry can be accessed by the following:</p><pre class="programlisting">ICollectionRegistry registry = (ICollectionRegistry)ServiceRegistry.getInstance()
+  .getService(CollectionRegistryService.SERVICE_NAME);</pre><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="prog_persistent_objects-collectionRegistryGetMethods"></a>Getting a Collection</h4></div></div></div><p>
+        Once the collection registry has been obtained, specific collections can be accessed. This is achieved via the
+        Collection Registry <code class="code">get*</code> methods, which retrieve a collection of the specified name, creating it
+        if it does not already exist. There are variants for lists and maps. The caller supplies the classes that make
+        up the elements in the collection, a single class in the case of a list, and a key class and a value class in
+        the case of a map.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10198"></a>List Collections</h4></div></div></div><p>
+        To get a list collection (a collection which is keyed by an integer index), call the
+        <a class="javadoc" href="../javadoc/com/camerontec/util/collection/ICollectionRegistry.html#getList(java.lang.String,%20java.util.Properties,%20java.lang.Class)" target="_top">getList</a>
+        method.
+      </p><p>For example to get a list of type <code class="code">Integer</code> use:</p><pre class="programlisting">List&lt;Integer&gt; list = registry.getList("integerList", componentProperties, Integer.class);</pre><p>
+        There is also a variant of the
+        <a class="javadoc" href="../javadoc/com/camerontec/util/collection/ICollectionRegistry.html#getList(java.lang.String,%20java.util.Properties,%20com.camerontec.util.io.IBytesSegmentExternalizer)" target="_top">getList</a>
+        method which takes a custom <a href="ch08s04.html#prog_persistent_objects-externalizers" title="8.4.6.&nbsp;Externalizers">externalizer</a>.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10208"></a>Map Collections</h4></div></div></div><p>
+        To get a map collection (a collection which is keyed by an object), call the
+        <a class="javadoc" href="../javadoc/com/camerontec/util/collection/ICollectionRegistry.html#getMap(java.lang.String,%20java.util.Properties,%20java.lang.Class,%20java.lang.Class)" target="_top">getMap</a>
+        method.
+      </p><p>For example to get a collection which maps <code class="code">String</code> to <code class="code">Integer</code>, use:</p><pre class="programlisting">Map&lt;String, Integer&gt; map =
+  registry.getMap("someMap", componentProperties, String.class, Integer.class);</pre><p>
+        Like list collections, there is also a variant of the
+        <a class="javadoc" href="../javadoc/com/camerontec/util/collection/ICollectionRegistry.html#getMap(java.lang.String,%20java.util.Properties,%20com.camerontec.util.io.IBytesSegmentExternalizer,%20com.camerontec.util.io.IBytesSegmentExternalizer,%20java.util.Map)" target="_top">getMap</a>
+        method which takes custom <a href="ch08s04.html#prog_persistent_objects-externalizers" title="8.4.6.&nbsp;Externalizers">externalizers</a>
+        for the key and value classes.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="prog_persistent_objects-collectionProperties"></a>Collection Properties</h4></div></div></div><p>
+        The properties provided when getting a list or map are used to configure the collection when it is created
+        or opened. These properties are explained in detail in
+        <a href="apd.html" title="Appendix&nbsp;D.&nbsp;Persistent Collections Properties">Persistent Collections Properties</a>. Most of the
+        properties are common to all collections. The exceptions to this are:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><a href="apds02.html#persistent_collections_properties-highCapacityList"><code class="code">isHighCapacityList</code></a>:
+          When <code class="code">true</code>, <code class="code">getList</code> will return a high-capacity list, which has specific
+          <a href="apds02.html#persistent_collections_properties-highCapacityListCollectionProperties" title="D.2.2.2.&nbsp;High Capacity List (Indexed) Collection Properties">high-capacity properties</a>.
+          When <code class="code">false</code>, <code class="code">getList</code> will return a standard list which can be configured with
+          <a href="apds02.html#persistent_collections_properties-listCollectionProperties" title="D.2.2.1.&nbsp;Standard Capacity Collection Properties">standard list properties</a>.
+          This property is not supported with maps.
+        </li><li class="listitem"><a href="apds02.html#persistent_collections_properties-isCachingEnabled"><code class="code">isCachingEnabled</code></a>
+          and
+          <a href="apds02.html#persistent_collections_properties-maxCacheElements"><code class="code">maxCacheElements</code></a>
+          only apply to map collections.
+        </li></ul></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10238"></a>Name</h4></div></div></div><p>
+        The name used to identify and retrieve a collection must be unique across the collection registry. There are
+        two standard
+        <a class="javadoc" href="../javadoc/com/camerontec/util/collection/CollectionProperties.html" target="_top">CollectionProperties</a>
+        which can fulfill this requirement: the <code class="code">name</code> attribute and the <code class="code">directoryName</code>
+        attribute. There is a
+        <a class="javadoc" href="../javadoc/com/camerontec/util/collection/CollectionProperties.html#getName(java.util.Properties)" target="_top">getName</a>
+        convenience function provided which will choose <code class="code">name</code> over <code class="code">directoryName</code> if it is
+        present in a properties object, and throw an exception if neither property is defined:
+      </p><pre class="programlisting">Map&lt;K,V&gt; map =
+    registry.getMap(CollectionProperties.getName(properties), properties, K.class, V.class);</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10248"></a>8.4.3.&nbsp;Compacting a Collection</h3></div></div></div><p>
+      Calling
+      <a class="javadoc" href="../javadoc/com/camerontec/util/collection/ICollectionRegistry.html#compact(java.lang.String)" target="_top">compact</a>
+      with the name of a collection will attempt to reduce the size of the collection. As the collections are
+      persisted as journal files, compacting will remove all duplicate keys from the journal.
+    </p><p>For example, there might be a task scheduled at the end of the day to do this.</p><pre class="programlisting">registry.compact("routeMap");</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="d5e10254"></a>8.4.4.&nbsp;Removing a Collection</h3></div></div></div><p>
+        Calling
+        <a class="javadoc" href="../javadoc/com/camerontec/util/collection/ICollectionRegistry.html#compact(java.lang.String)" target="_top">remove</a>
+        will remove a named collection from the registry. This operation will remove the underlying persistence
+        files from disk. It is not replicated.
+    </p><pre class="programlisting">registry.remove("routeMap");</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_persistent_objects-collections"></a>8.4.5.&nbsp;Collections</h3></div></div></div><p>
+      Once the collection has been obtained from the collection registry, it can be accessed and updated according to
+      whether it is a list or a map.
+    </p><p>
+      It is important to note that changes to the collection are only persisted (and distributed in High Availability
+      environments) when there is a direct action upon the collection. For example, a change to an element which has
+      been retrieved from the collection will only be persisted once the element has been 'put back' into the
+      collection. If the collection is a list, this means re-adding it; if it is a map it means re-putting it.
+    </p><p>
+      For example if a route table is being updated when an execution report is received for an order:
+    </p><pre class="programlisting">Route route = routingMap.get(clOrdId);
+route.setConfirmedClOrdId(true);
+//Without this line, the update to the map will not be persisted
+routingMap.put(clOrdId, route);</pre><p>
+      It is possible to nest collections, but it also must be noted that the same restriction applies to collection
+      updates as above. That is the outer collection must be updated for the modification to be persisted
+      (and distributed).
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10266"></a>List Collections</h4></div></div></div><p>
+        For standard capacity lists, the <code class="code">java.util.List</code> interface is fully supported. Elements can be
+        added, retrieved, updated, removed at any index in the list.
+      </p><p>
+        For example as part of its end of day processing the router processor may delete all of the orders that have
+        been replaced or canceled. It could do this by maintaining a deletion list, items from which are updated as
+        they are processed.
+      </p><pre class="programlisting">List&lt;String&gt; deleteList = registry.getList("deleteList", componentProperties, String.class);
+for (int i=0; i &lt; deleteList.size(); i++) {
+  DeleteRecord deleteRecord = deleteList.get(i);
+  routingMap.remove(deleteRecord.getClOrdId());
+  deleteRecord.setDeleted(true);
+  deleteList.set(i, deleteRecord);
+}</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10272"></a>High Capacity List Collections</h4></div></div></div><p>
+        The <code class="code">java.util.List</code> contract is modified for high capacity list collections such that elements can
+        only be added or removed from the end of the list, and the entire list can be cleared.
+      </p><p>
+        This example shows usage of a high capacity list in a component which stores <code class="code">IFIXMessage</code> objects:
+      </p><pre class="programlisting">properties.setProperty(CollectionsProperties.IS_HIGH_CAPACITY_LIST, "true");
+List&lt;IFIXMessage&gt; messages = registry.getList(
+    CollectionProperties.getName(properties),
+    properties,
+    messageExternalizer);
+...
+messages.add(message);
+...
+messages.clear()</pre></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10279"></a>Map Collections</h4></div></div></div><p>
+        The <code class="code">java.util.Map</code> interface is fully supported for map collections. Elements can be put into the
+        map, retrieved and removed from the map, the map can be iterated and cleared.
+      </p><p>
+        Note that due to the underlying map implementation, performing a <code class="code">put()</code> or <code class="code">putAll()</code>
+        on the collection will result in a write to the disk regardless of whether the collection data has changed or
+        not. Therefore it is the responsibility of the map's client to decide when it is appropriate to
+        <code class="code">put()</code> or <code class="code">putAll()</code>.
+      </p><p>
+        This example shows usage of a map in a component which maps a string (a client order ID for example) to routes:
+      </p><pre class="programlisting">Map&lt;String, Route&gt; routeMap = registry.getMap(
+    CollectionProperties.getName(properties),
+    properties,
+    String.class,
+    Route.class);
+...
+// Add a new route
+routeMap.put("newClOrdID", newRoute);
+...
+// Modify an existing route
+Route route = routeMap.get("anotherClOrdID");
+route.changeRoutingInformation(...);
+routeMap.put("anotherClOrdID", route);
+...
+// Delete a route
+routeMap.delete("id");</pre></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="prog_persistent_objects-externalizers"></a>8.4.6.&nbsp;Externalizers</h3></div></div></div><p>
+      Externalizers serialize and deserialize an object to and from a
+      <a class="javadoc" href="../javadoc/com/camerontec/util/data/BytesSegment.html" target="_top">BytesSegment</a>
+      in order to prepare it to be written to and read from persistent storage. <code class="code">BytesSegment</code>
+      objects are efficient low-level byte storage for the data that needs to be serialized. They minimize object
+      creation, re-using their own pre-allocated storage where possible, and extending this storage only when necessary.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="d5e10295"></a>Built-in Externalizers</h4></div></div></div><p>
+        We provide the following built-in externalizers. If custom externalizers are not specified, objects
+        will be persisted using the most appropriate built-in externalizer.
+      </p><div class="note"><h3 class="title">Note</h3><p>
+          The data stored in the collection can be of type <code class="code">BytesSegment</code> itself, minimizing the translation
+          required for externalization. When this is the case there is no guarantee that object returned from persisted
+          collections will be safe to store. i.e. object already returned may be changed on subsequent retrieval from
+          a persistent collection.
+        </p></div><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Type</th><th>Externalizer</th></tr></thead><tbody><tr><td><code class="code">BytesSegment</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/BytesSegmentToBytesSegmentExternalizer.html" target="_top">BytesSegmentToBytesSegmentExternalizer</a>
+              </td></tr><tr><td><code class="code">String</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/StringUTFToBytesSegmentExternalizer.html" target="_top">StringUTFToBytesSegmentExternalizer</a>
+              </td></tr><tr><td><code class="code">Boolean</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/BooleanToBytesSegmentExternalizer.html" target="_top">BooleanToBytesSegmentExternalizer</a>
+              </td></tr><tr><td><code class="code">Short</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/ShortToBytesSegmentExternalizer.html" target="_top">ShortToBytesSegmentExternalizer</a>
+              </td></tr><tr><td><code class="code">Integer</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/IntegerToBytesSegmentExternalizer.html" target="_top">IntegerToBytesSegmentExternalizer</a>
+              </td></tr><tr><td><code class="code">Float</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/ShortToBytesSegmentExternalizer.html" target="_top">FloatToBytesSegmentExternalizer</a>
+              </td></tr><tr><td><code class="code">Long</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/LongToBytesSegmentExternalizer.html" target="_top">LongToBytesSegmentExternalizer</a>
+              </td></tr><tr><td><code class="code">Double</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/DoubleToBytesSegmentExternalizer.html" target="_top">DoubleToBytesSegmentExternalizer</a>
+              </td></tr><tr><td><code class="code">Object</code></td><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/ObjectToBytesSegmentExternalizer.html" target="_top">ObjectToBytesSegmentExternalizer</a>
+                (see <a href="ch08s04.html#prog_persistent_objects-objectExternalizers" title="ObjectToBytesSegmentExternalizer">below</a>)
+              </td></tr></tbody></table></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="prog_persistent_objects-objectExternalizers"></a>ObjectToBytesSegmentExternalizer</h4></div></div></div><p>
+        Any object which implements <code class="code">java.io.Serializable</code> can be handled by this externalizer. This default
+        object serialization uses <code class="code">ObjectOutputStream</code> and <code class="code">ObjectInputStream</code>. If the class also
+        implements <code class="code">java.io.Externalizable</code> then the serialization is controlled by the
+        <code class="code">writeExternal</code> and <code class="code">readExternal</code> methods of this interface. If this is still
+        insufficient for an object's serialization, then a
+        <a href="ch08s04.html#prog_persistent_objects-customExternalizer" title="Custom Externalizers">Custom Externalizer</a> can be written.
+      </p></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="prog_persistent_objects-customExternalizer"></a>Custom Externalizers</h4></div></div></div><p>
+        A custom externalizer may be required if object-based serialization is not efficient enough for the
+        application. A custom externalizer must implement the
+        <a class="javadoc" href="../javadoc/com/camerontec/util/io/IBytesSegmentExternalizer.html" target="_top">IBytesSegmentExternalizer</a>
+        interface. This interface has two methods:
+      </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>Method</th><th>Notes</th></tr></thead><tbody><tr><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/IBytesSegmentExternalizer.html#toBytesSegment(T,%20com.camerontec.util.data.BytesSegment)" target="_top">toBytesSegment</a>
+              </td><td>
+                Serializes the object to its <code class="code">BytesSegment</code> representation.
+              </td></tr><tr><td>
+                <a class="javadoc" href="../javadoc/com/camerontec/util/io/IBytesSegmentExternalizer.html#fromBytesSegment(com.camerontec.util.data.BytesSegment)" target="_top">fromBytesSegment</a>
+              </td><td>
+                Creates an object by deserializing the specified <code class="code">BytesSegment</code>.
+              </td></tr></tbody></table></div><p>
+        There is a base implementation,
+        <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/BytesSegmentExternalizerBase.html" target="_top">BytesSegmentExternalizerBase</a>,
+        which performs handling of null values for <code class="code">BytesSegment</code> and object parameters.
+      </p><p>
+        There is a further implementation,
+        <a class="javadoc" href="../javadoc/com/camerontec/util/io/externalizer/ConcurrentStreamingBytesSegmentExternalizerBase.html" target="_top">ConcurrentStreamingBytesSegmentExternalizerBase</a>,
+        which provides support for concurrency as well as wrapping the underlying <code class="code">BytesSegments</code> in
+        <a class="javadoc" href="../javadoc/com/camerontec/util/io/BytesSegmentDataInputStream.html" target="_top">BytesSegmentDataInputStream</a>
+        and
+        <a class="javadoc" href="../javadoc/com/camerontec/util/io/BytesSegmentDataOutputStream.html" target="_top">BytesSegmentDataOutputStream</a>,
+        taking care of their creation and wrapping.
+      </p></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch08s03.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch08.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch08s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">8.3.&nbsp;Tasks&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;8.5.&nbsp;Message Factories</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:52:41+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>

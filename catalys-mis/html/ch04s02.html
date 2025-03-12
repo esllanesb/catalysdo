@@ -1,0 +1,105 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title xmlns:d="http://docbook.org/ns/docbook">Catalys MIS User Guide &#151; 4.2.&nbsp;Servers and Sessions</title><link rel="stylesheet" type="text/css" href="../resources/docbook.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Catalys MIS User Guide"><link rel="up" href="ch04.html" title="Chapter&nbsp;4.&nbsp;Dashboard Web Interface"><link rel="prev" href="ch04.html" title="Chapter&nbsp;4.&nbsp;Dashboard Web Interface"><link rel="next" href="ch04s03.html" title="4.3.&nbsp;Events"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:d="http://docbook.org/ns/docbook" class="navheader"><table width="100%" summary="Navigation header"><tr><td width="20%" align="left"><a accesskey="p" href="ch04.html">Prev</a>&nbsp;</td><th width="60%" align="center"><div id="navheader_chapter_title">Chapter&nbsp;4.&nbsp;Dashboard Web Interface</div><div><a accesskey="h" href="index.html">Home</a></div></th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch04s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title"><a name="dashboard_servers_and_sessions"></a>4.2.&nbsp;Servers and Sessions</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Dashboard_Servers_and_Sessions-intro"></a>4.2.1.&nbsp;Introduction</h3></div></div></div><p>
+      The Servers and Sessions tab shows all of the Catalys Nodes and CameronFIX Servers that are being monitored, as
+      well their sessions. The servers and nodes are shown in the left panel, and the sessions are shown in the right
+      panel. Each server has a check box to its left; clicking this on will display the sessions associated with this
+      server, and clicking this off will remove the sessions associated with this server from the display.
+    </p><div class="mediaobject"><img src="../resources/servers_sessions_overview.png"></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Dashboard_Servers_and_Sessions-presentation"></a>4.2.2.&nbsp;Presentation</h3></div></div></div><p>
+      Summary information associated with each server and session is displayed in a row. The fields of these rows
+      (columns) can be used to group the servers and sessions, as well as sort them within their groups; and filter
+      them.
+    </p><p>
+      Grouping, sorting and filtering modifications are only available to the current browser session. They are reset
+      to defaults at the beginning of the next session.
+    </p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="Dashboard_Servers_and_Sessions-group"></a>Grouping Servers and Sessions</h4></div></div></div><p>
+        Group servers or sessions by a particular field by clicking on the arrow to the right of the field name. This
+        will bring up the Field Menu. Select 'Group By This Field'. Once grouped by a field, the column associated with
+        that field disappears, and the values of the field are shown as headers of the groups. To group by a different
+        field, repeat the procedure for the new field.
+      </p><p>
+        Once grouped, collapse or expand individual groups by clicking the +/- icon to the left of the group name.
+      </p><div class="mediaobject"><img src="../resources/gui-data-grouping.gif"></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="Dashboard_Servers_and_Sessions-sort"></a>Sorting and Showing/Hiding Columns</h4></div></div></div><p>
+        Sort the rows within their groups by clicking on the Field Menu, then selecting 'Sort Ascending' or 'Sort
+        Descending'. Once sorted by a particular field, an up/down arrow appears on the field title. This can be
+        clicked to change the sorting from ascending to descending and vice versa.
+      </p><p>
+        Change the fields that are displayed by selecting the 'Columns' item from the Field Menu. This will bring up a
+        list of fields, which are either checked, or not checked. Check the names of the fields for display, and
+        uncheck those to be hidden.
+      </p><div class="mediaobject"><img src="../resources/gui-data-sorting.gif"></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="Dashboard_Servers_and_Sessions-resize"></a>Resizing and Ordering Columns</h4></div></div></div><p>Resize columns by clicking and dragging any column separator bar.</p><p>Reorder columns by clicking and dragging the column header.</p><p>
+        <span class="bold"><strong>Session</strong></span> column resizing and re-ordering preferences are saved by the
+        Dashboard, and will be available the next time the user logs in. Other (non-session) re-configurations are not
+        saved, and will revert to their defaults.
+      </p><div class="mediaobject"><img src="../resources/gui-data-resizing.gif"></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="Dashboard_Servers_and_Sessions-filter"></a>Session Field Filtering</h4></div></div></div><p>
+        Filter session rows by hovering over one of the columns, then clicking on the down arrow to the right hand side
+        of the field name. This will bring up the field menu. Click on 'Filtering'. Text fields can be filtered by a
+        matching string; numerical fields can be filtered by a range or an equality.
+      </p><p>
+        Once the filter is in place, the text of the column heading will be italicized. The filter can be enabled and
+        disabled by ticking the box to the left of 'Filters' in the Field menu.
+      </p><div class="mediaobject"><img src="../resources/gui-data-filtering-menu.gif"></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="Dashboard_Servers_and_Sessions-properties"></a>4.2.3.&nbsp;Server and Session Popups</h3></div></div></div><p>
+      Click on any server or session row to bring up a popup window with more information about that server or session;
+      as well as access to operations on that server or session.
+    </p><p>To remove the popup from the view, click on the cross in the top right-hand corner of the window.</p><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="Dashboard_Servers_and_Sessions-server-props-and-commands"></a>Server Popup</h4></div></div></div><p>
+        The Server popup window has three tabs: the Properties and Commands tab, the Command Line tab and the Log
+        Levels tab.
+      </p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e1521"></a>Server Properties &amp; Commands Tab</h5></div></div></div><p>The Server Properties &amp; Commands tab contains the following panels:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Commands Buttons:
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">Configuration: click this button to go to this server's configuration.</li><li class="listitem">
+                Start/Stop: click this button to start or stop the server. Ensure that the CameronTec license is
+                present in the <span class="emphasis"><em>resources</em></span> directory of the installation of the server that is being
+                started.
+              </li><li class="listitem">Remove: remove this server from Dashboard monitoring.</li><li class="listitem"><a name="dashboard_servers_and_sessions-tail-log-file"></a>
+                 Tail Logs (if log streaming is enabled for this server). This provides the ability to access the last
+                 few lines of a log without leaving the Servers &amp; Sessions tab. It is a floating window,
+                 collapsible to its title bar. The window refreshes automatically. The same searching and filtering
+                  capabilities as the main Logs tab are available in this window.
+               </li></ul></div></li><li class="listitem">
+            Basic Properties:
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">
+                Host, Server Name, Number of Sessions, Version and Type. This panel can be minimized by clicking on the
+                up-arrow on the top right-hand side of the panel.
+              </li></ul></div></li><li class="listitem">Advanced and User Defined Properties:
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">
+                Displays all of the other standard properties of the server as well as any
+                <a href="ch04s02.html#Dashboard_Servers_and_Sessions-custom-props" title="4.2.3.1.&nbsp;Custom Properties">custom properties</a>. This panel can
+                also be minimized by clicking on the up-arrow on its top right-hand corner.
+              </li></ul></div></li><li class="listitem">(Catalys Nodes only) License Information:</li><li class="listitem">
+            Displays the expiry date, scope, number of allowed servers and sessions and enabled features associated
+            with the license.
+          </li></ul></div><div class="mediaobject"><img src="../resources/guiServerPopup.png"></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e1545"></a>Command Line Tab</h5></div></div></div><p>
+          The command line interface for an instance is available in the Commands tab. Type 'help' to list the available
+          commands.
+        </p><div class="mediaobject"><img src="../resources/command_line.png"></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e1551"></a>Log Levels tab</h5></div></div></div><p>
+          This tab displays all of this server's loggers, and the level at which they are logging. Note that loggers
+          are only displayed for those servers which are streaming logs.
+        </p><div class="mediaobject"><img src="../resources/guiServerPopupLogLevels.png"></div></div></div><div class="simplesect"><div class="titlepage"><div><div><h4 class="title"><a name="Dashboard_Servers_and_Sessions-session-props"></a>Session Popup</h4></div></div></div><p>The Session popup window two tabs: Configuration properties; and Runtime properties &amp; Commands.</p><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e1560"></a>Configuration Properties</h5></div></div></div><p>The Configuration Properties tab contains the following panels:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Session Status:
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">logged on</li><li class="listitem">logged off</li><li class="listitem">not connected</li></ul></div></li><li class="listitem">Basic Properties:
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">host, server name, sender and target comp IDs and the FIX version</li></ul></div></li><li class="listitem">Advanced and User Defined Properties:
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">Displays all of the other standard properties as well as any
+                <a href="ch04s02.html#Dashboard_Servers_and_Sessions-custom-props" title="4.2.3.1.&nbsp;Custom Properties">custom properties</a>.
+              </li></ul></div></li></ul></div><div class="mediaobject"><img src="../resources/guiSessionPopupConfig.png"></div></div><div class="simplesect"><div class="titlepage"><div><div><h5 class="title"><a name="d5e1579"></a>Runtime properties &amp; Commands</h5></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Commands:
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">Resend messages</li><li class="listitem">Send a test request</li><li class="listitem">Send a heartbeat message.</li><li class="listitem">Reset the session</li><li class="listitem">Reset the sequence numbers</li></ul></div></li><li class="listitem">Runtime Properties:
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem">session status</li><li class="listitem">sequence numbers</li><li class="listitem">schedule status</li></ul></div></li></ul></div><div class="mediaobject"><img src="../resources/guiSessionPopupRuntime.png"></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="Dashboard_Servers_and_Sessions-custom-props"></a>4.2.3.1.&nbsp;Custom Properties</h4></div></div></div><p>
+        Custom properties can be added to servers and sessions via XML configuration or via the JMX 'addCustomProperty'
+        operation on the server or session MBean.
+      </p><p>
+        These are displayed in the 'Advanced and User Defined Properties' tab of the Server and Session popup window.
+      </p><p>
+        Those properties defined with a # at the beginning of their name are also available to be displayed as columns
+        in the Server and Session panels.
+      </p><p>
+        For example, the session below has the additional 'Contact', 'Phone' and 'Email' properties, and the Contact
+        and Email fields are available for display as columns.
+      </p><pre class="programlisting">&lt;Session&gt;
+  &lt;Properties&gt;
+    &lt;Property  name="#Contact" value="John User" /&gt;
+    &lt;Property  name="Phone" value="+1(212)123-4567" /&gt;
+    &lt;Property  name="#Email" value="john@user.com" /&gt;
+  &lt;/Properties&gt;
+...
+&lt;/Session&gt;</pre><div class="mediaobject"><img src="../resources/gui-session-user-defined-properties.gif"></div><div class="mediaobject"><img src="../resources/custom-properties-as-column-server.gif"></div><div class="mediaobject"><img src="../resources/custom-properties-as-column-session.gif"></div></div></div></div><div xmlns:d="http://docbook.org/ns/docbook" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch04.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="ch04.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch04s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;4.&nbsp;Dashboard Web Interface&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;4.3.&nbsp;Events</td></tr></table></div><div xmlns:d="http://docbook.org/ns/docbook" xmlns:date="http://exslt.org/dates-and-times" id="footer_copyright"><div id="footer_copyright_pubdate">Published 2024-02-22T15:53:33+01:00</div><div id="footer_copyright_copy">
+        Copyright &copy; 2024 CameronTec</div></div></body></html>
